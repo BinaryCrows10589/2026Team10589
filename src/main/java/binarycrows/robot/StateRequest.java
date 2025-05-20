@@ -1,9 +1,47 @@
 package binarycrows.robot;
 
-import binarycrows.robot.enums.StateRequestStatus;
+import binarycrows.robot.Enums.StateRequestPriority;
+import binarycrows.robot.Enums.StateRequestStatus;
 
-public class StateRequest {
-    public StateRequestStatus status = StateRequestStatus.FRESH;
+public class StateRequest<TYPE extends Enum<TYPE>> {
+    protected StateRequestStatus status = StateRequestStatus.FRESH;
+    private TYPE stateRequestType;
+    private StateRequestPriority priority;
+    private boolean isLongRunning;
 
-    public StateRequest() {}
+    /**
+     * State requests are objects that are passed between state managers to request that a subsystem put itself into a particular state.
+     * @param stateRequestType The type of state request that this is, which is derived from an enum provided by the targeted substate manager
+     * @param priority A priority level of this state request to determine what it can and cannot override.
+     */
+    public StateRequest(TYPE stateRequestType, StateRequestPriority priority, boolean isLongRunning) {
+        this.stateRequestType = stateRequestType;
+        this.priority = priority;
+        this.isLongRunning = isLongRunning;
+    }
+
+    public StateRequest(TYPE stateRequestType, StateRequestPriority priority) {
+        this(stateRequestType, priority, false);
+    }
+
+    public TYPE getStateRequestType() {
+        return this.stateRequestType;
+    }
+
+    public void updateStatus(StateRequestStatus status) {
+        this.status = status;
+    }
+
+    public StateRequestStatus getStatus() {
+        return this.status;
+    }
+
+    public StateRequestPriority getPriority() {
+        return this.priority;
+    }
+
+    public boolean getIsLongRunning() {
+        return this.isLongRunning;
+    }
+
 }

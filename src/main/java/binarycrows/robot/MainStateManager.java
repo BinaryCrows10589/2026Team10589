@@ -6,6 +6,7 @@ public class MainStateManager extends Thread {
     private static MainStateManager instance = null;
     private boolean isRunning = false;
 
+    
 
     private MainStateManager()
     {
