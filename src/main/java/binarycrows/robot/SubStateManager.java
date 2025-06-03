@@ -13,6 +13,7 @@ public class SubStateManager<TYPE extends Enum<TYPE>> {
      * Note that this should be initialized to a default state by any extending classes.
      */
     protected StateRequest<TYPE> activeStateRequest;
+    protected StateRequest<TYPE> defaultState;
 
     protected SubStateManager()
     {
@@ -21,7 +22,7 @@ public class SubStateManager<TYPE extends Enum<TYPE>> {
 
 
     @SuppressWarnings("unused")
-    private void periodic() {}
+    public void periodic() {}
 
     /**
      * Accepts a state request and resolves whether it should replace the current state request.
@@ -40,6 +41,10 @@ public class SubStateManager<TYPE extends Enum<TYPE>> {
             this.activeStateRequest.updateStatus(StateRequestStatus.OVERRIDDEN);
             this.activeStateRequest = request;
         }
+    }
+
+    public void returnToDefaultState() {
+        recieveStateRequest(defaultState);
     }
 
     public TYPE getStateRequestType() {

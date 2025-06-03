@@ -8,6 +8,7 @@ public class StateRequest<TYPE extends Enum<TYPE>> {
     private TYPE stateRequestType;
     private StateRequestPriority priority;
     private boolean isLongRunning;
+    
 
     /**
      * State requests are objects that are passed between state managers to request that a subsystem put itself into a particular state.
@@ -24,8 +25,20 @@ public class StateRequest<TYPE extends Enum<TYPE>> {
         this(stateRequestType, priority, false);
     }
 
+    /**
+     * Reset this state request as if it was just constructed.
+     */
+    public void reinitialize() {
+        this.status = StateRequestStatus.FRESH;
+    }
+
     public TYPE getStateRequestType() {
         return this.stateRequestType;
+    }
+
+    @SuppressWarnings("rawtypes")
+    public SubStateManager getSubStateManager() {
+        return MainStateManager.getInstance().resolveSubStateManager(stateRequestType);
     }
 
     public void updateStatus(StateRequestStatus status) {
