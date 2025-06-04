@@ -1,10 +1,8 @@
 package binarycrows.robot.SeasonCode.Subsystems.SwerveDrive.SwerveModule;
 
 import edu.wpi.first.math.geometry.Rotation2d;
-
-
-import binarycrows.robot.AutoLogged;
 import binarycrows.robot.SeasonCode.Constants.SwerveModuleConstants;
+import binarycrows.robot.Utils.AutoLogged;
 
 public interface SwerveModuleIO {
 

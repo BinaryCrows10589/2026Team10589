@@ -4,6 +4,8 @@
 
 package binarycrows.robot;
 
+import java.util.ArrayList;
+
 import org.littletonrobotics.junction.LogFileUtil;
 import org.littletonrobotics.junction.LoggedRobot;
 import org.littletonrobotics.junction.Logger;
@@ -12,6 +14,7 @@ import org.littletonrobotics.junction.wpilog.WPILOGReader;
 import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 
 import binarycrows.robot.SeasonCode.Subsystems.SwerveDrive.SwerveModule.SwerveModule;
+import binarycrows.robot.Utils.Gamepad.GenericGamepad;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj.RobotBase;
@@ -22,6 +25,9 @@ import edu.wpi.first.wpilibj.RobotBase;
  * this project, you must also update the Main.java file in the project.
  */
 public class Robot extends LoggedRobot {
+
+  @SuppressWarnings("rawtypes")
+  private ArrayList<SubStateManager> subStateManagers;
   /**
    * This function is run when the robot is first started up and should be used for any
    * initialization code.
@@ -32,6 +38,7 @@ public class Robot extends LoggedRobot {
 
     // Place your robot's substate managers in this call!
     MainStateManager.getInstance().registerSubStateManagers(
+      new GenericGamepad(0, 4)
     );
   }
   @SuppressWarnings("resource")
@@ -58,10 +65,18 @@ public class Robot extends LoggedRobot {
       Logger.start();
 
       StateTable.putValue("isSim", !RobotBase.isReal());
+
+      subStateManagers = MainStateManager.getInstance().getSubStateManagers();
+
+      MainStateManager.getInstance().start();
   }
 
   @Override
-  public void robotPeriodic() {}
+  public void robotPeriodic() {
+    subStateManagers.forEach(subStateManager -> {
+        subStateManager.periodic();
+    });
+  }
 
   @Override
   public void autonomousInit() {}

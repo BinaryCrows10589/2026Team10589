@@ -1,5 +1,10 @@
 package binarycrows.robot.Utils;
 
+import java.lang.reflect.Field;
+import java.util.HashMap;
+import java.util.Map.Entry;
+import java.util.Objects;
+
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 
@@ -43,4 +48,28 @@ public class ConversionUtils {
         }
         return newAngle;
       }
+
+        @SuppressWarnings("unchecked")
+        public static <E> HashMap<String, E> fieldsToMap(Field[] fields, Object obj) {
+            HashMap<String, E> map = new HashMap<String, E>();
+            for (int i = 0; i < fields.length; i++) {
+                try {
+                    map.put(fields[i].getName(), (E) fields[i].get(obj));
+                } catch (IllegalArgumentException e) {
+                    e.printStackTrace();
+                } catch (IllegalAccessException e) {
+                    e.printStackTrace();
+                }
+            }
+            return map;
+        }
+
+        public static <T, E> T getKeyByValue(HashMap<T, E> map, E value) {
+            for (Entry<T, E> entry : map.entrySet()) {
+                if (Objects.equals(value, entry.getValue())) {
+                    return entry.getKey();
+                }
+            }
+            return null;
+        }
 }

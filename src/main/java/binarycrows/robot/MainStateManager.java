@@ -46,9 +46,6 @@ public class MainStateManager extends Thread {
     }
 
     private void periodic() {
-        subStateManagers.forEach(subStateManager -> {
-            subStateManager.periodic();
-        });
     }
 
     public void dispatchStateRequest(StateRequest stateRequest) {
@@ -64,9 +61,15 @@ public class MainStateManager extends Thread {
         return subStateManagerTypeLookup.get(type);
     }
 
+    public ArrayList<SubStateManager> getSubStateManagers() {
+        return subStateManagers;
+    }
+
     public static synchronized MainStateManager getInstance()
     {
         if (instance == null) instance = new MainStateManager();
         return instance;
     }
+
+
 }

@@ -75,6 +75,61 @@ public class StateTable {
         Logger.recordOutput(path, value);
     }
 
+    /**
+     * Records a value to the State Table and Advantage Kit.
+     * @param path
+     * @param value
+     */
+    public static synchronized void putValue(String path, boolean[] value) {
+        stateTableObjects.put(path, value);
+        Logger.recordOutput(path, value);
+    }
+    /**
+     * Records a value to the State Table and Advantage Kit.
+     * @param path
+     * @param value
+     */
+    public static synchronized void putValue(String path, int[] value) {
+        stateTableObjects.put(path, value);
+        Logger.recordOutput(path, value);
+    }
+    /**
+     * Records a value to the State Table and Advantage Kit.
+     * @param path
+     * @param value
+     */
+    public static synchronized void putValue(String path, long[] value) {
+        stateTableObjects.put(path, value);
+        Logger.recordOutput(path, value);
+    }
+    /**
+     * Records a value to the State Table and Advantage Kit.
+     * @param path
+     * @param value
+     */
+    public static synchronized void putValue(String path, float[] value) {
+        stateTableObjects.put(path, value);
+        Logger.recordOutput(path, value);
+    }
+    /**
+     * Records a value to the State Table and Advantage Kit.
+     * @param path
+     * @param value
+     */
+    public static synchronized void putValue(String path, double[] value) {
+        stateTableObjects.put(path, value);
+        Logger.recordOutput(path, value);
+    }
+    /**
+     * Records a value to the State Table and Advantage Kit.
+     * @param path
+     * @param value
+     */
+    public static synchronized void putValue(String path, String[] value) {
+        stateTableObjects.put(path, value);
+        Logger.recordOutput(path, value);
+    }
+
     public static synchronized void recordNonFatalException(Exception e) {
         stateTableObjects.put("ErrorLog", stateTableObjects.get(e.getMessage()) + "\n");
     }
