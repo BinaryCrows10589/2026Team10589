@@ -5,20 +5,14 @@ import java.lang.reflect.Field;
 
 import binarycrows.robot.StateTable;
 
-public class AutoLogged {
-    private String path = "";
+public class LogIOInputs {
 
-    protected void updatePath(String path) {
-        this.path = path + (path == "" ? "" : "/");
-    }
-
-
-    public void logToStateTable() {
+    public static void logToStateTable(Object inputs, String path) {
         
-        for (Field field : this.getClass().getFields()) {
+        for (Field field : inputs.getClass().getFields()) {
             try {
 
-                Object fieldValue = field.get(this);
+                Object fieldValue = field.get(inputs);
 
                 String absolutePath = path + field.getName();
                 

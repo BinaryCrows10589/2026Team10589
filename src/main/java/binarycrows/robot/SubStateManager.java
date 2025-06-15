@@ -40,6 +40,7 @@ public class SubStateManager<TYPE extends Enum<TYPE>> {
             // Otherwise, override the old state request with the new one.
             this.activeStateRequest.updateStatus(StateRequestStatus.OVERRIDDEN);
             this.activeStateRequest = request;
+            request.updateStatus(StateRequestStatus.PENDING);
         }
     }
 

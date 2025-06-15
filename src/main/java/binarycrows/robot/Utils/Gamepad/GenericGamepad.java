@@ -7,7 +7,7 @@ import binarycrows.robot.Enums.NullStateRequestType;
 import edu.wpi.first.wpilibj.GenericHID;
 
 @SuppressWarnings("rawtypes")
-public class GenericGamepad extends SubStateManager<NullStateRequestType> {
+public class GenericGamepad {
 
 
     /*
@@ -24,7 +24,6 @@ public class GenericGamepad extends SubStateManager<NullStateRequestType> {
 
     }
 
-    @Override
     public void periodic() {
         for(int i = 0; i < buttonMap.length; i++) {
             if(this.gamepad.getRawButtonPressed(i+1)) {
@@ -67,6 +66,13 @@ public class GenericGamepad extends SubStateManager<NullStateRequestType> {
     }
     public void onRelease(int buttonIndex, Runnable onRelease) {
         buttonMap[buttonIndex][1] = onRelease;
+    }
+
+    public double getAxis(int axis) {
+        return this.gamepad.getRawAxis(axis);
+    }
+    public double getPOV(int pov) {
+        return this.gamepad.getPOV(pov);
     }
 
 }
