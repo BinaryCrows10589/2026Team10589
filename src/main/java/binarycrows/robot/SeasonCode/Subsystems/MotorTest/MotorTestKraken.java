@@ -2,6 +2,7 @@ package binarycrows.robot.SeasonCode.Subsystems.MotorTest;
 
 import com.ctre.phoenix6.hardware.TalonFX;
 
+@SuppressWarnings("unused")
 public class MotorTestKraken implements MotorTestIO {
     TalonFX motorController;
 

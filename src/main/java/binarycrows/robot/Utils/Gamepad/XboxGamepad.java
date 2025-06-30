@@ -1,11 +1,5 @@
 package binarycrows.robot.Utils.Gamepad;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import binarycrows.robot.Utils.LogIOInputs;
-import binarycrows.robot.Utils.ConversionUtils;
-
 public class XboxGamepad extends GenericGamepad {
 
     public static class XboxGamepadID {

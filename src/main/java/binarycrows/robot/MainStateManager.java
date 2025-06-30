@@ -1,6 +1,5 @@
 package binarycrows.robot;
 
-import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -48,8 +47,11 @@ public class MainStateManager extends Thread {
     private void periodic() {
     }
 
+    @SuppressWarnings("unchecked")
     public void dispatchStateRequest(StateRequest stateRequest) {
-        
+        Enum stateRequestType = stateRequest.getStateRequestType();
+        SubStateManager targetManager = resolveSubStateManager(stateRequestType);
+        targetManager.recieveStateRequest(stateRequest);
     }
 
     public void requestReturnToDefaultState(SubStateManager subStateManager) {

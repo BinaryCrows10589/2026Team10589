@@ -2,8 +2,6 @@ package binarycrows.robot.Utils.Gamepad;
 
 import binarycrows.robot.MainStateManager;
 import binarycrows.robot.StateRequest;
-import binarycrows.robot.SubStateManager;
-import binarycrows.robot.Enums.NullStateRequestType;
 import edu.wpi.first.wpilibj.GenericHID;
 
 @SuppressWarnings("rawtypes")

@@ -1,6 +1,5 @@
 package binarycrows.robot.Utils;
 
-import java.io.InvalidClassException;
 import java.lang.reflect.Field;
 
 import binarycrows.robot.StateTable;

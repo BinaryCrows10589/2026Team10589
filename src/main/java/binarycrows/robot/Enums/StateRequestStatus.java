@@ -31,5 +31,9 @@ public enum StateRequestStatus {
     /**
      * A cancelled state request has been stopped for one reason or another. This state is only valid for complex state requests, which can be reasonably undone.
      */
-    CANCELLED
+    CANCELLED,
+    /**
+     * A timed out state request has ran out of time.
+     */
+    TIMED_OUT
 }

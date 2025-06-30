@@ -14,7 +14,6 @@ import org.littletonrobotics.junction.wpilog.WPILOGReader;
 import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 
 import binarycrows.robot.SeasonCode.Subsystems.MotorTest.MotorSubStateManager;
-import binarycrows.robot.Utils.Gamepad.GenericGamepad;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj.RobotBase;
