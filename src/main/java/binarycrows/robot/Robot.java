@@ -13,7 +13,7 @@ import org.littletonrobotics.junction.networktables.NT4Publisher;
 import org.littletonrobotics.junction.wpilog.WPILOGReader;
 import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 
-import binarycrows.robot.SeasonCode.Subsystems.MotorTest.MotorSubStateManager;
+import binarycrows.robot.SeasonCode.Subsystems.Elevator.ElevatorSubStateManager;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj.RobotBase;
@@ -37,7 +37,7 @@ public class Robot extends LoggedRobot {
 
     // Place your robot's substate managers in this call!
     MainStateManager.getInstance().registerSubStateManagers(
-      new MotorSubStateManager()
+      new ElevatorSubStateManager()
     );
   }
   @SuppressWarnings("resource")
@@ -66,6 +66,8 @@ public class Robot extends LoggedRobot {
       StateTable.putValue("isSim", !RobotBase.isReal());
 
       subStateManagers = MainStateManager.getInstance().getSubStateManagers();
+
+      Keybinds.createKeybinds();
 
       MainStateManager.getInstance().start();
   }

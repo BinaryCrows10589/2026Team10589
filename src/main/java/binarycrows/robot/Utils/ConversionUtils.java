@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.Map.Entry;
 import java.util.Objects;
 
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 
@@ -72,4 +73,28 @@ public class ConversionUtils {
             }
             return null;
         }
+
+    public static boolean getIsInTolerance(double currentValue, double desiredValue, double tolerance) {
+        return Math.abs(currentValue - desiredValue) <= tolerance;
+    }
+
+    public static boolean getIsInTolerance(Rotation2d currentValue, Rotation2d desiredValue, double toleranceRad) {
+        return Math.abs(currentValue.minus(desiredValue).getRadians()) <= toleranceRad;
+    }
+
+    public static boolean getIsInTolerance(Pose2d currentValue, Pose2d desiredValue, Pose2d tolerance) {
+        return (getIsInTolerance(currentValue.getX(), desiredValue.getX(), tolerance.getX()) &&
+            getIsInTolerance(currentValue.getY(), desiredValue.getY(), tolerance.getY()) && 
+            getIsInTolerance(currentValue.getRotation(), desiredValue.getRotation(), tolerance.getRotation().getRadians()));
+        
+    }
+
+    public static boolean[] getMembersInTolerance(Pose2d currentValue, Pose2d desiredValue, Pose2d tolerance) {
+        return new boolean[] {
+            getIsInTolerance(currentValue.getX(), desiredValue.getX(), tolerance.getX()),
+            getIsInTolerance(currentValue.getY(), desiredValue.getY(), tolerance.getY()),
+            getIsInTolerance(currentValue.getRotation(), desiredValue.getRotation(), tolerance.getRotation().getRadians())
+        };
+    }
+
 }

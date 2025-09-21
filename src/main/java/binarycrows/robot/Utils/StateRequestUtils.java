@@ -2,8 +2,10 @@ package binarycrows.robot.Utils;
 
 import java.security.InvalidParameterException;
 
+import binarycrows.robot.MainStateManager;
 import binarycrows.robot.StateRequest;
 import binarycrows.robot.Enums.StateRequestPriority;
+import binarycrows.robot.SeasonCode.Subsystems.Elevator.ElevatorStateRequest;
 
 public class StateRequestUtils {
     /**
@@ -54,5 +56,15 @@ public class StateRequestUtils {
             default:
                 throw new InvalidParameterException("No activity value found for given status."); 
         }
+    }
+
+    public static Runnable createStateRequestRunnable(@SuppressWarnings("rawtypes") Enum type, StateRequestPriority priority) {
+        return () -> {
+            MainStateManager.getInstance().dispatchStateRequest(
+                new StateRequest<>(type, priority));
+        };
+    }
+    public static Runnable createStateRequestRunnable(@SuppressWarnings("rawtypes") Enum type) {
+        return createStateRequestRunnable(type, StateRequestPriority.NORMAL);
     }
 }
