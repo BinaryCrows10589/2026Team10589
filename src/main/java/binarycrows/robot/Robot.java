@@ -14,6 +14,7 @@ import org.littletonrobotics.junction.wpilog.WPILOGReader;
 import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 
 import binarycrows.robot.SeasonCode.Subsystems.Elevator.ElevatorSubStateManager;
+import binarycrows.robot.SeasonCode.Subsystems.SwerveDrive.DriveSubStateManager;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj.RobotBase;
@@ -37,7 +38,8 @@ public class Robot extends LoggedRobot {
 
     // Place your robot's substate managers in this call!
     MainStateManager.getInstance().registerSubStateManagers(
-      new ElevatorSubStateManager()
+      new ElevatorSubStateManager(),
+      new DriveSubStateManager()
     );
   }
   @SuppressWarnings("resource")
@@ -77,6 +79,7 @@ public class Robot extends LoggedRobot {
     subStateManagers.forEach(subStateManager -> {
         subStateManager.periodic();
     });
+    Keybinds.periodic();
   }
 
   @Override
