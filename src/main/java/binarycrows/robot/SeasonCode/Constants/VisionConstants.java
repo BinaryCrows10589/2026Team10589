@@ -11,6 +11,6 @@ public final class VisionConstants {
     public static final Vector<N3> swerveDrivePoseEstimateTrust = VecBuilder.fill(0.05, 0.05, 0.1);
     public static final Vector<N3> visionPoseEstimateTrust = VecBuilder.fill(.2, .2, 0);
 
-    public static final AprilTagFieldLayout aprilTagLayout = AprilTagFields.k2025ReefscapeAndyMark.loadAprilTagLayoutField();
+    public static final AprilTagFieldLayout aprilTagLayout = AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeAndyMark);
     public static OriginPosition originPosition = OriginPosition.kBlueAllianceWallRightSide;
 }
