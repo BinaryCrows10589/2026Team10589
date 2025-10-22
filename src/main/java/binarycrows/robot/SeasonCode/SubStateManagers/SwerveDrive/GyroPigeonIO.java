@@ -21,6 +21,8 @@ public class GyroPigeonIO implements GyroIO {
         this.gyro = new Pigeon2(CANIDs.gyro, SwerveDriveConstants.CANLoopName);
         this.gyro.getConfigurator().apply(new Pigeon2Configuration());
         this.gyro.reset();
+        yawAngle = this.gyro.getRotation2d();
+
         previousGyroValue = gyro.getRotation2d();
     } 
 

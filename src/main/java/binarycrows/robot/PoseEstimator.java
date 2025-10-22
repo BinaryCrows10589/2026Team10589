@@ -26,12 +26,12 @@ public class PoseEstimator {
 
     private SwerveDrivePoseEstimator swerveDrivePoseEstimator;
 
-    public PoseEstimator() {
+    public PoseEstimator(Rotation2d yawAngle, SwerveModulePosition[] modulePositions) {
         configPhotonPoseEstimators();
         swerveDrivePoseEstimator = new SwerveDrivePoseEstimator(
             SwerveDriveConstants.driveKinematics,
-            DriveSubStateManager.getInstance().gyroPigeonIO.yawAngle, 
-            DriveSubStateManager.getInstance().getModulePositions(), 
+            yawAngle,
+            modulePositions, 
             new Pose2d(),
             VisionConstants.swerveDrivePoseEstimateTrust, VisionConstants.visionPoseEstimateTrust);
         VisionConstants.aprilTagLayout.setOrigin(VisionConstants.originPosition);

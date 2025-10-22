@@ -19,6 +19,7 @@ public class StateRequest<TYPE extends Enum<TYPE>> {
         this.stateRequestType = stateRequestType;
         this.priority = priority;
         this.isLongRunning = isLongRunning;
+        this.status = StateRequestStatus.FRESH;
     }
 
     public StateRequest(TYPE stateRequestType, StateRequestPriority priority) {
@@ -38,7 +39,7 @@ public class StateRequest<TYPE extends Enum<TYPE>> {
 
     @SuppressWarnings("rawtypes")
     public SubStateManager getSubStateManager() {
-        return MainStateManager.getInstance().resolveSubStateManager(stateRequestType);
+        return MainStateManager.getInstance().resolveSubStateManager(stateRequestType.getClass());
     }
 
     public void updateStatus(StateRequestStatus status) {

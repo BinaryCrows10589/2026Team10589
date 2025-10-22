@@ -207,6 +207,8 @@ public class SwerveModuleTalonFXIO implements SwerveModuleIO {
 
     @Override
     public void setDesiredModuleDriveVoltage(double desiredVoltage) {
+        System.out.println("Set desired voltage of " + swerveModuleName + " is being set to " + desiredVoltage);
+
         this.driveControlVoltageRequest.Output = desiredVoltage;
         this.driveMotor.setControl(this.driveControlVoltageRequest);
     }

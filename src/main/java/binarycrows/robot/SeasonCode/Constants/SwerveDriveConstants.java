@@ -5,7 +5,7 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 
 public final class SwerveDriveConstants {
-    public static final String CANLoopName = "SwerveDrive";
+    public static final String CANLoopName = "*";
 
     public static final String frontLeftModuleName = "FrontLeftModule";
     public static final String frontRightModuleName = "FrontRightModule";

@@ -26,7 +26,7 @@ public class XboxGamepad extends GenericGamepad {
 
 
     public XboxGamepad(int portID) {
-        super(portID, 0);
+        super(portID, 9);
     }
 
 

@@ -18,7 +18,7 @@ public class MainStateManager extends Thread {
 
     private ArrayList<SubStateManager> subStateManagers = new ArrayList<>();
 
-    private HashMap<Enum, SubStateManager> subStateManagerTypeLookup = new HashMap<Enum, SubStateManager>();
+    private HashMap<Class, SubStateManager> subStateManagerTypeLookup = new HashMap<Class, SubStateManager>();
 
     private ArrayList<StateRequestGroup> activeStateRequestGroups = new ArrayList<>();
 
@@ -33,6 +33,7 @@ public class MainStateManager extends Thread {
         subStateManagerArray.forEach((SubStateManager subStateManager) -> {
             subStateManagerTypeLookup.put(subStateManager.getStateRequestType(), subStateManager);
         });
+        StateTable.putValue("SubStateManagerTypeLookup", subStateManagerTypeLookup.toString());
     }
 
     public void run() {
@@ -109,7 +110,7 @@ public class MainStateManager extends Thread {
             activeStateRequestGroups.add(stateRequestGroup);
             stateRequestGroup.updateStatus(StateRequestStatus.PENDING);
         }
-        Enum stateRequestType = stateRequest.getStateRequestType();
+        Class stateRequestType = stateRequest.getStateRequestType().getClass();
         SubStateManager targetManager = resolveSubStateManager(stateRequestType);
         targetManager.recieveStateRequest(stateRequest);
     }
@@ -119,7 +120,7 @@ public class MainStateManager extends Thread {
     }
 
 
-    public SubStateManager resolveSubStateManager(Enum type) {
+    public SubStateManager resolveSubStateManager(Class type) {
         return subStateManagerTypeLookup.get(type);
     }
 

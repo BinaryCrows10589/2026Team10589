@@ -9,8 +9,10 @@ import org.photonvision.PhotonPoseEstimator;
 
 import binarycrows.robot.Keybinds;
 import binarycrows.robot.PoseEstimator;
+import binarycrows.robot.StateRequest;
 import binarycrows.robot.StateTable;
 import binarycrows.robot.SubStateManager;
+import binarycrows.robot.Enums.StateRequestPriority;
 import binarycrows.robot.Enums.StateRequestStatus;
 import binarycrows.robot.SeasonCode.Constants.MetaConstants;
 import binarycrows.robot.SeasonCode.Constants.SwerveDriveConstants;
@@ -53,13 +55,18 @@ public class DriveSubStateManager extends SubStateManager<DriveStateRequest> {
 
     private Timer voltageRecordingTimer = new Timer();
 
+
     public DriveSubStateManager() {
         super();
         gyroPigeonIO = new GyroPigeonIO();
-        frontLeftSwerveModule = new SwerveModule(new SwerveModuleTalonFXIO("FrontLeft"), "FrontLeft");
-        frontRightSwerveModule = new SwerveModule(new SwerveModuleTalonFXIO("FrontRight"), "FrontRight");
-        backLeftSwerveModule = new SwerveModule(new SwerveModuleTalonFXIO("BackLeft"), "BackLeft");
-        backRightSwerveModule = new SwerveModule(new SwerveModuleTalonFXIO("BackRight"), "BackRight");
+        frontLeftSwerveModule = new SwerveModule(new SwerveModuleTalonFXIO("FrontLeftModule"), "FrontLeftModule");
+        frontRightSwerveModule = new SwerveModule(new SwerveModuleTalonFXIO("FrontRightModule"), "FrontRightModule");
+        backLeftSwerveModule = new SwerveModule(new SwerveModuleTalonFXIO("BackLeftModule"), "BackLeftModule");
+        backRightSwerveModule = new SwerveModule(new SwerveModuleTalonFXIO("BackRightModule"), "BackRightModule");
+
+        poseEstimator = new PoseEstimator(gyroPigeonIO.yawAngle, getModulePositions());
+
+        super.defaultState = new StateRequest<DriveStateRequest>(DriveStateRequest.DISABLE, StateRequestPriority.LOW);
     }
 
     private void recordVoltageTableValue() {
@@ -70,7 +77,8 @@ public class DriveSubStateManager extends SubStateManager<DriveStateRequest> {
 
     @Override
     public void periodic() {
-
+        super.periodic();
+        
 
         LogIOInputs.logObjectToStateTable(gyroPigeonIO, "Gyro");
         LogIOInputs.logObjectToStateTable(this, "SwerveDrive");
@@ -80,6 +88,7 @@ public class DriveSubStateManager extends SubStateManager<DriveStateRequest> {
             switch (this.activeStateRequest.getStateRequestType()) {
                 case CONSTRUCT_VOLTAGE_TABLE:
                     voltageRecordingTimer.reset();
+                    voltageRecordingTimer.start();
                     this.activeStateRequest.updateStatus(StateRequestStatus.RUNNING);
                     break;
                 case TELEOP_DRIVE:
@@ -95,10 +104,14 @@ public class DriveSubStateManager extends SubStateManager<DriveStateRequest> {
         switch (this.activeStateRequest.getStateRequestType()) {
             case CONSTRUCT_VOLTAGE_TABLE:
 
+            
+
                 LogIOInputs.logToStateTable(currentVoltageTableTargetValue, "DriveSubsystem/VoltageTableTargetValue");
                 LogIOInputs.logToStateTable(voltageRecordingTimer.get(), "DriveSubsystem/VoltageRecordingTimeElapsed");
 
                 if (voltageRecordingTimer.hasElapsed(voltageTableRecordingTime)) { // It's time to record, buster brown!
+                    System.out.println("Record new value");
+
 
                     if (!startedRecordingDeceleration) { // Still accelerating
 
@@ -146,6 +159,11 @@ public class DriveSubStateManager extends SubStateManager<DriveStateRequest> {
     private double translationMax = SwerveDriveConstants.maxSpeedMetersPerSecond;
     private boolean normalizeTranslationMaximum = false;
     private double rotationMax = SwerveDriveConstants.maxRotationAnglePerSecond;
+
+    @Override
+    public Class<DriveStateRequest> getStateRequestType() {
+        return DriveStateRequest.class;
+    }
 
     private void drivePeriodic() {
         if(StateTable.getValueAsBoolean("IsDriverControlled")) {

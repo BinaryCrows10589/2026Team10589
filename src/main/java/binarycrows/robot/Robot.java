@@ -35,10 +35,7 @@ public class Robot extends LoggedRobot {
     
     MainStateManager.getInstance(); // Initialize the MainStateManager
 
-    // Place your robot's substate managers in this call!
-    MainStateManager.getInstance().registerSubStateManagers(
-      new DriveSubStateManager()
-    );
+    
   }
   @SuppressWarnings("resource")
   @Override
@@ -62,6 +59,11 @@ public class Robot extends LoggedRobot {
         }
       }
       Logger.start();
+
+      // Place your robot's substate managers in this call!
+      MainStateManager.getInstance().registerSubStateManagers(
+        new DriveSubStateManager()
+      );
 
       StateTable.putValue("isSim", !RobotBase.isReal());
 

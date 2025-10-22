@@ -18,11 +18,13 @@ public class SubStateManager<TYPE extends Enum<TYPE>> {
     protected SubStateManager()
     {
         assert instance == null;
+        this.activeStateRequest = defaultState;
     }
 
 
-    @SuppressWarnings("unused")
-    public void periodic() {}
+    public void periodic() {
+        if (activeStateRequest == null) activeStateRequest = defaultState;
+    }
 
     /**
      * Accepts a state request and resolves whether it should replace the current state request.
@@ -41,6 +43,8 @@ public class SubStateManager<TYPE extends Enum<TYPE>> {
             this.activeStateRequest.updateStatus(StateRequestStatus.OVERRIDDEN);
             this.activeStateRequest = request;
             request.updateStatus(StateRequestStatus.PENDING);
+
+            
         }
     }
 
@@ -48,7 +52,7 @@ public class SubStateManager<TYPE extends Enum<TYPE>> {
         recieveStateRequest(defaultState);
     }
 
-    public TYPE getStateRequestType() {
+    public Class<TYPE> getStateRequestType() {
         return null;
     }
 
