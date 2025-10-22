@@ -1,4 +1,4 @@
-package binarycrows.robot.SeasonCode.Subsystems.SwerveDrive;
+package binarycrows.robot.SeasonCode.SubStateManagers.SwerveDrive;
 
 import com.ctre.phoenix6.swerve.SwerveModuleConstants;
 
@@ -32,12 +32,17 @@ public class SwerveModule {
     public void setDesiredModuleState(SwerveModuleState desiredState) {
         SwerveModuleState optimizedState = ConversionUtils.optimizeSwerveModuleState(desiredState, getModuleState().angle); 
         
+        // Temporary option for drive voltage
         double driveVoltage = optimizedState.speedMetersPerSecond == 0 ? 0 : 
         MathUtil.clamp((((optimizedState.speedMetersPerSecond/SwerveDriveConstants.maxSpeedMPS) * 13)
         + (SwerveDriveConstants.driveFeedForward * Math.signum(optimizedState.speedMetersPerSecond))), -13, 13);
-
         this.swerveModuleIO.setDesiredModuleDriveVoltage(driveVoltage);
         this.swerveModuleIO.setDesiredModuleAngle(optimizedState.angle);
+
+        // The other option we need to implement
+        //double desiredRPM = optimizedState.speedMetersPerSecond / SwerveModuleConstants.kDriveConversionVelocityFactor;
+        //this.swerveModuleIO.setDesiredModuleVelocityRPM(desiredRPM);
+        //this.swerveModuleIO.setDesiredModuleDriveVoltage(metersPerSecondToVoltage(optimizedState.speedMetersPerSecond));
     }
 
     public void setDesiredModuleDriveVoltage(double driveVoltage) {

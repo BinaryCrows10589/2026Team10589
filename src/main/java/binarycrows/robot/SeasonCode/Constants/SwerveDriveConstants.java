@@ -1,6 +1,8 @@
 package binarycrows.robot.SeasonCode.Constants;
 
 import binarycrows.robot.Utils.ConversionUtils;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 
 public final class SwerveDriveConstants {
     public static final String CANLoopName = "SwerveDrive";
@@ -54,4 +56,30 @@ public final class SwerveDriveConstants {
     public static final double wheelDistancePerRotation = wheelDiameterMeters * Math.PI;
     public static final double driveConversionPositionFactor = wheelDistancePerRotation / driveGearRatio;
     public static final double driveConversionVelocityFactor = driveConversionPositionFactor / 60.0; /* Figure why this sixty is here. It was last season */
+
+    public static final double distanceBetweenCentersOfRightAndLeftWheels = ConversionUtils.inchesToMeters(23.75);
+        public static final double distanceBetweenCentersOfFrontAndBackWheels = ConversionUtils.inchesToMeters(23.75);
+        public static final double radiusFromCenterToFarthestSwerveModule = Math
+        .sqrt(((distanceBetweenCentersOfRightAndLeftWheels * distanceBetweenCentersOfRightAndLeftWheels)
+            + (distanceBetweenCentersOfFrontAndBackWheels * distanceBetweenCentersOfFrontAndBackWheels)));
+
+    public static final SwerveDriveKinematics driveKinematics = new SwerveDriveKinematics(
+        new Translation2d(distanceBetweenCentersOfFrontAndBackWheels / 2,
+            distanceBetweenCentersOfRightAndLeftWheels / 2),
+        new Translation2d(distanceBetweenCentersOfFrontAndBackWheels / 2,
+            -distanceBetweenCentersOfRightAndLeftWheels / 2),
+        new Translation2d(-distanceBetweenCentersOfFrontAndBackWheels / 2,
+            distanceBetweenCentersOfRightAndLeftWheels / 2),
+        new Translation2d(-distanceBetweenCentersOfFrontAndBackWheels / 2,
+            -distanceBetweenCentersOfRightAndLeftWheels / 2));
+
+    public static final double maxSpeedMetersPerSecond = 4.3;
+
+    public static final double maxRotationAnglePerSecond = 11.4;
+
+    public static final double translationXSlowModeMultipler = .2;
+
+    public static final double translationYSlowModeMultipler = .2;
+
+    public static final double rotationSlowModeMultipler = .2;
 }

@@ -6,7 +6,7 @@ import binarycrows.robot.Utils.StateRequestUtils;
 public class SubStateManager<TYPE extends Enum<TYPE>> {
 
     @SuppressWarnings("rawtypes")
-    private static SubStateManager instance = null;
+    public static SubStateManager instance = null;
 
     /**
      * The active state request for the sub-state manager. 

@@ -1,15 +1,17 @@
-package binarycrows.robot.SeasonCode.Subsystems.SwerveDrive;
+package binarycrows.robot.SeasonCode.SubStateManagers.SwerveDrive;
 
 import com.ctre.phoenix6.configs.Pigeon2Configuration;
 import com.ctre.phoenix6.hardware.Pigeon2;
 
 import binarycrows.robot.SeasonCode.Constants.CANIDs;
 import binarycrows.robot.SeasonCode.Constants.SwerveDriveConstants;
+import binarycrows.robot.Utils.LogIOInputs;
 import edu.wpi.first.math.geometry.Rotation2d;
 
 public class GyroPigeonIO implements GyroIO {
     private Pigeon2 gyro;
     private Rotation2d previousGyroValue;
+    public Rotation2d yawAngle;
 
     public GyroPigeonIO() {
         configureGyro();
@@ -24,12 +26,14 @@ public class GyroPigeonIO implements GyroIO {
 
     public void update(double rotationRate) {
 
-        Rotation2d yawAngle = this.gyro.getRotation2d();
+        yawAngle = this.gyro.getRotation2d();
+        
         if (Math.abs(previousGyroValue.minus(yawAngle).getDegrees()) > SwerveDriveConstants.maxAngleDeltaPerFrameDegrees) {
             this.gyro.setYaw(previousGyroValue.getDegrees());
         } else {
             previousGyroValue = yawAngle;
         }
+
     }
 
     @Override

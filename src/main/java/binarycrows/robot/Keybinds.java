@@ -1,7 +1,6 @@
 package binarycrows.robot;
 
-import binarycrows.robot.SeasonCode.Subsystems.Elevator.ElevatorStateRequest;
-import binarycrows.robot.SeasonCode.Subsystems.SwerveDrive.DriveStateRequest;
+import binarycrows.robot.SeasonCode.SubStateManagers.SwerveDrive.DriveStateRequest;
 import binarycrows.robot.Utils.StateRequestUtils;
 import binarycrows.robot.Utils.Gamepad.GenericGamepad;
 import binarycrows.robot.Utils.Gamepad.XboxGamepad;
@@ -49,5 +48,19 @@ public class Keybinds {
             XboxGamepad.XboxGamepadID.b, 
             StateRequestUtils.createStateRequestRunnable(DriveStateRequest.DISABLE)
         );
+        driverController.onPress(
+            XboxGamepad.XboxGamepadID.x, 
+            StateRequestUtils.createStateRequestRunnable(DriveStateRequest.TELEOP_DRIVE)
+        );
+    }
+
+    public static double getTranslationX() {
+        return driverController.getAxis(XboxGamepad.XboxGamepadID.left_stick_y);
+    }
+    public static double getTranslationY() {
+        return driverController.getAxis(XboxGamepad.XboxGamepadID.left_stick_x);
+    }
+    public static double getRotation() {
+        return driverController.getAxis(XboxGamepad.XboxGamepadID.right_stick_x);
     }
 }

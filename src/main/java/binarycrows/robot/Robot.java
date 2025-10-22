@@ -13,8 +13,7 @@ import org.littletonrobotics.junction.networktables.NT4Publisher;
 import org.littletonrobotics.junction.wpilog.WPILOGReader;
 import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 
-import binarycrows.robot.SeasonCode.Subsystems.Elevator.ElevatorSubStateManager;
-import binarycrows.robot.SeasonCode.Subsystems.SwerveDrive.DriveSubStateManager;
+import binarycrows.robot.SeasonCode.SubStateManagers.SwerveDrive.DriveSubStateManager;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj.RobotBase;
@@ -38,7 +37,6 @@ public class Robot extends LoggedRobot {
 
     // Place your robot's substate managers in this call!
     MainStateManager.getInstance().registerSubStateManagers(
-      new ElevatorSubStateManager(),
       new DriveSubStateManager()
     );
   }
@@ -67,6 +65,10 @@ public class Robot extends LoggedRobot {
 
       StateTable.putValue("isSim", !RobotBase.isReal());
 
+      StateTable.putValue("SlowMode", false);
+
+      StateTable.putValue("AxisLock", false);
+
       subStateManagers = MainStateManager.getInstance().getSubStateManagers();
 
       Keybinds.createKeybinds();
@@ -83,19 +85,25 @@ public class Robot extends LoggedRobot {
   }
 
   @Override
-  public void autonomousInit() {}
+  public void autonomousInit() {
+    StateTable.putValue("IsDriverControlled", false);
+  }
 
   @Override
   public void autonomousPeriodic() {}
 
   @Override
-  public void teleopInit() {}
+  public void teleopInit() {
+    StateTable.putValue("IsDriverControlled", true);
+  }
 
   @Override
   public void teleopPeriodic() {}
 
   @Override
-  public void disabledInit() {}
+  public void disabledInit() {
+    StateTable.putValue("IsDriverControlled", false);
+  }
 
   @Override
   public void disabledPeriodic() {}

@@ -4,6 +4,9 @@ import java.util.HashMap;
 
 import org.littletonrobotics.junction.Logger;
 
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.kinematics.SwerveModuleState;
+
 
 public class StateTable {
 
@@ -129,6 +132,15 @@ public class StateTable {
         stateTableObjects.put(path, value);
         Logger.recordOutput(path, value);
     }
+    /**
+     * Records a value to the State Table and Advantage Kit.
+     * @param path
+     * @param value
+     */
+    public static synchronized void putValue(String path, Rotation2d value) {
+        stateTableObjects.put(path, value);
+        Logger.recordOutput(path, value);
+    }
 
     public static synchronized void recordNonFatalException(Exception e) {
         stateTableObjects.put("ErrorLog", stateTableObjects.get(e.getMessage()) + "\n");
@@ -151,6 +163,9 @@ public class StateTable {
     }
     public static synchronized String getValueAsString(String path) {
         return (String) getValue(path);
+    }
+    public static synchronized Rotation2d getValueAsRotation2d(String path) {
+        return (Rotation2d) getValue(path);
     }
     public static synchronized Object getValue(String path) {
         return stateTableObjects.get(path);

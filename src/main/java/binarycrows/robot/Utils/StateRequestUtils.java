@@ -5,7 +5,6 @@ import java.security.InvalidParameterException;
 import binarycrows.robot.MainStateManager;
 import binarycrows.robot.StateRequest;
 import binarycrows.robot.Enums.StateRequestPriority;
-import binarycrows.robot.SeasonCode.Subsystems.Elevator.ElevatorStateRequest;
 
 public class StateRequestUtils {
     /**
