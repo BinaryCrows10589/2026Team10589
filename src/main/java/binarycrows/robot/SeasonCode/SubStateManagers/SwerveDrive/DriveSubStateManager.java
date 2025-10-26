@@ -81,7 +81,6 @@ public class DriveSubStateManager extends SubStateManager<DriveStateRequest> {
         
 
         LogIOInputs.logObjectToStateTable(gyroPigeonIO, "Gyro");
-        LogIOInputs.logObjectToStateTable(this, "SwerveDrive");
 
         // Resolve pending state request
         if (this.activeStateRequest.getStatus() == StateRequestStatus.PENDING) {
@@ -108,6 +107,7 @@ public class DriveSubStateManager extends SubStateManager<DriveStateRequest> {
 
                 LogIOInputs.logToStateTable(currentVoltageTableTargetValue, "DriveSubsystem/VoltageTableTargetValue");
                 LogIOInputs.logToStateTable(voltageRecordingTimer.get(), "DriveSubsystem/VoltageRecordingTimeElapsed");
+                LogIOInputs.logToStateTable(accelerationTable, "DriveSubsystem/VoltageAccelerationTable");
 
                 if (voltageRecordingTimer.hasElapsed(voltageTableRecordingTime)) { // It's time to record, buster brown!
                     System.out.println("Record new value");

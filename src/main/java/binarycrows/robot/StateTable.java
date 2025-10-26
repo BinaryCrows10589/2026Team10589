@@ -1,9 +1,14 @@
 package binarycrows.robot;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map.Entry;
+import java.util.Set;
+import java.util.stream.Stream;
 
 import org.littletonrobotics.junction.Logger;
 
+import binarycrows.robot.SeasonCode.Constants.MetaConstants;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 
@@ -11,135 +16,33 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 public class StateTable {
 
     private static volatile HashMap<String, Object> stateTableObjects = new HashMap<String, Object>();
+    private static volatile HashMap<String, Object> advantageKitStateTable = new HashMap<String, Object>();
 
     /**
      * Records an arbitrary object to the State Table.
-     * These do not support Advantage Kit logging. You must use a function with a corresponding type to publish to AdvantageKit.
+     * @param <T>
      * @param path
      * @param value
      */
+    @SuppressWarnings("unchecked")
     public static synchronized void putValue(String path, Object value) {
-        stateTableObjects.put(path, value);
-    }
+        // Fix common types to be correct
+        if (value instanceof ArrayList) {
+            if (((ArrayList)value).size() != 0) {
 
-    
-    /**
-     * Records a value to the State Table and Advantage Kit.
-     * @param path
-     * @param value
-     */
-    public static synchronized void putValue(String path, boolean value) {
-        stateTableObjects.put(path, value);
-        Logger.recordOutput(path, value);
-    }
-    /**
-     * Records a value to the State Table and Advantage Kit.
-     * @param path
-     * @param value
-     */
-    public static synchronized void putValue(String path, int value) {
-        stateTableObjects.put(path, value);
-        Logger.recordOutput(path, value);
-    }
-    /**
-     * Records a value to the State Table and Advantage Kit.
-     * @param path
-     * @param value
-     */
-    public static synchronized void putValue(String path, long value) {
-        stateTableObjects.put(path, value);
-        Logger.recordOutput(path, value);
-    }
-    /**
-     * Records a value to the State Table and Advantage Kit.
-     * @param path
-     * @param value
-     */
-    public static synchronized void putValue(String path, float value) {
-        stateTableObjects.put(path, value);
-        Logger.recordOutput(path, value);
-    }
-    /**
-     * Records a value to the State Table and Advantage Kit.
-     * @param path
-     * @param value
-     */
-    public static synchronized void putValue(String path, double value) {
-        stateTableObjects.put(path, value);
-        Logger.recordOutput(path, value);
-    }
-    /**
-     * Records a value to the State Table and Advantage Kit.
-     * @param path
-     * @param value
-     */
-    public static synchronized void putValue(String path, String value) {
-        stateTableObjects.put(path, value);
-        Logger.recordOutput(path, value);
-    }
+                @SuppressWarnings("rawtypes")
+                Object firstIndex = ((ArrayList)value).get(0);
 
-    /**
-     * Records a value to the State Table and Advantage Kit.
-     * @param path
-     * @param value
-     */
-    public static synchronized void putValue(String path, boolean[] value) {
+                System.out.println("First index of " + firstIndex);
+
+                if (firstIndex instanceof Double) {
+                    value = ((ArrayList<Double>)value).stream().mapToDouble(Double::doubleValue).toArray();
+                }
+            } else return; // TODO: Don't ignore empty arrays???
+        }
+
         stateTableObjects.put(path, value);
-        Logger.recordOutput(path, value);
-    }
-    /**
-     * Records a value to the State Table and Advantage Kit.
-     * @param path
-     * @param value
-     */
-    public static synchronized void putValue(String path, int[] value) {
-        stateTableObjects.put(path, value);
-        Logger.recordOutput(path, value);
-    }
-    /**
-     * Records a value to the State Table and Advantage Kit.
-     * @param path
-     * @param value
-     */
-    public static synchronized void putValue(String path, long[] value) {
-        stateTableObjects.put(path, value);
-        Logger.recordOutput(path, value);
-    }
-    /**
-     * Records a value to the State Table and Advantage Kit.
-     * @param path
-     * @param value
-     */
-    public static synchronized void putValue(String path, float[] value) {
-        stateTableObjects.put(path, value);
-        Logger.recordOutput(path, value);
-    }
-    /**
-     * Records a value to the State Table and Advantage Kit.
-     * @param path
-     * @param value
-     */
-    public static synchronized void putValue(String path, double[] value) {
-        stateTableObjects.put(path, value);
-        Logger.recordOutput(path, value);
-    }
-    /**
-     * Records a value to the State Table and Advantage Kit.
-     * @param path
-     * @param value
-     */
-    public static synchronized void putValue(String path, String[] value) {
-        stateTableObjects.put(path, value);
-        Logger.recordOutput(path, value);
-    }
-    /**
-     * Records a value to the State Table and Advantage Kit.
-     * @param path
-     * @param value
-     */
-    public static synchronized void putValue(String path, Rotation2d value) {
-        stateTableObjects.put(path, value);
-        Logger.recordOutput(path, value);
+        updateAdvantageKit();
     }
 
     public static synchronized void recordNonFatalException(Exception e) {
@@ -169,5 +72,40 @@ public class StateTable {
     }
     public static synchronized Object getValue(String path) {
         return stateTableObjects.get(path);
+    }
+
+    public static void updateAdvantageKit() { // TODO: This is written to make it possible to function on a separate thread to the updating, but it can be inefficient for the poor Rio due to the hashmap shenanigans
+        Set<Entry<String, Object>> entries = stateTableObjects.entrySet();
+        entries.removeAll(advantageKitStateTable.entrySet());
+        if (entries.isEmpty()) return;
+
+        for (Entry<String, Object> entry : entries) {
+            advantageKitStateTable.put(entry.getKey(), entry.getValue());
+            logToAdvantageKit(entry.getValue(), entry.getKey());
+            System.out.println("Logged " + entry.getValue() + " to " + entry.getKey());
+        }
+    }
+
+    public static void logToAdvantageKit(Object fieldValue, String absolutePath) {
+        if (!absolutePath.endsWith("/")) absolutePath += "/";
+        // I'm sorry
+        if      (fieldValue instanceof Boolean   ) Logger.recordOutput(absolutePath, (Boolean   ) fieldValue);
+        else if (fieldValue instanceof Integer   ) Logger.recordOutput(absolutePath, (Integer   ) fieldValue);
+        else if (fieldValue instanceof Long      ) Logger.recordOutput(absolutePath, (Long      ) fieldValue);
+        else if (fieldValue instanceof Float     ) Logger.recordOutput(absolutePath, (Float     ) fieldValue);
+        else if (fieldValue instanceof Double    ) Logger.recordOutput(absolutePath, (Double    ) fieldValue);
+        else if (fieldValue instanceof String    ) Logger.recordOutput(absolutePath, (String    ) fieldValue);
+        else if (fieldValue instanceof Rotation2d) Logger.recordOutput(absolutePath, (Rotation2d) fieldValue);
+        else if (fieldValue instanceof boolean[] ) Logger.recordOutput(absolutePath, (boolean[] ) fieldValue);
+        else if (fieldValue instanceof int[]     ) Logger.recordOutput(absolutePath, (int[]     ) fieldValue);
+        else if (fieldValue instanceof long[]    ) Logger.recordOutput(absolutePath, (long[]    ) fieldValue);
+        else if (fieldValue instanceof float[]   ) Logger.recordOutput(absolutePath, (float[]   ) fieldValue);
+        else if (fieldValue instanceof double[]  ) Logger.recordOutput(absolutePath, (double[]  ) fieldValue);
+        else if (fieldValue instanceof String[]  ) Logger.recordOutput(absolutePath, (String[]  ) fieldValue);
+        else {
+            if (!MetaConstants.inProduction) {
+                throw new ClassCastException("Could not find a suitable AdvantageKit compatible type for the state table object of class " + fieldValue.getClass().getCanonicalName() + " recorded at " + absolutePath);
+            }
+        }
     }
 }
