@@ -14,6 +14,7 @@ import org.littletonrobotics.junction.wpilog.WPILOGReader;
 import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 
 import binarycrows.robot.SeasonCode.SubStateManagers.SwerveDrive.DriveSubStateManager;
+import binarycrows.robot.Utils.LogIOInputs;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj.RobotBase;
@@ -82,6 +83,7 @@ public class Robot extends LoggedRobot {
   public void robotPeriodic() {
     subStateManagers.forEach(subStateManager -> {
         subStateManager.periodic();
+        LogIOInputs.logToStateTable(subStateManager.activeStateRequest, subStateManager.toString() + "/ActiveStateRequest");
     });
     Keybinds.periodic();
   }

@@ -79,8 +79,8 @@ public class DriveSubStateManager extends SubStateManager<DriveStateRequest> {
     public void periodic() {
         super.periodic();
         
-
-        LogIOInputs.logObjectToStateTable(gyroPigeonIO, "Gyro");
+        if (swerveModuleStates != null)
+            LogIOInputs.logToStateTable(swerveModuleStates, "DriveSubsystem/ModuleStates");
 
         // Resolve pending state request
         if (this.activeStateRequest.getStatus() == StateRequestStatus.PENDING) {
@@ -212,6 +212,7 @@ public class DriveSubStateManager extends SubStateManager<DriveStateRequest> {
     }
 
     public void drive(double desiredXVelocity, double desiredYVelocity, double desiredRotationalVelocity, boolean isFieldRelative) {
+        swerveModuleStates = getModuleStates();
         this.desiredChassisSpeeds = isFieldRelative ? 
             ChassisSpeeds.fromFieldRelativeSpeeds(desiredXVelocity, desiredYVelocity,
                 desiredRotationalVelocity, this.poseEstimator.getRobotPose().getRotation()) :
@@ -253,6 +254,16 @@ public class DriveSubStateManager extends SubStateManager<DriveStateRequest> {
         return positions;
     }
 
+    public SwerveModuleState[] getModuleStates() {
+        SwerveModuleState[] states = {
+            this.frontLeftSwerveModule.getModuleState(),
+            this.frontRightSwerveModule.getModuleState(),
+            this.backLeftSwerveModule.getModuleState(),
+            this.backRightSwerveModule.getModuleState()
+        };
+        return states;
+    }
+
     public void drive(ChassisSpeeds desiredChassisSpeeds) {
         this.desiredChassisSpeeds = desiredChassisSpeeds;
     }
@@ -271,6 +282,11 @@ public class DriveSubStateManager extends SubStateManager<DriveStateRequest> {
 
     public Rotation2d getGyroAngleRotation2d() {
         return gyroPigeonIO.yawAngle;
+    }
+
+    @Override
+    public String toString() {
+        return "Drive SubState Manager";
     }
 
     

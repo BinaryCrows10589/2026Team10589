@@ -1,9 +1,14 @@
 package binarycrows.robot;
 
+import java.util.Map;
+
 import binarycrows.robot.Enums.StateRequestPriority;
 import binarycrows.robot.Enums.StateRequestStatus;
 
 public class StateRequest<TYPE extends Enum<TYPE>> {
+
+    public record LoggableStateRequest<TYPE>(TYPE stateRequestType, StateRequestStatus status, StateRequestPriority priority, boolean isLongRunning) {}
+
     protected StateRequestStatus status = StateRequestStatus.FRESH;
     private TYPE stateRequestType;
     private StateRequestPriority priority;
@@ -56,6 +61,10 @@ public class StateRequest<TYPE extends Enum<TYPE>> {
 
     public boolean getIsLongRunning() {
         return this.isLongRunning;
+    }
+
+    public LoggableStateRequest<TYPE> getAsLoggable() {
+        return new LoggableStateRequest<TYPE>(stateRequestType, status, priority, isLongRunning);
     }
 
 }

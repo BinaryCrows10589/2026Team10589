@@ -62,4 +62,9 @@ public class SubStateManager<TYPE extends Enum<TYPE>> {
         if (instance == null) instance = new SubStateManager();
         return instance;
     }
+
+    @Override
+    public String toString() {
+        return "Unnamed SubState manager";
+    }
 }
