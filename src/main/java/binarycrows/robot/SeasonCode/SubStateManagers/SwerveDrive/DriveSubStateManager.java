@@ -176,7 +176,11 @@ public class DriveSubStateManager extends SubStateManager<DriveStateRequest> {
             Keybinds.getTranslationY() * SwerveDriveConstants.maxSpeedMetersPerSecond; 
             double rotation = slowMode ? 
             Keybinds.getRotation() * SwerveDriveConstants.maxRotationAnglePerSecond * SwerveDriveConstants.rotationSlowModeMultipler : 
-            Keybinds.getRotation() * SwerveDriveConstants.maxRotationAnglePerSecond;            
+            Keybinds.getRotation() * SwerveDriveConstants.maxRotationAnglePerSecond;
+
+            LogIOInputs.logToStateTable(translationX, "DriveSubsystem/TranslationX");
+            LogIOInputs.logToStateTable(translationY, "DriveSubsystem/TranslationY");
+            LogIOInputs.logToStateTable(rotation, "DriveSubsystem/rotation");
 
             translationMax = SwerveDriveConstants.maxSpeedMetersPerSecond;
             rotationMax = SwerveDriveConstants.maxRotationAnglePerSecond;

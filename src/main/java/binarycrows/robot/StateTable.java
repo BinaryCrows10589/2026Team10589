@@ -2,6 +2,7 @@ package binarycrows.robot;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.stream.Stream;
@@ -71,11 +72,12 @@ public class StateTable {
         return (Rotation2d) getValue(path);
     }
     public static synchronized Object getValue(String path) {
+        System.out.println("Accessing " + path + "... (its value is " + stateTableObjects.get(path) + ")");
         return stateTableObjects.get(path);
     }
 
     public static void updateAdvantageKit() { // TODO: This is written to make it possible to function on a separate thread to the updating, but it can be inefficient for the poor Rio due to the hashmap shenanigans
-        Set<Entry<String, Object>> entries = stateTableObjects.entrySet();
+        Set<Entry<String, Object>> entries = new HashSet<Entry<String, Object>>(stateTableObjects.entrySet());
         entries.removeAll(advantageKitStateTable.entrySet());
         if (entries.isEmpty()) return;
 

@@ -7,7 +7,7 @@ import binarycrows.robot.Enums.StateRequestStatus;
 
 public class StateRequest<TYPE extends Enum<TYPE>> {
 
-    public record LoggableStateRequest<TYPE>(TYPE stateRequestType, StateRequestStatus status, StateRequestPriority priority, boolean isLongRunning) {}
+    public record LoggableStateRequest(StateRequestStatus status, StateRequestPriority priority, boolean isLongRunning) {}
 
     protected StateRequestStatus status = StateRequestStatus.FRESH;
     private TYPE stateRequestType;
@@ -63,8 +63,8 @@ public class StateRequest<TYPE extends Enum<TYPE>> {
         return this.isLongRunning;
     }
 
-    public LoggableStateRequest<TYPE> getAsLoggable() {
-        return new LoggableStateRequest<TYPE>(stateRequestType, status, priority, isLongRunning);
+    public LoggableStateRequest getAsLoggable() {
+        return new LoggableStateRequest(status, priority, isLongRunning);
     }
 
 }

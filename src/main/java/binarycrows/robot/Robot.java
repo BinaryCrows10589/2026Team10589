@@ -71,6 +71,8 @@ public class Robot extends LoggedRobot {
       StateTable.putValue("SlowMode", false);
 
       StateTable.putValue("AxisLock", false);
+      
+      StateTable.putValue("IsDriverControlled", true);
 
       subStateManagers = MainStateManager.getInstance().getSubStateManagers();
 
@@ -84,6 +86,8 @@ public class Robot extends LoggedRobot {
     subStateManagers.forEach(subStateManager -> {
         subStateManager.periodic();
         LogIOInputs.logToStateTable(subStateManager.activeStateRequest, subStateManager.toString() + "/ActiveStateRequest");
+
+        LogIOInputs.logToStateTable(subStateManager.activeStateRequest.getStateRequestType().name(), subStateManager.toString() + "/ActiveStateRequest/Name");
     });
     Keybinds.periodic();
   }

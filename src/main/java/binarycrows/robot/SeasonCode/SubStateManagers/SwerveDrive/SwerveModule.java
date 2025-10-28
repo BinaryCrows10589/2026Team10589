@@ -10,7 +10,7 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 
 public class SwerveModule {
-    private final SwerveModuleTalonFXIO swerveModuleIO;
+    private final SwerveModuleIO swerveModuleIO;
     private String swerveModuleName = "NoModuleNameSet";
 
     //private SwerveDriveVoltageVSMetersPerSecondTableCreater voltageTableCreator;
@@ -20,7 +20,7 @@ public class SwerveModule {
      * @param swerveModuleIO SwerveModuleIO: The IO object for the Swerve Module. It can be either SwerveModule
      * @param swerveModuleName
      */
-    public SwerveModule(SwerveModuleTalonFXIO swerveModuleIO, String swerveModuleName) {
+    public SwerveModule(SwerveModuleIO swerveModuleIO, String swerveModuleName) {
         this.swerveModuleIO = swerveModuleIO;
         this.swerveModuleName = swerveModuleName;
     }

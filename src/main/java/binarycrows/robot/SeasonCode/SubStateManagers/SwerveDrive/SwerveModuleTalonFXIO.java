@@ -207,7 +207,7 @@ public class SwerveModuleTalonFXIO implements SwerveModuleIO {
 
     @Override
     public void setDesiredModuleDriveVoltage(double desiredVoltage) {
-        System.out.println("Set desired voltage of " + swerveModuleName + " is being set to " + desiredVoltage);
+        System.out.println("Desired voltage of " + swerveModuleName + " is being set to " + desiredVoltage);
 
         this.driveControlVoltageRequest.Output = desiredVoltage;
         this.driveMotor.setControl(this.driveControlVoltageRequest);
@@ -215,6 +215,7 @@ public class SwerveModuleTalonFXIO implements SwerveModuleIO {
 
     @Override
     public void setDesiredModuleAngle(Rotation2d desiredModuleAngle) {
+        System.out.println("Desired angle of " + swerveModuleName + " is being set to " + desiredModuleAngle);
         double desiredModuleRotations = desiredModuleAngle.getRotations(); 
         double desiredMotorRotation = desiredModuleRotations * SwerveDriveConstants.turnGearRatio;
 
