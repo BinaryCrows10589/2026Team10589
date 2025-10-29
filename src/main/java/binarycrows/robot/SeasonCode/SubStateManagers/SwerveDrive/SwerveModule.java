@@ -54,6 +54,13 @@ public class SwerveModule {
         swerveModuleIO.resetTurningMotorToAbsolute();
     }
 
+    public Rotation2d getAbsoluteEncoderPosition() {
+        return swerveModuleIO.getAbsoluteEncoderPosition();
+    }
+    public Rotation2d getRelativeEncoderPosition() {
+        return Rotation2d.fromRotations(swerveModuleIO.getWheelAngleRelativePositionRotations());
+    }
+
 
     // TODO: REIMPLEMENT THIS AS A LERP TABLE!
     public double metersPerSecondToVoltage(double desiredMetersPerSecond) {

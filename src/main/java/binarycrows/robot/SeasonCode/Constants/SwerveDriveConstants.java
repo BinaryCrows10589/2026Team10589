@@ -17,10 +17,10 @@ public final class SwerveDriveConstants {
     public static final boolean backLeftDriveInverted = false;
     public static final boolean backRightDriveInverted = false;
 
-    public static final boolean frontLeftTurnInverted = false;
-    public static final boolean frontRightTurnInverted = false;
-    public static final boolean backLeftTurnInverted = false;
-    public static final boolean backRightTurnInverted = false;
+    public static final boolean frontLeftTurnInverted = true;
+    public static final boolean frontRightTurnInverted = true;
+    public static final boolean backLeftTurnInverted = true;
+    public static final boolean backRightTurnInverted = true;
 
     public static final double frontLeftTurnEncoderOffset = 0.300049;
     public static final double frontRightTurnEncoderOffset = 0.368164;

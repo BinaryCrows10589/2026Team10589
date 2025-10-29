@@ -94,7 +94,13 @@ public class SwerveModuleTalonFXIO implements SwerveModuleIO {
                 throw new RuntimeException("The undefined module " + swerveModuleName + " was used. Please change to a valid name found in the SwerveDriveConstants.java file.");
         }
         configureTurnPID();
-        Timer.delay(.1); // We should see if we can reduce this to dramaticly increase robot boot time. 
+        //Timer.delay(.1); // We should see if we can reduce this to dramaticly increase robot boot time. 
+        try {
+            Thread.sleep(100);
+        } catch (InterruptedException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
         resetTurningMotorToAbsolute();
     }
 
@@ -156,6 +162,10 @@ public class SwerveModuleTalonFXIO implements SwerveModuleIO {
 
     public double getWheelAngleRelativePositionRotations() {
         return this.turnMotor.getPosition().getValueAsDouble() / SwerveDriveConstants.turnGearRatio;
+    }
+
+    public Rotation2d getAbsoluteEncoderPosition() {
+        return Rotation2d.fromRotations(this.turnAbsoluteEncoder.getAbsolutePosition().getValueAsDouble() - turningAbsoluteEncoderOffset);
     }
 
     /**

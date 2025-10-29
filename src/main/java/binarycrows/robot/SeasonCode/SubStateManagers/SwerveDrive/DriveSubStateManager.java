@@ -89,6 +89,16 @@ public class DriveSubStateManager extends SubStateManager<DriveStateRequest> {
         if (swerveModuleStates != null)
             LogIOInputs.logToStateTable(swerveModuleStates, "DriveSubsystem/ModuleStates");
 
+        LogIOInputs.logToStateTable(frontLeftSwerveModule.getAbsoluteEncoderPosition(), "DriveSubsystem/FLAbsoluteEncoderPos");
+        LogIOInputs.logToStateTable(frontRightSwerveModule.getAbsoluteEncoderPosition(), "DriveSubsystem/FRAbsoluteEncoderPos");
+        LogIOInputs.logToStateTable(backLeftSwerveModule.getAbsoluteEncoderPosition(), "DriveSubsystem/BLAbsoluteEncoderPos");
+        LogIOInputs.logToStateTable(backRightSwerveModule.getAbsoluteEncoderPosition(), "DriveSubsystem/BRAbsoluteEncoderPos");
+
+        LogIOInputs.logToStateTable(frontLeftSwerveModule.getRelativeEncoderPosition(), "DriveSubsystem/FLRelativeEncoderPos");
+        LogIOInputs.logToStateTable(frontRightSwerveModule.getRelativeEncoderPosition(), "DriveSubsystem/FRRelativeEncoderPos");
+        LogIOInputs.logToStateTable(backLeftSwerveModule.getRelativeEncoderPosition(), "DriveSubsystem/BLRelativeEncoderPos");
+        LogIOInputs.logToStateTable(backRightSwerveModule.getRelativeEncoderPosition(), "DriveSubsystem/BRRelativeEncoderPos");
+
         // Resolve pending state request
         if (this.activeStateRequest.getStatus() == StateRequestStatus.PENDING) {
             switch (this.activeStateRequest.getStateRequestType()) {
@@ -162,11 +172,13 @@ public class DriveSubStateManager extends SubStateManager<DriveStateRequest> {
                     if (!hasStartedDrivingDistance) {
                         hasStartedDrivingDistance = true;
                         startDriveDistance = getDriveDistance();
-                        this.drive(0.1, 0, 0, false);
+                        //this.drive(0.1, 0, 0, false);
                     }
                     if (getDriveDistanceTotal() >= driveDistance) {
                         this.drive(0, 0, 0, false);
                     
+                    } else {
+                        this.drive(0.1, 0, 0, false);
                     }
                     LogIOInputs.logToStateTable(getDriveDistanceTotal(), "DriveSubsystem/DriveDistance");
 
@@ -243,7 +255,12 @@ public class DriveSubStateManager extends SubStateManager<DriveStateRequest> {
         }
     }
     public void driveOneTest() {
-        frontLeftSwerveModule.setDesiredModuleState(new SwerveModuleState(0.1, Rotation2d.fromDegrees(0)));
+        setModuleStates(new SwerveModuleState[] { 
+            new SwerveModuleState(0.1, Rotation2d.fromDegrees(0)), 
+            new SwerveModuleState(0.1, Rotation2d.fromDegrees(0)), 
+            new SwerveModuleState(0.1, Rotation2d.fromDegrees(0)), 
+            new SwerveModuleState(0.1, Rotation2d.fromDegrees(0)) 
+        });
     }
 
     public void drive(double desiredXVelocity, double desiredYVelocity, double desiredRotationalVelocity, boolean isFieldRelative) {
