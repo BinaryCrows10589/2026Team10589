@@ -82,6 +82,9 @@ public class DriveSubStateManager extends SubStateManager<DriveStateRequest> {
     @Override
     public void periodic() {
         super.periodic();
+
+        swerveModuleStates = getModuleStates();
+
         
         if (swerveModuleStates != null)
             LogIOInputs.logToStateTable(swerveModuleStates, "DriveSubsystem/ModuleStates");
@@ -152,13 +155,14 @@ public class DriveSubStateManager extends SubStateManager<DriveStateRequest> {
                 
                 break;
                 case TELEOP_DRIVE:
-                    drivePeriodic();
+                    driveOneTest();
+                    //drivePeriodic();
                     break;
                 case DRIVE_DISTANCE_TEST:
                     if (!hasStartedDrivingDistance) {
                         hasStartedDrivingDistance = true;
                         startDriveDistance = getDriveDistance();
-                        this.drive(0, 0.1, 0, false);
+                        this.drive(0.1, 0, 0, false);
                     }
                     if (getDriveDistanceTotal() >= driveDistance) {
                         this.drive(0, 0, 0, false);
@@ -238,9 +242,11 @@ public class DriveSubStateManager extends SubStateManager<DriveStateRequest> {
             }
         }
     }
+    public void driveOneTest() {
+        frontLeftSwerveModule.setDesiredModuleState(new SwerveModuleState(0.1, Rotation2d.fromDegrees(0)));
+    }
 
     public void drive(double desiredXVelocity, double desiredYVelocity, double desiredRotationalVelocity, boolean isFieldRelative) {
-        swerveModuleStates = getModuleStates();
         this.desiredChassisSpeeds = isFieldRelative ? 
             ChassisSpeeds.fromFieldRelativeSpeeds(desiredXVelocity, desiredYVelocity,
                 desiredRotationalVelocity, this.poseEstimator.getRobotPose().getRotation()) :
@@ -264,6 +270,7 @@ public class DriveSubStateManager extends SubStateManager<DriveStateRequest> {
     }
 
     public void setModuleStates(SwerveModuleState[] desiredStates) {
+        LogIOInputs.logToStateTable(desiredStates, "DriveSubsystem/DesiredModuleStates");
         SwerveDriveKinematics.desaturateWheelSpeeds(
         desiredStates, SwerveDriveConstants.maxSpeedMetersPerSecond);
         this.frontLeftSwerveModule.setDesiredModuleState(desiredStates[0]);

@@ -9,6 +9,7 @@ import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.signals.SensorDirectionValue;
@@ -17,6 +18,7 @@ import com.ctre.phoenix6.swerve.SwerveModuleConstants;
 import binarycrows.robot.SeasonCode.Constants.CANIDs;
 import binarycrows.robot.SeasonCode.Constants.MetaConstants;
 import binarycrows.robot.SeasonCode.Constants.SwerveDriveConstants;
+import binarycrows.robot.Utils.LogIOInputs;
 import binarycrows.robot.Utils.Tuning.RuntimeTunablePIDValues;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.Timer;
@@ -30,7 +32,7 @@ public class SwerveModuleTalonFXIO implements SwerveModuleIO {
 
     private CANcoder turnAbsoluteEncoder;
 
-    private double turningAbsoluteEncoderOffset;
+    public double turningAbsoluteEncoderOffset;
 
     // If this works and we have a CTRE subscripting try enablign FOC
     private VoltageOut driveControlVoltageRequest = new VoltageOut(0);
@@ -62,23 +64,31 @@ public class SwerveModuleTalonFXIO implements SwerveModuleIO {
         switch (this.swerveModuleName) {
             case SwerveDriveConstants.frontLeftModuleName:
                 configDriveMotor(CANIDs.frontLeftDriveMotor, SwerveDriveConstants.frontLeftDriveInverted);
+
                 configTurnMotor(CANIDs.frontLeftTurnMotor, SwerveDriveConstants.frontLeftTurnInverted);
                 configTurningAbsoluteEncoder(CANIDs.frontLeftTurnEncoderCANID, SwerveDriveConstants.frontLeftTurnEncoderOffset);
+
                 break;
             case SwerveDriveConstants.frontRightModuleName:
                 configDriveMotor(CANIDs.frontRightDriveMotor, SwerveDriveConstants.frontRightDriveInverted);
+
                 configTurnMotor(CANIDs.frontRightTurnMotor, SwerveDriveConstants.frontRightTurnInverted);
                 configTurningAbsoluteEncoder(CANIDs.frontRightTurnEncoderCANID, SwerveDriveConstants.frontRightTurnEncoderOffset);
+
                 break;
             case SwerveDriveConstants.backLeftModuleName:
                 configDriveMotor(CANIDs.backLeftDriveMotor, SwerveDriveConstants.backLeftDriveInverted);
+
                 configTurnMotor(CANIDs.backLeftTurnMotor, SwerveDriveConstants.backLeftTurnInverted);
                 configTurningAbsoluteEncoder(CANIDs.backLeftTurnEncoderCANID, SwerveDriveConstants.backLeftTurnEncoderOffset);
+
                 break;
             case SwerveDriveConstants.backRightModuleName:
                 configDriveMotor(CANIDs.backRightDriveMotor, SwerveDriveConstants.backRightTurnInverted);
+
                 configTurnMotor(CANIDs.backRightTurnMotor, SwerveDriveConstants.backRightTurnInverted);
                 configTurningAbsoluteEncoder(CANIDs.backRightTurnEncoderCANID, SwerveDriveConstants.backRightTurnEncoderOffset);
+
                 break;
             default:
                 throw new RuntimeException("The undefined module " + swerveModuleName + " was used. Please change to a valid name found in the SwerveDriveConstants.java file.");
@@ -131,9 +141,11 @@ public class SwerveModuleTalonFXIO implements SwerveModuleIO {
         turnMotorConfig.Voltage.PeakForwardVoltage = SwerveDriveConstants.maxTurnMotorVoltage;
         turnMotorConfig.Voltage.PeakReverseVoltage = -SwerveDriveConstants.maxTurnMotorVoltage;
 
+
         //this.turnMotor.optimizeBusUtilization();
         this.turnMotor.getConfigurator().apply(turnMotorConfig);
     }
+
 
     public double getDriveMotorRPS() {
         return this.driveMotor.getRotorVelocity().getValueAsDouble();

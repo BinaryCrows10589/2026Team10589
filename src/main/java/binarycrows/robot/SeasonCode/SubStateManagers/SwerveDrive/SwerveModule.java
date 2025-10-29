@@ -4,13 +4,14 @@ import com.ctre.phoenix6.swerve.SwerveModuleConstants;
 
 import binarycrows.robot.SeasonCode.Constants.SwerveDriveConstants;
 import binarycrows.robot.Utils.ConversionUtils;
+import binarycrows.robot.Utils.LogIOInputs;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 
 public class SwerveModule {
-    private final SwerveModuleIO swerveModuleIO;
+    private final SwerveModuleTalonFXIO swerveModuleIO;
     private String swerveModuleName = "NoModuleNameSet";
 
     //private SwerveDriveVoltageVSMetersPerSecondTableCreater voltageTableCreator;
@@ -20,7 +21,7 @@ public class SwerveModule {
      * @param swerveModuleIO SwerveModuleIO: The IO object for the Swerve Module. It can be either SwerveModule
      * @param swerveModuleName
      */
-    public SwerveModule(SwerveModuleIO swerveModuleIO, String swerveModuleName) {
+    public SwerveModule(SwerveModuleTalonFXIO swerveModuleIO, String swerveModuleName) {
         this.swerveModuleIO = swerveModuleIO;
         this.swerveModuleName = swerveModuleName;
     }
@@ -47,6 +48,10 @@ public class SwerveModule {
 
     public void setDesiredModuleDriveVoltage(double driveVoltage) {
         this.swerveModuleIO.setDesiredModuleDriveVoltage(driveVoltage);
+    }
+
+    public void resetTurningMotorToAbsolute() {
+        swerveModuleIO.resetTurningMotorToAbsolute();
     }
 
 

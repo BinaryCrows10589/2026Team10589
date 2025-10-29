@@ -22,10 +22,10 @@ public final class SwerveDriveConstants {
     public static final boolean backLeftTurnInverted = false;
     public static final boolean backRightTurnInverted = false;
 
-    public static final double frontLeftTurnEncoderOffset = 0.301025;
-    public static final double frontRightTurnEncoderOffset= 0.370117;
-    public static final double backLeftTurnEncoderOffset = 0.188721;
-    public static final double backRightTurnEncoderOffset = 0.157227;
+    public static final double frontLeftTurnEncoderOffset = 0.300049;
+    public static final double frontRightTurnEncoderOffset = 0.368164;
+    public static final double backLeftTurnEncoderOffset = 0.186768;
+    public static final double backRightTurnEncoderOffset = 0.154053;
 
     public static final int maxDriveMotorVoltage = 13;
     public static final int maxTurnMotorVoltage = 2;
@@ -57,8 +57,8 @@ public final class SwerveDriveConstants {
     public static final double driveConversionPositionFactor = wheelDistancePerRotation / driveGearRatio;
     public static final double driveConversionVelocityFactor = driveConversionPositionFactor / 60.0; /* Figure why this sixty is here. It was last season */
 
-    public static final double distanceBetweenCentersOfRightAndLeftWheels = ConversionUtils.inchesToMeters(23.75);
-        public static final double distanceBetweenCentersOfFrontAndBackWheels = ConversionUtils.inchesToMeters(23.75);
+    public static final double distanceBetweenCentersOfRightAndLeftWheels = ConversionUtils.inchesToMeters(24);
+        public static final double distanceBetweenCentersOfFrontAndBackWheels = ConversionUtils.inchesToMeters(24);
         public static final double radiusFromCenterToFarthestSwerveModule = Math
         .sqrt(((distanceBetweenCentersOfRightAndLeftWheels * distanceBetweenCentersOfRightAndLeftWheels)
             + (distanceBetweenCentersOfFrontAndBackWheels * distanceBetweenCentersOfFrontAndBackWheels)));

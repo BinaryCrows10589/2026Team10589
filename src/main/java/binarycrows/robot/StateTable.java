@@ -85,7 +85,6 @@ public class StateTable {
         for (Entry<String, Object> entry : entries) {
             advantageKitStateTable.put(entry.getKey(), entry.getValue());
             logToAdvantageKit(entry.getValue(), entry.getKey());
-            System.out.println("Logged " + entry.getValue() + " to " + entry.getKey());
         }
     }
 
