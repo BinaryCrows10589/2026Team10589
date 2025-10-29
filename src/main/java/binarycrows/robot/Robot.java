@@ -83,7 +83,6 @@ public class Robot extends LoggedRobot {
     subStateManagers.forEach(subStateManager -> {
         subStateManager.periodic();
     });
-    Keybinds.periodic();
   }
 
   @Override
@@ -100,7 +99,10 @@ public class Robot extends LoggedRobot {
   }
 
   @Override
-  public void teleopPeriodic() {}
+  public void teleopPeriodic() {
+    Keybinds.periodic();
+
+  }
 
   @Override
   public void disabledInit() {

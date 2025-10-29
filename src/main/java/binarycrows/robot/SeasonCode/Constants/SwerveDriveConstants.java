@@ -22,10 +22,10 @@ public final class SwerveDriveConstants {
     public static final boolean backLeftTurnInverted = false;
     public static final boolean backRightTurnInverted = false;
 
-    public static final double frontLeftTurnEncoderOffset = 0.457275;
-    public static final double frontRightTurnEncoderOffset= 0.964600;
-    public static final double backLeftTurnEncoderOffset = 0.925049;
-    public static final double backRightTurnEncoderOffset = 0.749756;
+    public static final double frontLeftTurnEncoderOffset = 0.301025;
+    public static final double frontRightTurnEncoderOffset= 0.370117;
+    public static final double backLeftTurnEncoderOffset = 0.188721;
+    public static final double backRightTurnEncoderOffset = 0.157227;
 
     public static final int maxDriveMotorVoltage = 13;
     public static final int maxTurnMotorVoltage = 2;
@@ -38,7 +38,7 @@ public final class SwerveDriveConstants {
     public static final double turnPIDValueFF = 0;
     public static final double turnPIDValueIZone = 0.5 / 360; // 1/2 degrees converted to rotations
 
-    public static final double turnGearRatio = 12.8;
+    public static final double turnGearRatio = 12.1;
 
     public static final double maxAngleDeltaPerFrameDegrees = 30;
 
@@ -49,7 +49,7 @@ public final class SwerveDriveConstants {
     public static final double voltageForMaxSpeed = 12;
 
     public static final double wheelDiameterMeters = ConversionUtils.inchesToMeters(3.8338048662);
-    public static final double driveGearRatio = 7.125;
+    public static final double driveGearRatio = 1296/209;
 
 
 

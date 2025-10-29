@@ -55,6 +55,10 @@ public class DriveSubStateManager extends SubStateManager<DriveStateRequest> {
 
     private Timer voltageRecordingTimer = new Timer();
 
+    public final double driveDistance = 4;
+    public double startDriveDistance = 0;
+    public boolean hasStartedDrivingDistance = false;
+
 
     public DriveSubStateManager() {
         super();
@@ -150,10 +154,30 @@ public class DriveSubStateManager extends SubStateManager<DriveStateRequest> {
                 case TELEOP_DRIVE:
                     drivePeriodic();
                     break;
+                case DRIVE_DISTANCE_TEST:
+                    if (!hasStartedDrivingDistance) {
+                        hasStartedDrivingDistance = true;
+                        startDriveDistance = getDriveDistance();
+                        this.drive(0, 0.1, 0, false);
+                    }
+                    if (getDriveDistanceTotal() >= driveDistance) {
+                        this.drive(0, 0, 0, false);
+                    
+                    }
+                    LogIOInputs.logToStateTable(getDriveDistanceTotal(), "DriveSubsystem/DriveDistance");
+
+                    break;
                 default:
                 break;
         }
 
+    }
+
+    private double getDriveDistanceTotal() {
+        return frontLeftSwerveModule.getModuleDriveDistance() - startDriveDistance;
+    }
+    private double getDriveDistance() {
+        return frontLeftSwerveModule.getModuleDriveDistance();
     }
 
     private double translationMax = SwerveDriveConstants.maxSpeedMetersPerSecond;
@@ -212,6 +236,7 @@ public class DriveSubStateManager extends SubStateManager<DriveStateRequest> {
     }
 
     public void drive(double desiredXVelocity, double desiredYVelocity, double desiredRotationalVelocity, boolean isFieldRelative) {
+        swerveModuleStates = new SwerveModuleState[] {frontLeftSwerveModule.getModuleState(), frontRightSwerveModule.getModuleState(), backLeftSwerveModule.getModuleState(), backRightSwerveModule.getModuleState()};
         this.desiredChassisSpeeds = isFieldRelative ? 
             ChassisSpeeds.fromFieldRelativeSpeeds(desiredXVelocity, desiredYVelocity,
                 desiredRotationalVelocity, this.poseEstimator.getRobotPose().getRotation()) :

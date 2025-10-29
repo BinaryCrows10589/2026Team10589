@@ -41,7 +41,6 @@ public class SwerveModuleTalonFXIO implements SwerveModuleIO {
 
     
     public double driveMotorRotations = 0.0;
-    public double driveMotorRPM = 0.0;
     public double driveMotorSpeedMetersPerSecond = 0.0;
     public double driveMotorDistanceMeters = 0.0;
     public double driveMotorAppliedVolts = 0.0;
@@ -49,7 +48,6 @@ public class SwerveModuleTalonFXIO implements SwerveModuleIO {
 
     public double turnMotorAbsolutePositionRotations = 0.0;
     public double turnMotorRelitivePositionRotations = 0.0;
-    public double wheelAngleRelativePositionRotations = 0.0;
     public double turnMotorRPM = 0.0;
     public double turnMotorAppliedVolts = 0.0;
     public double[] turnMotorCurrentAmps = new double[] {};
@@ -135,6 +133,17 @@ public class SwerveModuleTalonFXIO implements SwerveModuleIO {
 
         //this.turnMotor.optimizeBusUtilization();
         this.turnMotor.getConfigurator().apply(turnMotorConfig);
+    }
+
+    public double getDriveMotorRPS() {
+        return this.driveMotor.getRotorVelocity().getValueAsDouble();
+    }
+    public double getDriveMotorDistance() {
+        return this.driveMotor.getPosition().getValueAsDouble();
+    }
+
+    public double getWheelAngleRelativePositionRotations() {
+        return this.turnMotor.getPosition().getValueAsDouble() / SwerveDriveConstants.turnGearRatio;
     }
 
     /**

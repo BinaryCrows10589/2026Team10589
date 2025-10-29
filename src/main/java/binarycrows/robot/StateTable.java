@@ -50,6 +50,7 @@ public class StateTable {
     }
 
     public static synchronized boolean getValueAsBoolean(String path) {
+        System.out.println(path);
         return (boolean) getValue(path);
     }
     public static synchronized int getValueAsInteger(String path) {

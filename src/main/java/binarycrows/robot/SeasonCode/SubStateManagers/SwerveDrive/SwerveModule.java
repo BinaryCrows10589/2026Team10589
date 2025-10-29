@@ -72,7 +72,11 @@ public class SwerveModule {
      */
     public SwerveModulePosition getModulePosition() {
         return new SwerveModulePosition(
-            swerveModuleIO.driveMotorDistanceMeters, Rotation2d.fromRotations(swerveModuleIO.wheelAngleRelativePositionRotations));
+            swerveModuleIO.getDriveMotorDistance(), Rotation2d.fromRotations(swerveModuleIO.getWheelAngleRelativePositionRotations()));
+    }
+
+    public double getModuleDriveDistance() {
+        return swerveModuleIO.getDriveMotorDistance() * SwerveDriveConstants.driveConversionPositionFactor;
     }
 
     /**
@@ -88,7 +92,7 @@ public class SwerveModule {
      * @return Double: The current speed of the drive motor in MPS(Meters per second)
      */
     private double getDriveMotorSpeedInMetersPerSecond() {
-        return this.swerveModuleIO.driveMotorRPM * SwerveDriveConstants.driveConversionVelocityFactor;
+        return this.swerveModuleIO.getDriveMotorRPS() * 60 * SwerveDriveConstants.driveConversionVelocityFactor;
     }
 
     /**
@@ -96,6 +100,6 @@ public class SwerveModule {
      * @return Rotation2d: The module's wheel angle
      */
     private Rotation2d getWheelRotationAsRotation2d() {
-        return Rotation2d.fromRotations(swerveModuleIO.wheelAngleRelativePositionRotations);
+        return Rotation2d.fromRotations(swerveModuleIO.getWheelAngleRelativePositionRotations());
     }
 }

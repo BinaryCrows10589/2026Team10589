@@ -4,6 +4,7 @@ import binarycrows.robot.SeasonCode.SubStateManagers.SwerveDrive.DriveStateReque
 import binarycrows.robot.Utils.StateRequestUtils;
 import binarycrows.robot.Utils.Gamepad.GenericGamepad;
 import binarycrows.robot.Utils.Gamepad.XboxGamepad;
+import edu.wpi.first.wpilibj.RobotBase;
 
 public class Keybinds {
     public static GenericGamepad driverController = new XboxGamepad(0);
@@ -51,6 +52,10 @@ public class Keybinds {
         driverController.onPress(
             XboxGamepad.XboxGamepadID.x, 
             StateRequestUtils.createStateRequestRunnable(DriveStateRequest.TELEOP_DRIVE)
+        );
+        driverController.onPress(
+            XboxGamepad.XboxGamepadID.y, 
+            StateRequestUtils.createStateRequestRunnable(DriveStateRequest.DRIVE_DISTANCE_TEST)
         );
     }
 
