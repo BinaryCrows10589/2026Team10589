@@ -40,7 +40,7 @@ public class PoseEstimator {
 
 
     public void periodic() {
-        LogIOInputs.logObjectToStateTable(this, "PoseEstimator");
+        //LogIOInputs.logObjectToStateTable(this, "PoseEstimator");
     }
 
     public Pose2d getRobotPose() {

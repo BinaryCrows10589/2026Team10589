@@ -7,7 +7,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 
 public class LogIOInputs {
 
-    public static void logObjectToStateTable(Object inputs, String path) {
+    /*public static void logObjectToStateTable(Object inputs, String path) {
         if (!path.endsWith("/")) path += "/";
         
         for (Field field : inputs.getClass().getFields()) {
@@ -30,7 +30,7 @@ public class LogIOInputs {
                 StateTable.recordNonFatalException(e);
             }
         }
-    }
+    }*/
 
     public static void logToStateTable(Object fieldValue, String absolutePath) {
         if (!absolutePath.endsWith("/")) absolutePath += "/";
