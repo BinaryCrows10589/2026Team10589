@@ -6,7 +6,7 @@ import binarycrows.robot.StateTable;
 import edu.wpi.first.math.geometry.Rotation2d;
 
 public class LogIOInputs {
-
+    //TODO: (ELIJAH) This seems like a rational solution for logging and adding in the IOs, why did you comment it out
     /*public static void logObjectToStateTable(Object inputs, String path) {
         if (!path.endsWith("/")) path += "/";
         

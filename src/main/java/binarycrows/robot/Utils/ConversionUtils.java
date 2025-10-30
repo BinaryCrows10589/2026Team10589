@@ -49,7 +49,7 @@ public class ConversionUtils {
         }
         return newAngle;
       }
-
+    //TODO:(ELIJAH) Indentiaon is wrong compared to the rest of the file
         @SuppressWarnings("unchecked")
         public static <E> HashMap<String, E> fieldsToMap(Field[] fields, Object obj) {
             HashMap<String, E> map = new HashMap<String, E>();

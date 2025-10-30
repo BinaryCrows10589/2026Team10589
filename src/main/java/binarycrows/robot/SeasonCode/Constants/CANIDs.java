@@ -15,6 +15,6 @@ public final class CANIDs {
     public static final int frontRightTurnEncoderCANID = 14;
     public static final int backLeftTurnEncoderCANID = 15;
     public static final int backRightTurnEncoderCANID = 16;
-
+    // TODO: The canloop names should be in here insteed of in their respective files. The names would be "Rio" amd whatever you name the CANivor
     public static final int gyro = 17;
 }

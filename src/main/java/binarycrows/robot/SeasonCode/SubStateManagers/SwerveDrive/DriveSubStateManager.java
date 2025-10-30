@@ -205,6 +205,8 @@ public class DriveSubStateManager extends SubStateManager<DriveStateRequest> {
         return DriveStateRequest.class;
     }
 
+
+    // TODO:(ELIJAH) This should probaby be written better and less jankly then it is now(i know i wrote this)
     private void drivePeriodic() {
         if(StateTable.getValueAsBoolean("IsDriverControlled")) {
             boolean slowMode = StateTable.getValueAsBoolean("SlowMode");
@@ -263,6 +265,7 @@ public class DriveSubStateManager extends SubStateManager<DriveStateRequest> {
         });
     }
 
+    // TODO:(ELIJAH) Bring out the if...setModuleStates to the periodic directly. This will make the drive(chassisSpeeds) work as well
     public void drive(double desiredXVelocity, double desiredYVelocity, double desiredRotationalVelocity, boolean isFieldRelative) {
         this.desiredChassisSpeeds = isFieldRelative ? 
             ChassisSpeeds.fromFieldRelativeSpeeds(desiredXVelocity, desiredYVelocity,
@@ -342,8 +345,9 @@ public class DriveSubStateManager extends SubStateManager<DriveStateRequest> {
     }
 
     
-
+    //TODO:(Elijah) To fix this simply move it to a pose estimator state manager and has all of the vision stuff. I can help you impliment the vision state manager if needed
     public void updateAlliance() { //TODO: Make this not need to be disabled...
+        
         //if(MetaConstants.hasAllianceChanged) {
             //AprilTagFieldLayout fieldTags = photonPoseEstimators[0].getFieldTags();
             //if(MetaConstants.isBlueAlliance) {
