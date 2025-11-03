@@ -12,9 +12,9 @@ public final class SwerveDriveConstants {
     public static final String backLeftModuleName = "BackLeftModule";
     public static final String backRightModuleName = "BackRightModule";
 
-    public static final boolean frontLeftDriveInverted = false;
-    public static final boolean frontRightDriveInverted = false;
-    public static final boolean backLeftDriveInverted = false;
+    public static final boolean frontLeftDriveInverted = true;
+    public static final boolean frontRightDriveInverted = true;
+    public static final boolean backLeftDriveInverted = true;
     public static final boolean backRightDriveInverted = false;
 
     public static final boolean frontLeftTurnInverted = true;
@@ -48,7 +48,7 @@ public final class SwerveDriveConstants {
 
     public static final double voltageForMaxSpeed = 12;
 
-    public static final double wheelDiameterMeters = ConversionUtils.inchesToMeters(3.8338048662);
+    public static final double wheelDiameterMeters = ConversionUtils.inchesToMeters(3.45156526943);
     public static final double driveGearRatio = 1296/209;
 
 

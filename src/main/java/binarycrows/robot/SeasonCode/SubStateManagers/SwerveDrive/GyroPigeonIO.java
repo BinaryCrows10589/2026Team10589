@@ -26,7 +26,7 @@ public class GyroPigeonIO implements GyroIO {
         previousGyroValue = gyro.getRotation2d();
     } 
 
-    public void update(double rotationRate) {
+    public void update() {
 
         yawAngle = this.gyro.getRotation2d();
         

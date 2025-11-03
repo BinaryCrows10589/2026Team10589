@@ -83,6 +83,9 @@ public class DriveSubStateManager extends SubStateManager<DriveStateRequest> {
     public void periodic() {
         super.periodic();
 
+        gyroPigeonIO.update();
+        poseEstimator.periodic();
+
         swerveModuleStates = getModuleStates();
 
         
@@ -165,7 +168,7 @@ public class DriveSubStateManager extends SubStateManager<DriveStateRequest> {
                 
                 break;
                 case TELEOP_DRIVE:
-                    driveOneTest();
+                    //driveOneTest();
                     //drivePeriodic();
                     break;
                 case DRIVE_DISTANCE_TEST:
@@ -175,10 +178,10 @@ public class DriveSubStateManager extends SubStateManager<DriveStateRequest> {
                         //this.drive(0.1, 0, 0, false);
                     }
                     if (getDriveDistanceTotal() >= driveDistance) {
-                        this.drive(0, 0, 0, false);
+                        this.drive(0, 0, 0, true);
                     
                     } else {
-                        this.drive(0.1, 0, 0, false);
+                        this.drive(0.1, 0, 0, true);
                     }
                     LogIOInputs.logToStateTable(getDriveDistanceTotal(), "DriveSubsystem/DriveDistance");
 

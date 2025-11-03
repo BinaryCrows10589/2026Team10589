@@ -19,6 +19,7 @@ public class SubStateManager<TYPE extends Enum<TYPE>> {
     {
         assert instance == null;
         this.activeStateRequest = defaultState;
+        instance = this;
     }
 
 

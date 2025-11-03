@@ -40,7 +40,13 @@ public class PoseEstimator {
 
 
     public void periodic() {
-        //LogIOInputs.logObjectToStateTable(this, "PoseEstimator");
+        try {
+            this.swerveDrivePoseEstimator.update(DriveSubStateManager.getInstance().gyroPigeonIO.yawAngle,
+                DriveSubStateManager.getInstance().getModulePositions());
+
+        } catch(Exception E) {
+           System.out.println("FAILED TO UPDATE: " + E.getMessage());
+        }
     }
 
     public Pose2d getRobotPose() {
