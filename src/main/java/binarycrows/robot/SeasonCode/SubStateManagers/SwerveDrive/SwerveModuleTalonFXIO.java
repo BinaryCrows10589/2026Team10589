@@ -1,5 +1,7 @@
 package binarycrows.robot.SeasonCode.SubStateManagers.SwerveDrive;
 
+import java.util.HashMap;
+
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.configs.MagnetSensorConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
@@ -53,6 +55,7 @@ public class SwerveModuleTalonFXIO implements SwerveModuleIO {
     public double turnMotorRPM = 0.0;
     public double turnMotorAppliedVolts = 0.0;
     public double[] turnMotorCurrentAmps = new double[] {};
+
 
     /**
      * Creates a SwerveModuleIOTalonFX object and completes all configuration for the module
@@ -168,6 +171,10 @@ public class SwerveModuleTalonFXIO implements SwerveModuleIO {
         return Rotation2d.fromRotations(this.turnAbsoluteEncoder.getAbsolutePosition().getValueAsDouble() - turningAbsoluteEncoderOffset);
     }
 
+    public double getAppliedDriveMotorVolts() {
+        return this.driveMotor.getMotorVoltage().getValueAsDouble();
+    }
+
     /**
       * Configures the turn motor PID Controller. 
      */
@@ -239,15 +246,16 @@ public class SwerveModuleTalonFXIO implements SwerveModuleIO {
 
     @Override
     public void setDesiredModuleDriveVoltage(double desiredVoltage) {
-        System.out.println("Desired voltage of " + swerveModuleName + " is being set to " + desiredVoltage);
+
 
         this.driveControlVoltageRequest.Output = desiredVoltage;
         this.driveMotor.setControl(this.driveControlVoltageRequest);
+
+
     }
 
     @Override
     public void setDesiredModuleAngle(Rotation2d desiredModuleAngle) {
-        System.out.println("Desired angle of " + swerveModuleName + " is being set to " + desiredModuleAngle);
         double desiredModuleRotations = desiredModuleAngle.getRotations(); 
         double desiredMotorRotation = desiredModuleRotations * SwerveDriveConstants.turnGearRatio;
 

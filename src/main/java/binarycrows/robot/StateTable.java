@@ -34,7 +34,6 @@ public class StateTable {
                 @SuppressWarnings("rawtypes")
                 Object firstIndex = ((ArrayList)value).get(0);
 
-                System.out.println("First index of " + firstIndex);
 
                 if (firstIndex instanceof Double) {
                     value = ((ArrayList<Double>)value).stream().mapToDouble(Double::doubleValue).toArray();
@@ -51,7 +50,6 @@ public class StateTable {
     }
 
     public static synchronized boolean getValueAsBoolean(String path) {
-        System.out.println(path);
         return (boolean) getValue(path);
     }
     public static synchronized int getValueAsInteger(String path) {
@@ -73,7 +71,6 @@ public class StateTable {
         return (Rotation2d) getValue(path);
     }
     public static synchronized Object getValue(String path) {
-        System.out.println("Accessing " + path + "... (its value is " + stateTableObjects.get(path) + ")");
         return stateTableObjects.get(path);
     }
 

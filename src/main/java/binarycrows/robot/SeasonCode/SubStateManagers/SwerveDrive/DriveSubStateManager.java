@@ -45,9 +45,9 @@ public class DriveSubStateManager extends SubStateManager<DriveStateRequest> {
     private PoseEstimator poseEstimator;
 
     private double currentVoltageTableTargetValue = 0;
-    private double voltageTableStep = 0.1;
-    private double voltageTableRecordingTime = 2;
-    private double voltageTableMaxValue = SwerveDriveConstants.maxDriveMotorVoltage;
+    private double voltageTableStep = 0.01;
+    private double voltageTableRecordingTime = 1;
+    private double voltageTableMaxValue = 0.5;
     private double voltageTableMinValue = 0;
     private boolean startedRecordingDeceleration = false;
     private ArrayList<Double> accelerationTable = new ArrayList<Double>();
@@ -130,7 +130,6 @@ public class DriveSubStateManager extends SubStateManager<DriveStateRequest> {
                 LogIOInputs.logToStateTable(accelerationTable, "DriveSubsystem/VoltageAccelerationTable");
 
                 if (voltageRecordingTimer.hasElapsed(voltageTableRecordingTime)) { // It's time to record, buster brown!
-                    System.out.println("Record new value");
 
 
                     if (!startedRecordingDeceleration) { // Still accelerating
@@ -168,8 +167,7 @@ public class DriveSubStateManager extends SubStateManager<DriveStateRequest> {
                 
                 break;
                 case TELEOP_DRIVE:
-                    //driveOneTest();
-                    //drivePeriodic();
+                    drivePeriodic();
                     break;
                 case DRIVE_DISTANCE_TEST:
                     if (!hasStartedDrivingDistance) {
@@ -258,38 +256,34 @@ public class DriveSubStateManager extends SubStateManager<DriveStateRequest> {
                 drive(translationXSpeed, translationYSpeed, rotationSpeed,true);
             }
         }
-    }
-    public void driveOneTest() {
-        setModuleStates(new SwerveModuleState[] { 
-            new SwerveModuleState(0.1, Rotation2d.fromDegrees(0)), 
-            new SwerveModuleState(0.1, Rotation2d.fromDegrees(0)), 
-            new SwerveModuleState(0.1, Rotation2d.fromDegrees(0)), 
-            new SwerveModuleState(0.1, Rotation2d.fromDegrees(0)) 
-        });
+
+        
+        if (desiredChassisSpeeds != null) {  
+            SwerveModuleState[] desiredStates = SwerveDriveConstants.driveKinematics.toSwerveModuleStates(desiredChassisSpeeds);   
+            // If we're not trying to move, we lock the angles of the wheels
+            if (desiredChassisSpeeds.vxMetersPerSecond == 0.0 && desiredChassisSpeeds.vyMetersPerSecond == 0.0
+                && desiredChassisSpeeds.omegaRadiansPerSecond == 0.0) {
+                SwerveModuleState[] currentStates = swerveModuleStates;
+                for(int i = 0; i < currentStates.length; i++) {
+                    desiredStates[i].angle = currentStates[i].angle;
+                }
+            }
+            setModuleStates(desiredStates);
+            // Resets the desiredChassisSpeeds to null to stop it from "sticking" to the last states
+            desiredChassisSpeeds = null;
+        }
     }
 
-    // TODO:(ELIJAH) Bring out the if...setModuleStates to the periodic directly. This will make the drive(chassisSpeeds) work as well
     public void drive(double desiredXVelocity, double desiredYVelocity, double desiredRotationalVelocity, boolean isFieldRelative) {
+        LogIOInputs.logToStateTable(desiredXVelocity, "Driver/XVelocity");
+        LogIOInputs.logToStateTable(desiredYVelocity, "Driver/YVelocity");
+        LogIOInputs.logToStateTable(desiredRotationalVelocity, "Driver/RotVelocity");
         this.desiredChassisSpeeds = isFieldRelative ? 
             ChassisSpeeds.fromFieldRelativeSpeeds(desiredXVelocity, desiredYVelocity,
                 desiredRotationalVelocity, this.poseEstimator.getRobotPose().getRotation()) :
             new ChassisSpeeds(desiredXVelocity, desiredYVelocity,
                 desiredRotationalVelocity);
-
-            if (desiredChassisSpeeds != null) {  
-                SwerveModuleState[] desiredStates = SwerveDriveConstants.driveKinematics.toSwerveModuleStates(desiredChassisSpeeds);   
-                // If we're not trying to move, we lock the angles of the wheels
-                if (desiredChassisSpeeds.vxMetersPerSecond == 0.0 && desiredChassisSpeeds.vyMetersPerSecond == 0.0
-                    && desiredChassisSpeeds.omegaRadiansPerSecond == 0.0) {
-                    SwerveModuleState[] currentStates = swerveModuleStates;
-                    for(int i = 0; i < currentStates.length; i++) {
-                        desiredStates[i].angle = currentStates[i].angle;
-                    }
-                }
-                setModuleStates(desiredStates);
-            }
-            // Resets the desiredChassisSpeeds to null to stop it from "sticking" to the last states
-            desiredChassisSpeeds = null;
+            
     }
 
     public void setModuleStates(SwerveModuleState[] desiredStates) {

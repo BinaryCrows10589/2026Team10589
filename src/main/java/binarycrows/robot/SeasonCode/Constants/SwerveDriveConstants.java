@@ -30,7 +30,7 @@ public final class SwerveDriveConstants {
     public static final int maxDriveMotorVoltage = 13;
     public static final int maxTurnMotorVoltage = 2;
 
-    public static final double maxSpeedMPS = 4.317;
+    public static final double maxSpeedMPS = 4.9;
 
     public static final double turnPIDValueP = .24472;
     public static final double turnPIDValueI = 0;
@@ -55,7 +55,7 @@ public final class SwerveDriveConstants {
 
     public static final double wheelDistancePerRotation = wheelDiameterMeters * Math.PI;
     public static final double driveConversionPositionFactor = wheelDistancePerRotation / driveGearRatio;
-    public static final double driveConversionVelocityFactor = driveConversionPositionFactor / 60.0; /* Figure why this sixty is here. It was last season */
+    public static final double driveConversionVelocityFactor = driveConversionPositionFactor / 60.0; /* Figure why this sixty is here. It was last season */ //Probably to undo the *60 in the swerve module IO when getting MPS
 
     public static final double distanceBetweenCentersOfRightAndLeftWheels = ConversionUtils.inchesToMeters(24);
         public static final double distanceBetweenCentersOfFrontAndBackWheels = ConversionUtils.inchesToMeters(24);

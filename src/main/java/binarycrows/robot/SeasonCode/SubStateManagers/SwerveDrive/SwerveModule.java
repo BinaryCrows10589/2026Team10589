@@ -1,5 +1,8 @@
 package binarycrows.robot.SeasonCode.SubStateManagers.SwerveDrive;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+
 import com.ctre.phoenix6.swerve.SwerveModuleConstants;
 
 import binarycrows.robot.SeasonCode.Constants.SwerveDriveConstants;
@@ -13,6 +16,10 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 public class SwerveModule {
     private final SwerveModuleTalonFXIO swerveModuleIO;
     private String swerveModuleName = "NoModuleNameSet";
+
+    public ArrayList<Double> voltageColumn = new ArrayList<Double>();
+    public ArrayList<Double> velocityColumn = new ArrayList<Double>();
+
 
     //private SwerveDriveVoltageVSMetersPerSecondTableCreater voltageTableCreator;
 
@@ -35,8 +42,9 @@ public class SwerveModule {
         
         // Temporary option for drive voltage
         double driveVoltage = optimizedState.speedMetersPerSecond == 0 ? 0 : 
-        MathUtil.clamp((((optimizedState.speedMetersPerSecond/SwerveDriveConstants.maxSpeedMPS) * 13)
-        + (SwerveDriveConstants.driveFeedForward * Math.signum(optimizedState.speedMetersPerSecond))), -13, 13);
+        MathUtil.clamp((((optimizedState.speedMetersPerSecond/SwerveDriveConstants.maxSpeedMPS) * 12.1)
+        + (SwerveDriveConstants.driveFeedForward * Math.signum(optimizedState.speedMetersPerSecond))), -12.1, 12.1);
+
         this.swerveModuleIO.setDesiredModuleDriveVoltage(driveVoltage);
         this.swerveModuleIO.setDesiredModuleAngle(optimizedState.angle);
 
@@ -47,6 +55,10 @@ public class SwerveModule {
     }
 
     public void setDesiredModuleDriveVoltage(double driveVoltage) {
+        voltageColumn.add(swerveModuleIO.getAppliedDriveMotorVolts());
+        velocityColumn.add(getDriveMotorSpeedInMetersPerSecond());
+        LogIOInputs.logToStateTable(voltageColumn, "VoltageToVelocityTeleop/" + swerveModuleName + "/Voltage");
+        LogIOInputs.logToStateTable(velocityColumn, "VoltageToVelocityTeleop/" + swerveModuleName + "/Velocity");
         this.swerveModuleIO.setDesiredModuleDriveVoltage(driveVoltage);
     }
 

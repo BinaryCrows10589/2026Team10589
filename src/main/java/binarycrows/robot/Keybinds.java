@@ -1,6 +1,8 @@
 package binarycrows.robot;
 
+import binarycrows.robot.SeasonCode.Constants.ControlConstants;
 import binarycrows.robot.SeasonCode.SubStateManagers.SwerveDrive.DriveStateRequest;
+import binarycrows.robot.Utils.ConversionUtils;
 import binarycrows.robot.Utils.StateRequestUtils;
 import binarycrows.robot.Utils.Gamepad.GenericGamepad;
 import binarycrows.robot.Utils.Gamepad.XboxGamepad;
@@ -60,12 +62,12 @@ public class Keybinds {
     }
 
     public static double getTranslationX() {
-        return driverController.getAxis(XboxGamepad.XboxGamepadID.left_stick_y);
+        return -ConversionUtils.applyDeadband(driverController.getAxis(XboxGamepad.XboxGamepadID.left_stick_y), ControlConstants.driveControllerDeadband) * ControlConstants.maxSpeedFraction;
     }
     public static double getTranslationY() {
-        return driverController.getAxis(XboxGamepad.XboxGamepadID.left_stick_x);
+        return -ConversionUtils.applyDeadband(driverController.getAxis(XboxGamepad.XboxGamepadID.left_stick_x), ControlConstants.driveControllerDeadband) * ControlConstants.maxSpeedFraction;
     }
     public static double getRotation() {
-        return driverController.getAxis(XboxGamepad.XboxGamepadID.right_stick_x);
+        return -ConversionUtils.applyDeadband(driverController.getAxis(XboxGamepad.XboxGamepadID.right_stick_x), ControlConstants.driveControllerDeadband) * ControlConstants.maxSpeedFraction;
     }
 }
