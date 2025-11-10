@@ -41,7 +41,10 @@ public class Keybinds {
             XboxGamepad.XboxGamepadID.a, 
             StateRequestUtils.createStateRequestRunnable(ElevatorStateRequest.FUNNEL)
         );
-         */
+         */ 
+        //1 - 0.1 = 0.9
+         //0.5 / 0.9 = (0-1)
+
 
         driverController.onPress(
             XboxGamepad.XboxGamepadID.a, 
