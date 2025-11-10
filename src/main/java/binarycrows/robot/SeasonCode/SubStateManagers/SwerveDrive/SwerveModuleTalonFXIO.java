@@ -230,8 +230,7 @@ public class SwerveModuleTalonFXIO implements SwerveModuleIO {
      * Updates the PID values for the module bassed on network tables.
      * Must be called periodically.
      */
-    // TODO:(Elijah) call this in the period to enable network tables pid tuning
-    private void updatePIDValuesFromNetworkTables() {
+    public void updatePIDValuesFromNetworkTables() {
         if (MetaConstants.inProduction) return; // Don't run at competitions!
         double[] currentTurnPIDValues = this.turnMotorPIDConstantTuner.getUpdatedPIDConstants();
         if(this.turnMotorPIDConstantTuner.hasAnyPIDValueChanged()) {

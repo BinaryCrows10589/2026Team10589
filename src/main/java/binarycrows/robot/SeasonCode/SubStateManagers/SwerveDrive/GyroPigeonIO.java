@@ -21,14 +21,14 @@ public class GyroPigeonIO implements GyroIO {
         this.gyro = new Pigeon2(CANIDs.gyro, SwerveDriveConstants.CANLoopName);
         this.gyro.getConfigurator().apply(new Pigeon2Configuration());
         this.gyro.reset();
-        yawAngle = this.gyro.getRotation2d();
+        updateGyroAngle();
 
-        previousGyroValue = gyro.getRotation2d();
+        updatePreviousGyroAngle();
     } 
 
     public void update() {
 
-        yawAngle = this.gyro.getRotation2d();
+        updateGyroAngle();
         
         if (Math.abs(previousGyroValue.minus(yawAngle).getDegrees()) > SwerveDriveConstants.maxAngleDeltaPerFrameDegrees) {
             this.gyro.setYaw(previousGyroValue.getDegrees());
@@ -38,9 +38,16 @@ public class GyroPigeonIO implements GyroIO {
 
     }
 
+    public void updateGyroAngle() {
+        yawAngle = this.gyro.getRotation2d().plus(Rotation2d.kCW_90deg);
+    }
+    public void updatePreviousGyroAngle() {
+        previousGyroValue = this.gyro.getRotation2d().plus(Rotation2d.kCW_90deg);
+    }
+
     @Override
     public void resetAngle(Rotation2d newZero) {
         this.gyro.setYaw(newZero.getDegrees());
-        previousGyroValue = gyro.getRotation2d();
+        updatePreviousGyroAngle();
     }
 }

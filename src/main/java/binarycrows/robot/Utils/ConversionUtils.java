@@ -91,7 +91,7 @@ public class ConversionUtils {
 
     public static double applyDeadband(double rawValue, double deadband) {
         if (Math.abs(rawValue) <= deadband) return 0;
-        return rawValue;
+        return (rawValue - deadband) / (1 - deadband);
     }
 
     public static boolean[] getMembersInTolerance(Pose2d currentValue, Pose2d desiredValue, Pose2d tolerance) {

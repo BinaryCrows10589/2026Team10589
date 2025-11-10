@@ -86,6 +86,11 @@ public class DriveSubStateManager extends SubStateManager<DriveStateRequest> {
         gyroPigeonIO.update();
         poseEstimator.periodic();
 
+        frontLeftSwerveModule.updatePIDValuesFromNetworkTables();
+        frontRightSwerveModule.updatePIDValuesFromNetworkTables();
+        backLeftSwerveModule.updatePIDValuesFromNetworkTables();
+        backRightSwerveModule.updatePIDValuesFromNetworkTables();
+
         swerveModuleStates = getModuleStates();
 
         

@@ -45,7 +45,7 @@ public class SwerveModule {
         MathUtil.clamp((((optimizedState.speedMetersPerSecond/SwerveDriveConstants.maxSpeedMPS) * 12.1)
         + (SwerveDriveConstants.driveFeedForward * Math.signum(optimizedState.speedMetersPerSecond))), -12.1, 12.1);
 
-        this.swerveModuleIO.setDesiredModuleDriveVoltage(driveVoltage);
+        this.setDesiredModuleDriveVoltage(driveVoltage);
         this.swerveModuleIO.setDesiredModuleAngle(optimizedState.angle);
 
         // The other option we need to implement
@@ -60,6 +60,10 @@ public class SwerveModule {
         LogIOInputs.logToStateTable(voltageColumn, "VoltageToVelocityTeleop/" + swerveModuleName + "/Voltage");
         LogIOInputs.logToStateTable(velocityColumn, "VoltageToVelocityTeleop/" + swerveModuleName + "/Velocity");
         this.swerveModuleIO.setDesiredModuleDriveVoltage(driveVoltage);
+    }
+
+    public void updatePIDValuesFromNetworkTables() {
+        swerveModuleIO.updatePIDValuesFromNetworkTables();
     }
 
     public void resetTurningMotorToAbsolute() {
