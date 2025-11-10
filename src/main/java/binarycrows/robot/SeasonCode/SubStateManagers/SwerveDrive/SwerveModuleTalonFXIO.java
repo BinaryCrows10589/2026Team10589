@@ -231,6 +231,8 @@ public class SwerveModuleTalonFXIO implements SwerveModuleIO {
      * Must be called periodically.
      */
     public void updatePIDValuesFromNetworkTables() {
+
+
         if (MetaConstants.inProduction) return; // Don't run at competitions!
         double[] currentTurnPIDValues = this.turnMotorPIDConstantTuner.getUpdatedPIDConstants();
         if(this.turnMotorPIDConstantTuner.hasAnyPIDValueChanged()) {
@@ -241,6 +243,10 @@ public class SwerveModuleTalonFXIO implements SwerveModuleIO {
             newTurnPIDConfigs.kS = currentTurnPIDValues[3];
             this.turnMotor.getConfigurator().apply(newTurnPIDConfigs);
         }
+
+        LogIOInputs.logToStateTable(this.turnControlRequest.Position, swerveModuleName + "/DesiredRotation");
+        LogIOInputs.logToStateTable(this.turnMotor.getPosition().getValueAsDouble(), swerveModuleName + "/ActualRotation");
+
     }
 
     @Override

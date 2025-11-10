@@ -6,6 +6,8 @@ import java.util.HashMap;
 import com.ctre.phoenix6.swerve.SwerveModuleConstants;
 
 import binarycrows.robot.SeasonCode.Constants.SwerveDriveConstants;
+import binarycrows.robot.SeasonCode.Utils.DesiredMetersPerSecondToVoltage;
+import binarycrows.robot.SeasonCode.Utils.DesiredMetersPerSecondToVoltageLerpTable;
 import binarycrows.robot.Utils.ConversionUtils;
 import binarycrows.robot.Utils.LogIOInputs;
 import edu.wpi.first.math.MathUtil;
@@ -17,8 +19,8 @@ public class SwerveModule {
     private final SwerveModuleTalonFXIO swerveModuleIO;
     private String swerveModuleName = "NoModuleNameSet";
 
-    public ArrayList<Double> voltageColumn = new ArrayList<Double>();
-    public ArrayList<Double> velocityColumn = new ArrayList<Double>();
+    /*public ArrayList<Double> voltageColumn = new ArrayList<Double>();
+    public ArrayList<Double> velocityColumn = new ArrayList<Double>();*/
 
 
     //private SwerveDriveVoltageVSMetersPerSecondTableCreater voltageTableCreator;
@@ -38,12 +40,16 @@ public class SwerveModule {
      * @param desiredState SwerveModuleState: The desired state for the module
      */
     public void setDesiredModuleState(SwerveModuleState desiredState) {
+        LogIOInputs.logToStateTable(desiredState.speedMetersPerSecond, swerveModuleName + "/DesiredSpeedMPS");
+
+        LogIOInputs.logToStateTable(getDriveMotorSpeedInMetersPerSecond(), swerveModuleName + "/SpeedMPS");
+
         SwerveModuleState optimizedState = ConversionUtils.optimizeSwerveModuleState(desiredState, getModuleState().angle); 
         
         // Temporary option for drive voltage
-        double driveVoltage = optimizedState.speedMetersPerSecond == 0 ? 0 : 
+        double driveVoltage = metersPerSecondToVoltage(optimizedState.speedMetersPerSecond); /*optimizedState.speedMetersPerSecond == 0 ? 0 : 
         MathUtil.clamp((((optimizedState.speedMetersPerSecond/SwerveDriveConstants.maxSpeedMPS) * 12.1)
-        + (SwerveDriveConstants.driveFeedForward * Math.signum(optimizedState.speedMetersPerSecond))), -12.1, 12.1);
+        + (SwerveDriveConstants.driveFeedForward * Math.signum(optimizedState.speedMetersPerSecond))), -12.1, 12.1);*/
 
         this.setDesiredModuleDriveVoltage(driveVoltage);
         this.swerveModuleIO.setDesiredModuleAngle(optimizedState.angle);
@@ -55,15 +61,17 @@ public class SwerveModule {
     }
 
     public void setDesiredModuleDriveVoltage(double driveVoltage) {
-        voltageColumn.add(swerveModuleIO.getAppliedDriveMotorVolts());
+        /*voltageColumn.add(swerveModuleIO.getAppliedDriveMotorVolts());
         velocityColumn.add(getDriveMotorSpeedInMetersPerSecond());
         LogIOInputs.logToStateTable(voltageColumn, "VoltageToVelocityTeleop/" + swerveModuleName + "/Voltage");
-        LogIOInputs.logToStateTable(velocityColumn, "VoltageToVelocityTeleop/" + swerveModuleName + "/Velocity");
+        LogIOInputs.logToStateTable(velocityColumn, "VoltageToVelocityTeleop/" + swerveModuleName + "/Velocity");*/
         this.swerveModuleIO.setDesiredModuleDriveVoltage(driveVoltage);
     }
 
     public void updatePIDValuesFromNetworkTables() {
         swerveModuleIO.updatePIDValuesFromNetworkTables();
+
+        //LogIOInputs.logToStateTable(swerveModuleIO.getDriveAppliedVoltage(), swerveModuleName + "/DriveVoltage");
     }
 
     public void resetTurningMotorToAbsolute() {
@@ -77,19 +85,26 @@ public class SwerveModule {
         return Rotation2d.fromRotations(swerveModuleIO.getWheelAngleRelativePositionRotations());
     }
 
+    DesiredMetersPerSecondToVoltageLerpTable lerpTable = new DesiredMetersPerSecondToVoltageLerpTable();
+
 
     // TODO: REIMPLEMENT THIS AS A LERP TABLE!
     // TODO:(Elijah) IMPLIMENTED THIS IN DESIREDMETERSPERSECONDTOVOLTAGELERP.java
    
     public double metersPerSecondToVoltage(double desiredMetersPerSecond) {
-        double percentOfMaxSpeed = desiredMetersPerSecond / SwerveDriveConstants.maxSpeedMPS;
-        double appliedFeedforwardVoltage = (desiredMetersPerSecond != 0 ? SwerveDriveConstants.voltageFeedForward : 0) *
-            Math.signum(desiredMetersPerSecond);
-        double unclampedVoltage = percentOfMaxSpeed *
-            SwerveDriveConstants.voltageForMaxSpeed +
-            appliedFeedforwardVoltage;
-        double clampedVoltage = MathUtil.clamp(unclampedVoltage, -SwerveDriveConstants.voltageForMaxSpeed, SwerveDriveConstants.voltageForMaxSpeed);
-        return clampedVoltage;
+
+        if (desiredMetersPerSecond < 0.25) {
+            double percentOfMaxSpeed = desiredMetersPerSecond / SwerveDriveConstants.maxSpeedMPS;
+            double appliedFeedforwardVoltage = (desiredMetersPerSecond != 0 ? SwerveDriveConstants.voltageFeedForward : 0) *
+                Math.signum(desiredMetersPerSecond);
+            double unclampedVoltage = percentOfMaxSpeed *
+                SwerveDriveConstants.voltageForMaxSpeed +
+                appliedFeedforwardVoltage;
+            double clampedVoltage = MathUtil.clamp(unclampedVoltage, -SwerveDriveConstants.voltageForMaxSpeed, SwerveDriveConstants.voltageForMaxSpeed);
+            return clampedVoltage;
+        } else {
+            return lerpTable.metersPerSecondToVoltage(desiredMetersPerSecond, desiredMetersPerSecond-1);
+        }
     }
 
     public void stopModuleDrive() {

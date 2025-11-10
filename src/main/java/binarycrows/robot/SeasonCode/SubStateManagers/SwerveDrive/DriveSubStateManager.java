@@ -45,13 +45,15 @@ public class DriveSubStateManager extends SubStateManager<DriveStateRequest> {
     private PoseEstimator poseEstimator;
 
     private double currentVoltageTableTargetValue = 0;
-    private double voltageTableStep = 0.01;
-    private double voltageTableRecordingTime = 1;
-    private double voltageTableMaxValue = 0.5;
-    private double voltageTableMinValue = 0;
-    private boolean startedRecordingDeceleration = false;
-    private ArrayList<Double> accelerationTable = new ArrayList<Double>();
-    private ArrayList<Double> decelerationTable = new ArrayList<Double>();
+    private double voltageTableStep = 0.0002;
+    private ArrayList<Double> voltage = new ArrayList<Double>();
+    private ArrayList<Double> velocityFL = new ArrayList<Double>();
+    private ArrayList<Double> velocityFR = new ArrayList<Double>();
+    private ArrayList<Double> velocityBL = new ArrayList<Double>();
+    private ArrayList<Double> velocityBR = new ArrayList<Double>();
+    private int consecutiveMovement = 0;
+    private int consecutiveRest = 0;
+    private final int maxConsecutiveMovement = 100;
 
     private Timer voltageRecordingTimer = new Timer();
 
@@ -70,13 +72,15 @@ public class DriveSubStateManager extends SubStateManager<DriveStateRequest> {
 
         poseEstimator = new PoseEstimator(gyroPigeonIO.yawAngle, getModulePositions());
 
-        super.defaultState = new StateRequest<DriveStateRequest>(DriveStateRequest.DISABLE, StateRequestPriority.LOW);
+        super.defaultState = new StateRequest<DriveStateRequest>(DriveStateRequest.TELEOP_DRIVE, StateRequestPriority.NORMAL);
     }
 
     private void recordVoltageTableValue() {
-        ArrayList<Double> targetArray = (startedRecordingDeceleration ? decelerationTable : accelerationTable);
-        targetArray.add(currentVoltageTableTargetValue);
-        targetArray.add(frontLeftSwerveModule.getModuleState().speedMetersPerSecond);
+        voltage.add(currentVoltageTableTargetValue);
+        velocityFL.add(frontLeftSwerveModule.getModuleState().speedMetersPerSecond);
+        velocityFR.add(frontRightSwerveModule.getModuleState().speedMetersPerSecond);
+        velocityBL.add(backLeftSwerveModule.getModuleState().speedMetersPerSecond);
+        velocityBR.add(backRightSwerveModule.getModuleState().speedMetersPerSecond);
     }
 
     @Override
@@ -86,10 +90,10 @@ public class DriveSubStateManager extends SubStateManager<DriveStateRequest> {
         gyroPigeonIO.update();
         poseEstimator.periodic();
 
-        frontLeftSwerveModule.updatePIDValuesFromNetworkTables();
+        /*frontLeftSwerveModule.updatePIDValuesFromNetworkTables();
         frontRightSwerveModule.updatePIDValuesFromNetworkTables();
         backLeftSwerveModule.updatePIDValuesFromNetworkTables();
-        backRightSwerveModule.updatePIDValuesFromNetworkTables();
+        backRightSwerveModule.updatePIDValuesFromNetworkTables();*/
 
         swerveModuleStates = getModuleStates();
 
@@ -132,40 +136,48 @@ public class DriveSubStateManager extends SubStateManager<DriveStateRequest> {
 
                 LogIOInputs.logToStateTable(currentVoltageTableTargetValue, "DriveSubsystem/VoltageTableTargetValue");
                 LogIOInputs.logToStateTable(voltageRecordingTimer.get(), "DriveSubsystem/VoltageRecordingTimeElapsed");
-                LogIOInputs.logToStateTable(accelerationTable, "DriveSubsystem/VoltageAccelerationTable");
 
-                if (voltageRecordingTimer.hasElapsed(voltageTableRecordingTime)) { // It's time to record, buster brown!
-
-
-                    if (!startedRecordingDeceleration) { // Still accelerating
-
-                        if (currentVoltageTableTargetValue >= voltageTableMaxValue) { // Start bringing the speed back down since we've hit the max
-                            startedRecordingDeceleration = true;
-                            recordVoltageTableValue();
-                        }
-
-                        else { // Record the next value we need
-                            recordVoltageTableValue();
-                            currentVoltageTableTargetValue += voltageTableStep;
-                            frontLeftSwerveModule.setDesiredModuleDriveVoltage(currentVoltageTableTargetValue);
-                            voltageRecordingTimer.reset();
-                        }
+                if (consecutiveMovement > maxConsecutiveMovement) {
+                    if (currentVoltageTableTargetValue <= 0) {
+                        
+                        this.activeStateRequest.updateStatus(StateRequestStatus.FULFILLED);
+                        this.returnToDefaultState();
+                        recordVoltageTableValue();
+                        LogIOInputs.logToStateTable(voltage, "DriveSubsystem/Voltage");
+                        LogIOInputs.logToStateTable(velocityFL, "DriveSubsystem/VelocityFL");
+                        LogIOInputs.logToStateTable(velocityFR, "DriveSubsystem/VelocityFR");
+                        LogIOInputs.logToStateTable(velocityBL, "DriveSubsystem/VelocityBL");
+                        LogIOInputs.logToStateTable(velocityBR, "DriveSubsystem/VelocityBR");
                     }
-                    else { // Now decelerating
-                        if (currentVoltageTableTargetValue <= voltageTableMinValue) { // Stop since we've hit the minimum
-                            startedRecordingDeceleration = false;
-                            this.activeStateRequest.updateStatus(StateRequestStatus.FULFILLED);
-                            this.returnToDefaultState();
-                            recordVoltageTableValue();
-                            LogIOInputs.logToStateTable(accelerationTable, "DriveSubsystem/AccelerationTable");
-                            LogIOInputs.logToStateTable(decelerationTable, "DriveSubsystem/DecelerationTable");
-                        }
-                        else { // Record the next value we need
+                    else {
                             recordVoltageTableValue();
                             currentVoltageTableTargetValue -= voltageTableStep;
+                            System.out.println("Dec voltage to " + currentVoltageTableTargetValue);
                             frontLeftSwerveModule.setDesiredModuleDriveVoltage(currentVoltageTableTargetValue);
-                            voltageRecordingTimer.reset();
-                        }
+                            frontRightSwerveModule.setDesiredModuleDriveVoltage(currentVoltageTableTargetValue);
+                            backLeftSwerveModule.setDesiredModuleDriveVoltage(currentVoltageTableTargetValue);
+                            backRightSwerveModule.setDesiredModuleDriveVoltage(currentVoltageTableTargetValue);
+                    }
+                }
+                else {
+                    if (
+                        frontLeftSwerveModule.getModuleState().speedMetersPerSecond != 0 &&
+                        frontRightSwerveModule.getModuleState().speedMetersPerSecond != 0 &&
+                        backLeftSwerveModule.getModuleState().speedMetersPerSecond != 0 &&
+                        backRightSwerveModule.getModuleState().speedMetersPerSecond != 0
+                        ) {
+                        consecutiveMovement++;
+                        System.out.println("Moving!");
+                        
+                    } else {
+                        consecutiveMovement = 0;
+                        recordVoltageTableValue();
+                        currentVoltageTableTargetValue += voltageTableStep;
+                        System.out.println("Inc voltage to " + currentVoltageTableTargetValue);
+                        frontLeftSwerveModule.setDesiredModuleDriveVoltage(currentVoltageTableTargetValue);
+                        frontRightSwerveModule.setDesiredModuleDriveVoltage(currentVoltageTableTargetValue);
+                        backLeftSwerveModule.setDesiredModuleDriveVoltage(currentVoltageTableTargetValue);
+                        backRightSwerveModule.setDesiredModuleDriveVoltage(currentVoltageTableTargetValue);
                     }
                 }
 

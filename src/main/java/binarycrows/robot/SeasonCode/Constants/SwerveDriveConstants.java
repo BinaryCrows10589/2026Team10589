@@ -32,7 +32,7 @@ public final class SwerveDriveConstants {
 
     public static final double maxSpeedMPS = 4.9;
 
-    public static final double turnPIDValueP = .24472;
+    public static final double turnPIDValueP = .26;
     public static final double turnPIDValueI = 0;
     public static final double turnPIDValueD = 0;
     public static final double turnPIDValueFF = 0;
@@ -44,9 +44,9 @@ public final class SwerveDriveConstants {
 
     public static final double driveFeedForward = 0.04;
 
-    public static final double voltageFeedForward = 0.1;
+    public static final double voltageFeedForward = 0.4;
 
-    public static final double voltageForMaxSpeed = 12;
+    public static final double voltageForMaxSpeed = 12.1;
 
     public static final double wheelDiameterMeters = ConversionUtils.inchesToMeters(3.45156526943);
     public static final double driveGearRatio = 1296/209;
