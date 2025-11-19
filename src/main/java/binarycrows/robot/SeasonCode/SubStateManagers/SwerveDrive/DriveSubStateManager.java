@@ -17,6 +17,7 @@ import binarycrows.robot.Enums.StateRequestStatus;
 import binarycrows.robot.SeasonCode.Constants.MetaConstants;
 import binarycrows.robot.SeasonCode.Constants.SwerveDriveConstants;
 import binarycrows.robot.SeasonCode.Constants.VisionConstants;
+import binarycrows.robot.SeasonCode.SubStateManagers.SwerveDrive.SwerveModuleIO.SwerveModuleOutputs;
 import binarycrows.robot.Utils.LogIOInputs;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFieldLayout.OriginPosition;
@@ -35,6 +36,11 @@ public class DriveSubStateManager extends SubStateManager<DriveStateRequest> {
     private final SwerveModule frontRightSwerveModule;
     private final SwerveModule backLeftSwerveModule;
     private final SwerveModule backRightSwerveModule;
+
+    public SwerveModuleOutputs frontLeftOutputs;
+    public SwerveModuleOutputs frontRightOutputs;
+    public SwerveModuleOutputs backLeftOutputs;
+    public SwerveModuleOutputs backRightOutputs;
     
     public final GyroPigeonIO gyroPigeonIO;
 
@@ -65,10 +71,10 @@ public class DriveSubStateManager extends SubStateManager<DriveStateRequest> {
     public DriveSubStateManager() {
         super();
         gyroPigeonIO = new GyroPigeonIO();
-        frontLeftSwerveModule = new SwerveModule(new SwerveModuleTalonFXIO("FrontLeftModule"), "FrontLeftModule");
-        frontRightSwerveModule = new SwerveModule(new SwerveModuleTalonFXIO("FrontRightModule"), "FrontRightModule");
-        backLeftSwerveModule = new SwerveModule(new SwerveModuleTalonFXIO("BackLeftModule"), "BackLeftModule");
-        backRightSwerveModule = new SwerveModule(new SwerveModuleTalonFXIO("BackRightModule"), "BackRightModule");
+        frontLeftSwerveModule = new SwerveModule(new SwerveModuleTalonFX("FrontLeftModule", frontLeftOutputs), "FrontLeftModule");
+        frontRightSwerveModule = new SwerveModule(new SwerveModuleTalonFX("FrontRightModule", frontRightOutputs), "FrontRightModule");
+        backLeftSwerveModule = new SwerveModule(new SwerveModuleTalonFX("BackLeftModule", backLeftOutputs), "BackLeftModule");
+        backRightSwerveModule = new SwerveModule(new SwerveModuleTalonFX("BackRightModule", backRightOutputs), "BackRightModule");
 
         poseEstimator = new PoseEstimator(gyroPigeonIO.yawAngle, getModulePositions());
 
@@ -90,26 +96,21 @@ public class DriveSubStateManager extends SubStateManager<DriveStateRequest> {
         gyroPigeonIO.update();
         poseEstimator.periodic();
 
-        /*frontLeftSwerveModule.updatePIDValuesFromNetworkTables();
-        frontRightSwerveModule.updatePIDValuesFromNetworkTables();
-        backLeftSwerveModule.updatePIDValuesFromNetworkTables();
-        backRightSwerveModule.updatePIDValuesFromNetworkTables();*/
+        frontLeftSwerveModule.update();
+        frontRightSwerveModule.update();
+        backLeftSwerveModule.update();
+        backRightSwerveModule.update();
+
+        LogIOInputs.logObjectToStateTable(frontLeftOutputs, "SwerveModule/FrontLeft");
+        LogIOInputs.logObjectToStateTable(frontRightOutputs, "SwerveModule/FrontRight");
+        LogIOInputs.logObjectToStateTable(backLeftOutputs, "SwerveModule/BackLeft");
+        LogIOInputs.logObjectToStateTable(backRightOutputs, "SwerveModule/BackRight");
 
         swerveModuleStates = getModuleStates();
 
         
         if (swerveModuleStates != null)
             LogIOInputs.logToStateTable(swerveModuleStates, "DriveSubsystem/ModuleStates");
-
-        LogIOInputs.logToStateTable(frontLeftSwerveModule.getAbsoluteEncoderPosition(), "DriveSubsystem/FLAbsoluteEncoderPos");
-        LogIOInputs.logToStateTable(frontRightSwerveModule.getAbsoluteEncoderPosition(), "DriveSubsystem/FRAbsoluteEncoderPos");
-        LogIOInputs.logToStateTable(backLeftSwerveModule.getAbsoluteEncoderPosition(), "DriveSubsystem/BLAbsoluteEncoderPos");
-        LogIOInputs.logToStateTable(backRightSwerveModule.getAbsoluteEncoderPosition(), "DriveSubsystem/BRAbsoluteEncoderPos");
-
-        LogIOInputs.logToStateTable(frontLeftSwerveModule.getRelativeEncoderPosition(), "DriveSubsystem/FLRelativeEncoderPos");
-        LogIOInputs.logToStateTable(frontRightSwerveModule.getRelativeEncoderPosition(), "DriveSubsystem/FRRelativeEncoderPos");
-        LogIOInputs.logToStateTable(backLeftSwerveModule.getRelativeEncoderPosition(), "DriveSubsystem/BLRelativeEncoderPos");
-        LogIOInputs.logToStateTable(backRightSwerveModule.getRelativeEncoderPosition(), "DriveSubsystem/BRRelativeEncoderPos");
 
         // Resolve pending state request
         if (this.activeStateRequest.getStatus() == StateRequestStatus.PENDING) {
@@ -144,10 +145,6 @@ public class DriveSubStateManager extends SubStateManager<DriveStateRequest> {
                         this.returnToDefaultState();
                         recordVoltageTableValue();
                         LogIOInputs.logToStateTable(voltage, "DriveSubsystem/Voltage");
-                        LogIOInputs.logToStateTable(velocityFL, "DriveSubsystem/VelocityFL");
-                        LogIOInputs.logToStateTable(velocityFR, "DriveSubsystem/VelocityFR");
-                        LogIOInputs.logToStateTable(velocityBL, "DriveSubsystem/VelocityBL");
-                        LogIOInputs.logToStateTable(velocityBR, "DriveSubsystem/VelocityBR");
                     }
                     else {
                             recordVoltageTableValue();
