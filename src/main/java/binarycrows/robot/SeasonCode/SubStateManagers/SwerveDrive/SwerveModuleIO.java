@@ -33,6 +33,8 @@ public interface SwerveModuleIO {
         public double turnMotorAppliedVolts = 0.0;
         public double turnMotorSupplyAmps = 0.0;
         public double turnMotorTorqueAmps = 0.0;
+        public double turnMotorDesiredPositionRotations = 0.0;
+
     }
 
     public void setDesiredModuleDriveVoltage(double desiredVoltage);
@@ -43,5 +45,5 @@ public interface SwerveModuleIO {
 
     public SwerveModuleOutputs getOutputs();
 
-    public void updateOutputs();
+    public void update();
 }

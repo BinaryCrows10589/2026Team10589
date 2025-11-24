@@ -31,7 +31,7 @@ public class SwerveModule {
     }
 
     public void update() {
-        swerveModuleIO.updateOutputs();
+        swerveModuleIO.update();
     }
 
     /**

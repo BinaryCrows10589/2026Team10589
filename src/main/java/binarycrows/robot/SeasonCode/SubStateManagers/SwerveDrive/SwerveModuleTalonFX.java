@@ -292,7 +292,7 @@ public class SwerveModuleTalonFX implements SwerveModuleIO {
     }
 
     @Override
-    public void updateOutputs() {
+    public void update() {
         outputs.driveMotorAppliedVolts = getAppliedDriveMotorVolts();
         outputs.driveMotorSupplyAmps = getDriveMotorSupplyAmps();
         outputs.driveMotorTorqueAmps = getDriveMotorTorqueAmps();
@@ -307,6 +307,8 @@ public class SwerveModuleTalonFX implements SwerveModuleIO {
         outputs.turnMotorAbsolutePositionRotations = getTurnMotorAbsolutePositionRotations();
         outputs.turnMotorRelativePositionRotations = getTurnMotorRelativePositionRotations();
         outputs.turnMotorRPS = getTurnMotorRPS();
+        outputs.turnMotorDesiredPositionRotations = this.turnControlRequest.Position;
+
 
         updatePIDValuesFromNetworkTables();
     }

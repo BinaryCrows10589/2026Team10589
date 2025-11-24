@@ -79,15 +79,18 @@ public class DriveSubStateManager extends SubStateManager<DriveStateRequest> {
         backLeftOutputs = new SwerveModuleOutputs();
         backRightOutputs = new SwerveModuleOutputs();
 
-        gyroIO = new GyroPigeonIO(gyroOutputs);
-        frontLeftSwerveModule = new SwerveModule(new SwerveModuleTalonFX("FrontLeftModule", frontLeftOutputs), "FrontLeftModule");
-        frontRightSwerveModule = new SwerveModule(new SwerveModuleTalonFX("FrontRightModule", frontRightOutputs), "FrontRightModule");
-        backLeftSwerveModule = new SwerveModule(new SwerveModuleTalonFX("BackLeftModule", backLeftOutputs), "BackLeftModule");
-        backRightSwerveModule = new SwerveModule(new SwerveModuleTalonFX("BackRightModule", backRightOutputs), "BackRightModule");
+        gyroIO = MetaConstants.isReal ? new GyroPigeonIO(gyroOutputs) : new GyroSimIO(gyroOutputs);
+        frontLeftSwerveModule = constructSwerveModule("FrontLeftModule", frontLeftOutputs);
+        frontRightSwerveModule = constructSwerveModule("FrontRightModule", frontRightOutputs);
+        backLeftSwerveModule = constructSwerveModule("BackLeftModule", backLeftOutputs);
+        backRightSwerveModule = constructSwerveModule("BackRightModule", backRightOutputs);
 
         poseEstimator = new PoseEstimator(gyroOutputs.yawAngle, getModulePositions());
 
         super.defaultState = new StateRequest<DriveStateRequest>(DriveStateRequest.TELEOP_DRIVE, StateRequestPriority.NORMAL);
+    }
+    private SwerveModule constructSwerveModule(String name, SwerveModuleOutputs outputs) {
+        return new SwerveModule(MetaConstants.isReal ? new SwerveModuleTalonFX(name, outputs) : new SwerveModuleSim(name, outputs), name);
     }
 
     private void recordVoltageTableValue() {
