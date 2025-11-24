@@ -9,7 +9,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 
 public class GyroPigeonIO implements GyroIO {
     private Pigeon2 gyro;
-    private Rotation2d previousGyroValue;
+    private Rotation2d previousGyroValue = Rotation2d.kZero;
     public GyroOutputs outputs;
 
     public GyroPigeonIO(GyroOutputs outputs) {
@@ -29,6 +29,7 @@ public class GyroPigeonIO implements GyroIO {
     public void update() {
 
         updateGyroAngle();
+        updateOutputs();
         
         if (Math.abs(previousGyroValue.minus(outputs.yawAngle).getDegrees()) > SwerveDriveConstants.maxAngleDeltaPerFrameDegrees) {
             this.gyro.setYaw(previousGyroValue.getDegrees());
@@ -40,6 +41,9 @@ public class GyroPigeonIO implements GyroIO {
 
     public void updateGyroAngle() {
         this.outputs.yawAngle = this.gyro.getRotation2d().plus(Rotation2d.kCW_90deg);
+        this.outputs.yawAngleVelocityDegreesPerSecond = this.gyro.getAngularVelocityZDevice().getValueAsDouble();
+    }
+    public void updateOutputs() {
     }
     public void updatePreviousGyroAngle() {
         previousGyroValue = this.gyro.getRotation2d().plus(Rotation2d.kCW_90deg);

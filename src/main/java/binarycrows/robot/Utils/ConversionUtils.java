@@ -15,6 +15,10 @@ public class ConversionUtils {
         return inches / 39.37;
     }
 
+    public static double feetToMeters(double feet) {
+        return feet * 12 / 39.37;
+    }
+
     public static SwerveModuleState optimizeSwerveModuleState(SwerveModuleState desiredState, Rotation2d currentAngle) {
         double targetAngle = placeInAppropriate0To360Scope(currentAngle.getDegrees(), desiredState.angle.getDegrees());
         double targetSpeed = desiredState.speedMetersPerSecond;

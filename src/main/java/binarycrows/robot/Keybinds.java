@@ -6,6 +6,8 @@ import binarycrows.robot.Utils.ConversionUtils;
 import binarycrows.robot.Utils.StateRequestUtils;
 import binarycrows.robot.Utils.Gamepad.GenericGamepad;
 import binarycrows.robot.Utils.Gamepad.XboxGamepad;
+import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.Vector;
 import edu.wpi.first.wpilibj.RobotBase;
 
 public class Keybinds {
@@ -64,11 +66,19 @@ public class Keybinds {
         );
     }
 
-    public static double getTranslationX() {
-        return -ConversionUtils.applyDeadband(driverController.getAxis(XboxGamepad.XboxGamepadID.left_stick_y), ControlConstants.driveControllerDeadband) * ControlConstants.maxSpeedFraction;
-    }
-    public static double getTranslationY() {
-        return -ConversionUtils.applyDeadband(driverController.getAxis(XboxGamepad.XboxGamepadID.left_stick_x), ControlConstants.driveControllerDeadband) * ControlConstants.maxSpeedFraction;
+    public static double[] getTranslation() {
+        double xTranslation = -(driverController.getAxis(XboxGamepad.XboxGamepadID.left_stick_y));
+        double yTranslation = -(driverController.getAxis(XboxGamepad.XboxGamepadID.left_stick_x));
+
+        double magnitude = Math.sqrt(xTranslation * xTranslation + yTranslation * yTranslation);
+        
+        double deadbandMagnitude = MathUtil.applyDeadband(magnitude, ControlConstants.driveControllerDeadband);
+        if (deadbandMagnitude == 0) return new double[] {0,0};
+
+        double xTranslationDeadbanded = (xTranslation / magnitude) * deadbandMagnitude;
+        double yTranslationDeadbanded = (yTranslation / magnitude) * deadbandMagnitude;
+
+        return new double[] {xTranslationDeadbanded * ControlConstants.maxSpeedFraction, yTranslationDeadbanded * ControlConstants.maxSpeedFraction};
     }
     public static double getRotation() {
         return -ConversionUtils.applyDeadband(driverController.getAxis(XboxGamepad.XboxGamepadID.right_stick_x), ControlConstants.driveControllerDeadband) * ControlConstants.maxSpeedFraction;

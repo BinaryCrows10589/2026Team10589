@@ -19,6 +19,6 @@ public class GyroSimIO implements GyroIO {
 
     @Override
     public void update() {
-        outputs.yawAngle = Rotation2d.kZero;
+        // leave outputs at their defaults (for now)
     }
 }

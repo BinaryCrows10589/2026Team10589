@@ -216,6 +216,19 @@ public class DriveSubStateManager extends SubStateManager<DriveStateRequest> {
 
     }
 
+    public double[] getRobotPoseCM() {
+        Pose2d pose = poseEstimator.getRobotPose();
+        return new double[] {pose.getX(), pose.getY(), pose.getRotation().getDegrees()};
+    }
+    public double[] getRobotVelocityCM() {
+        ChassisSpeeds speeds = SwerveDriveConstants.driveKinematics.toChassisSpeeds(swerveModuleStates);
+        return new double[] {speeds.vxMetersPerSecond, speeds.vyMetersPerSecond, gyroOutputs.yawAngleVelocityDegreesPerSecond};
+    }
+
+    public void driveCM(double[] speeds) {
+        this.drive(speeds[0], speeds[1], speeds[2], false);
+    }
+
     private double getDriveDistanceTotal() {
         return frontLeftSwerveModule.getModuleDriveDistance() - startDriveDistance;
     }
@@ -240,8 +253,9 @@ public class DriveSubStateManager extends SubStateManager<DriveStateRequest> {
             double throttle = slowMode ?
             Keybinds.getThrottle() * SwerveDriveConstants.maxSpeedMetersPerSecond * SwerveDriveConstants.translationXSlowModeMultipler :
             Keybinds.getThrottle() * SwerveDriveConstants.maxSpeedMetersPerSecond;
-            double translationX = Keybinds.getTranslationX();
-            double translationY = Keybinds.getTranslationY();
+            double[] translation = Keybinds.getTranslation();
+            double translationX = translation[0];
+            double translationY = translation[1];
             double rotation = slowMode ? 
             Keybinds.getRotation() * SwerveDriveConstants.maxRotationAnglePerSecond * SwerveDriveConstants.rotationSlowModeMultipler : 
             Keybinds.getRotation() * SwerveDriveConstants.maxRotationAnglePerSecond;

@@ -5,6 +5,7 @@
 package binarycrows.robot;
 
 import java.util.ArrayList;
+import java.util.function.Supplier;
 
 import org.littletonrobotics.junction.LogFileUtil;
 import org.littletonrobotics.junction.LoggedRobot;
@@ -13,6 +14,11 @@ import org.littletonrobotics.junction.networktables.NT4Publisher;
 import org.littletonrobotics.junction.wpilog.WPILOGReader;
 import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 
+import binarycrows.robot.CrowMotion.UserSide.CMConfig;
+import binarycrows.robot.CrowMotion.UserSide.RobotProfilingUtils.CMRobotProfile;
+import binarycrows.robot.SeasonCode.Constants.FieldConstants;
+import binarycrows.robot.SeasonCode.Constants.MetaConstants;
+import binarycrows.robot.SeasonCode.Constants.SwerveDriveConstants;
 import binarycrows.robot.SeasonCode.SubStateManagers.SwerveDrive.DriveSubStateManager;
 import binarycrows.robot.Utils.LogIOInputs;
 import edu.wpi.first.wpilibj.PowerDistribution;
@@ -77,7 +83,42 @@ public class Robot extends LoggedRobot {
 
       Keybinds.createKeybinds();
 
-      MainStateManager.getInstance().start();
+      DriveSubStateManager driveSubStateManager = DriveSubStateManager.getInstance();
+      
+      CMConfig.init(
+        driveSubStateManager::getRobotPoseCM, 
+        driveSubStateManager::getRobotVelocityCM, 
+        driveSubStateManager::driveCM, 
+        SwerveDriveConstants.distanceBetweenCentersOfRightAndLeftWheels, 
+        SwerveDriveConstants.distanceBetweenCentersOfFrontAndBackWheels,
+        MetaConstants.isBlueAlliance, 
+        new Supplier() {
+
+          @Override
+          public Object get() {
+            return false;
+          }},
+        FieldConstants.fieldWidthMeters,
+        FieldConstants.fieldLengthMeters,
+        25, // ???
+        4, // ???
+        4.311, // good
+        3.5, // good
+        3.5, // good
+        .2, // good-ish
+        0.25, // good
+        0.2, // ???
+        4.311, // good
+        360, // good
+        360, // good
+        360, // good
+        1, // good
+        5, // good
+        .5, // good
+        .5, // good
+        10 // good
+        );
+
   }
 
   @Override
