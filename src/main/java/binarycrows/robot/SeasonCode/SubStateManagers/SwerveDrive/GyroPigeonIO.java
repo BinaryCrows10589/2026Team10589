@@ -5,15 +5,15 @@ import com.ctre.phoenix6.hardware.Pigeon2;
 
 import binarycrows.robot.SeasonCode.Constants.CANIDs;
 import binarycrows.robot.SeasonCode.Constants.SwerveDriveConstants;
-import binarycrows.robot.Utils.LogIOInputs;
 import edu.wpi.first.math.geometry.Rotation2d;
 
 public class GyroPigeonIO implements GyroIO {
     private Pigeon2 gyro;
     private Rotation2d previousGyroValue;
-    public Rotation2d yawAngle;
+    public GyroOutputs outputs;
 
-    public GyroPigeonIO() {
+    public GyroPigeonIO(GyroOutputs outputs) {
+        this.outputs = outputs;
         configureGyro();
     }
 
@@ -30,16 +30,16 @@ public class GyroPigeonIO implements GyroIO {
 
         updateGyroAngle();
         
-        if (Math.abs(previousGyroValue.minus(yawAngle).getDegrees()) > SwerveDriveConstants.maxAngleDeltaPerFrameDegrees) {
+        if (Math.abs(previousGyroValue.minus(outputs.yawAngle).getDegrees()) > SwerveDriveConstants.maxAngleDeltaPerFrameDegrees) {
             this.gyro.setYaw(previousGyroValue.getDegrees());
         } else {
-            previousGyroValue = yawAngle;
+            previousGyroValue = outputs.yawAngle;
         }
 
     }
 
     public void updateGyroAngle() {
-        yawAngle = this.gyro.getRotation2d().plus(Rotation2d.kCW_90deg);
+        this.outputs.yawAngle = this.gyro.getRotation2d().plus(Rotation2d.kCW_90deg);
     }
     public void updatePreviousGyroAngle() {
         previousGyroValue = this.gyro.getRotation2d().plus(Rotation2d.kCW_90deg);

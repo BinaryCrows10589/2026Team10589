@@ -17,6 +17,7 @@ import binarycrows.robot.Enums.StateRequestStatus;
 import binarycrows.robot.SeasonCode.Constants.MetaConstants;
 import binarycrows.robot.SeasonCode.Constants.SwerveDriveConstants;
 import binarycrows.robot.SeasonCode.Constants.VisionConstants;
+import binarycrows.robot.SeasonCode.SubStateManagers.SwerveDrive.GyroIO.GyroOutputs;
 import binarycrows.robot.SeasonCode.SubStateManagers.SwerveDrive.SwerveModuleIO.SwerveModuleOutputs;
 import binarycrows.robot.Utils.LogIOInputs;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
@@ -42,7 +43,9 @@ public class DriveSubStateManager extends SubStateManager<DriveStateRequest> {
     public SwerveModuleOutputs backLeftOutputs;
     public SwerveModuleOutputs backRightOutputs;
     
-    public final GyroPigeonIO gyroPigeonIO;
+    public final GyroIO gyroIO;
+
+    public final GyroOutputs gyroOutputs;
 
     public SwerveModuleState[] swerveModuleStates;
 
@@ -58,7 +61,6 @@ public class DriveSubStateManager extends SubStateManager<DriveStateRequest> {
     private ArrayList<Double> velocityBL = new ArrayList<Double>();
     private ArrayList<Double> velocityBR = new ArrayList<Double>();
     private int consecutiveMovement = 0;
-    private int consecutiveRest = 0;
     private final int maxConsecutiveMovement = 100;
 
     private Timer voltageRecordingTimer = new Timer();
@@ -70,13 +72,20 @@ public class DriveSubStateManager extends SubStateManager<DriveStateRequest> {
 
     public DriveSubStateManager() {
         super();
-        gyroPigeonIO = new GyroPigeonIO();
+
+        gyroOutputs = new GyroOutputs();
+        frontLeftOutputs = new SwerveModuleOutputs();
+        frontRightOutputs = new SwerveModuleOutputs();
+        backLeftOutputs = new SwerveModuleOutputs();
+        backRightOutputs = new SwerveModuleOutputs();
+
+        gyroIO = new GyroPigeonIO(gyroOutputs);
         frontLeftSwerveModule = new SwerveModule(new SwerveModuleTalonFX("FrontLeftModule", frontLeftOutputs), "FrontLeftModule");
         frontRightSwerveModule = new SwerveModule(new SwerveModuleTalonFX("FrontRightModule", frontRightOutputs), "FrontRightModule");
         backLeftSwerveModule = new SwerveModule(new SwerveModuleTalonFX("BackLeftModule", backLeftOutputs), "BackLeftModule");
         backRightSwerveModule = new SwerveModule(new SwerveModuleTalonFX("BackRightModule", backRightOutputs), "BackRightModule");
 
-        poseEstimator = new PoseEstimator(gyroPigeonIO.yawAngle, getModulePositions());
+        poseEstimator = new PoseEstimator(gyroOutputs.yawAngle, getModulePositions());
 
         super.defaultState = new StateRequest<DriveStateRequest>(DriveStateRequest.TELEOP_DRIVE, StateRequestPriority.NORMAL);
     }
@@ -93,7 +102,7 @@ public class DriveSubStateManager extends SubStateManager<DriveStateRequest> {
     public void periodic() {
         super.periodic();
 
-        gyroPigeonIO.update();
+        gyroIO.update();
         poseEstimator.periodic();
 
         frontLeftSwerveModule.update();
@@ -335,10 +344,10 @@ public class DriveSubStateManager extends SubStateManager<DriveStateRequest> {
     }
 
     public void resetGyro() {
-        gyroPigeonIO.resetAngle(Rotation2d.kZero);
+        gyroIO.resetAngle(Rotation2d.kZero);
     }
     public void resetGyro(Rotation2d rotation) {
-        gyroPigeonIO.resetAngle(rotation);
+        gyroIO.resetAngle(rotation);
     }
 
     public static DriveSubStateManager getInstance() {
@@ -347,7 +356,7 @@ public class DriveSubStateManager extends SubStateManager<DriveStateRequest> {
     }
 
     public Rotation2d getGyroAngleRotation2d() {
-        return gyroPigeonIO.yawAngle;
+        return gyroOutputs.yawAngle;
     }
 
     @Override
