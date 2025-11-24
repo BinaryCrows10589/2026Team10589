@@ -44,7 +44,9 @@ public final class SwerveDriveConstants {
 
     public static final double driveFeedForward = 0.04;
 
-    public static final double voltageFeedForward = 0.4;
+    public static final double voltageFeedForward = 0.2;
+    public static final double mpsLerpTableCutoff = 0.25;
+
 
     public static final double voltageForMaxSpeed = 12.1;
 
@@ -82,4 +84,5 @@ public final class SwerveDriveConstants {
     public static final double translationYSlowModeMultipler = .2;
 
     public static final double rotationSlowModeMultipler = .2;
+
 }

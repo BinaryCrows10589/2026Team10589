@@ -93,7 +93,7 @@ public class SwerveModule {
    
     public double metersPerSecondToVoltage(double desiredMetersPerSecond) {
 
-        if (desiredMetersPerSecond < 0.25) {
+        if (desiredMetersPerSecond < SwerveDriveConstants.mpsLerpTableCutoff) {
             double percentOfMaxSpeed = desiredMetersPerSecond / SwerveDriveConstants.maxSpeedMPS;
             double appliedFeedforwardVoltage = (desiredMetersPerSecond != 0 ? SwerveDriveConstants.voltageFeedForward : 0) *
                 Math.signum(desiredMetersPerSecond);
