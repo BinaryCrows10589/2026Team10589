@@ -41,7 +41,7 @@ public class PoseEstimator {
 
     public void periodic() {
         try {
-            this.swerveDrivePoseEstimator.update(DriveSubStateManager.getInstance().gyroPigeonIO.yawAngle,
+            this.swerveDrivePoseEstimator.update(DriveSubStateManager.getInstance().gyroOutputs.yawAngle,
                 DriveSubStateManager.getInstance().getModulePositions());
 
         } catch(Exception E) {

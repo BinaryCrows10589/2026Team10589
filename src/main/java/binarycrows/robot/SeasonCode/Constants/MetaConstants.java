@@ -6,4 +6,6 @@ public final class MetaConstants {
     public static final boolean inProduction = false; // This should be TRUE if we are at a competition
 
     public static boolean isBlueAlliance = true;
+
+    public static final boolean isReal = RobotBase.isReal();
 }

@@ -66,7 +66,6 @@ public class Robot extends LoggedRobot {
         new DriveSubStateManager()
       );
 
-      StateTable.putValue("isSim", !RobotBase.isReal());
 
       StateTable.putValue("SlowMode", false);
 

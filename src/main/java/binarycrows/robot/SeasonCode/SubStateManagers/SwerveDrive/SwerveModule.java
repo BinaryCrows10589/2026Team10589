@@ -1,12 +1,7 @@
 package binarycrows.robot.SeasonCode.SubStateManagers.SwerveDrive;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-
-import com.ctre.phoenix6.swerve.SwerveModuleConstants;
 
 import binarycrows.robot.SeasonCode.Constants.SwerveDriveConstants;
-import binarycrows.robot.SeasonCode.Utils.DesiredMetersPerSecondToVoltage;
 import binarycrows.robot.SeasonCode.Utils.DesiredMetersPerSecondToVoltageLerpTable;
 import binarycrows.robot.Utils.ConversionUtils;
 import binarycrows.robot.Utils.LogIOInputs;
@@ -16,7 +11,7 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 
 public class SwerveModule {
-    private final SwerveModuleTalonFXIO swerveModuleIO;
+    private final SwerveModuleIO swerveModuleIO;
     private String swerveModuleName = "NoModuleNameSet";
 
     /*public ArrayList<Double> voltageColumn = new ArrayList<Double>();
@@ -30,9 +25,13 @@ public class SwerveModule {
      * @param swerveModuleIO SwerveModuleIO: The IO object for the Swerve Module. It can be either SwerveModule
      * @param swerveModuleName
      */
-    public SwerveModule(SwerveModuleTalonFXIO swerveModuleIO, String swerveModuleName) {
+    public SwerveModule(SwerveModuleIO swerveModuleIO, String swerveModuleName) {
         this.swerveModuleIO = swerveModuleIO;
         this.swerveModuleName = swerveModuleName;
+    }
+
+    public void update() {
+        swerveModuleIO.update();
     }
 
     /**
@@ -68,28 +67,18 @@ public class SwerveModule {
         this.swerveModuleIO.setDesiredModuleDriveVoltage(driveVoltage);
     }
 
-    public void updatePIDValuesFromNetworkTables() {
-        swerveModuleIO.updatePIDValuesFromNetworkTables();
-
-        //LogIOInputs.logToStateTable(swerveModuleIO.getDriveAppliedVoltage(), swerveModuleName + "/DriveVoltage");
-    }
-
     public void resetTurningMotorToAbsolute() {
         swerveModuleIO.resetTurningMotorToAbsolute();
     }
 
     public Rotation2d getAbsoluteEncoderPosition() {
-        return swerveModuleIO.getAbsoluteEncoderPosition();
+        return Rotation2d.fromRotations(swerveModuleIO.getOutputs().turnMotorAbsolutePositionRotations);
     }
     public Rotation2d getRelativeEncoderPosition() {
-        return Rotation2d.fromRotations(swerveModuleIO.getWheelAngleRelativePositionRotations());
+        return Rotation2d.fromRotations(swerveModuleIO.getOutputs().turnMotorRelativePositionRotations);
     }
 
     DesiredMetersPerSecondToVoltageLerpTable lerpTable = new DesiredMetersPerSecondToVoltageLerpTable();
-
-
-    // TODO: REIMPLEMENT THIS AS A LERP TABLE!
-    // TODO:(Elijah) IMPLIMENTED THIS IN DESIREDMETERSPERSECONDTOVOLTAGELERP.java
    
     public double metersPerSecondToVoltage(double desiredMetersPerSecond) {
 
@@ -117,11 +106,11 @@ public class SwerveModule {
      */
     public SwerveModulePosition getModulePosition() {
         return new SwerveModulePosition(
-            swerveModuleIO.getDriveMotorDistance(), Rotation2d.fromRotations(swerveModuleIO.getWheelAngleRelativePositionRotations()));
+            swerveModuleIO.getOutputs().driveMotorDistanceRotations, Rotation2d.fromRotations(swerveModuleIO.getOutputs().turnMotorRelativePositionRotations));
     }
 
     public double getModuleDriveDistance() {
-        return swerveModuleIO.getDriveMotorDistance() * SwerveDriveConstants.driveConversionPositionFactor;
+        return swerveModuleIO.getOutputs().driveMotorDistanceRotations * SwerveDriveConstants.driveConversionPositionFactor;
     }
 
     /**
@@ -137,7 +126,7 @@ public class SwerveModule {
      * @return Double: The current speed of the drive motor in MPS(Meters per second)
      */
     private double getDriveMotorSpeedInMetersPerSecond() {
-        return this.swerveModuleIO.getDriveMotorRPS() * 60 * SwerveDriveConstants.driveConversionVelocityFactor;
+        return this.swerveModuleIO.getOutputs().driveMotorRPS * 60 * SwerveDriveConstants.driveConversionVelocityFactor;
     }
 
     /**
@@ -145,6 +134,6 @@ public class SwerveModule {
      * @return Rotation2d: The module's wheel angle
      */
     private Rotation2d getWheelRotationAsRotation2d() {
-        return Rotation2d.fromRotations(swerveModuleIO.getWheelAngleRelativePositionRotations());
+        return Rotation2d.fromRotations(swerveModuleIO.getOutputs().turnMotorRelativePositionRotations);
     }
 }

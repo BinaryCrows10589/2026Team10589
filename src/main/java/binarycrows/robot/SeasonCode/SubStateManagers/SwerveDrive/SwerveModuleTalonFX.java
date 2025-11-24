@@ -25,9 +25,11 @@ import binarycrows.robot.Utils.Tuning.RuntimeTunablePIDValues;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.Timer;
 
-public class SwerveModuleTalonFXIO implements SwerveModuleIO {
+public class SwerveModuleTalonFX implements SwerveModuleIO {
 
-    private String swerveModuleName; 
+    public String swerveModuleName; 
+
+    public SwerveModuleOutputs outputs;
 
     private TalonFX driveMotor;
     private TalonFX turnMotor;
@@ -61,8 +63,9 @@ public class SwerveModuleTalonFXIO implements SwerveModuleIO {
      * Creates a SwerveModuleIOTalonFX object and completes all configuration for the module
      * @param swerveModuleName String: The name of the module. List of valid module names can be found in SwerveDriveConstants
      */
-    public SwerveModuleTalonFXIO(String swerveModuleName) {
+    public SwerveModuleTalonFX(String swerveModuleName, SwerveModuleOutputs outputs) {
         this.swerveModuleName = swerveModuleName;
+        this.outputs = outputs;
 
         switch (this.swerveModuleName) {
             case SwerveDriveConstants.frontLeftModuleName:
@@ -155,24 +158,53 @@ public class SwerveModuleTalonFXIO implements SwerveModuleIO {
         this.turnMotor.getConfigurator().apply(turnMotorConfig);
     }
 
-
+    // Drive motor getters
     public double getDriveMotorRPS() {
         return this.driveMotor.getRotorVelocity().getValueAsDouble();
     }
-    public double getDriveMotorDistance() {
+    public double getDriveMotorMPS() {
+        return getDriveMotorRPS() * 60 * SwerveDriveConstants.driveConversionVelocityFactor;
+    }
+    public double getDriveMotorDistanceRotations() {
         return this.driveMotor.getPosition().getValueAsDouble();
     }
-
-    public double getWheelAngleRelativePositionRotations() {
-        return this.turnMotor.getPosition().getValueAsDouble() / SwerveDriveConstants.turnGearRatio;
+    public double getDriveMotorDistanceMeters() {
+        return getDriveMotorDistanceRotations() * SwerveDriveConstants.driveConversionPositionFactor;
     }
-
     public Rotation2d getAbsoluteEncoderPosition() {
         return Rotation2d.fromRotations(this.turnAbsoluteEncoder.getAbsolutePosition().getValueAsDouble() - turningAbsoluteEncoderOffset);
     }
-
     public double getAppliedDriveMotorVolts() {
         return this.driveMotor.getMotorVoltage().getValueAsDouble();
+    }
+    public double getDriveMotorSupplyAmps() {
+        return this.driveMotor.getSupplyCurrent().getValueAsDouble();
+    }
+    public double getDriveMotorTorqueAmps() {
+        return this.driveMotor.getTorqueCurrent().getValueAsDouble();
+    }
+
+    // Turn motor getters
+    public double getTurnMotorRPS() {
+        return this.turnMotor.getRotorVelocity().getValueAsDouble();
+    }
+    public double getTurnMotorMPS() {
+        return getTurnMotorRPS() * 60 * SwerveDriveConstants.driveConversionVelocityFactor;
+    }
+    public double getTurnMotorAbsolutePositionRotations() {
+        return this.turnAbsoluteEncoder.getPosition().getValueAsDouble();
+    }
+    public double getTurnMotorRelativePositionRotations() {
+        return this.turnMotor.getPosition().getValueAsDouble() / SwerveDriveConstants.turnGearRatio;
+    }
+    public double getAppliedTurnMotorVolts() {
+        return this.turnMotor.getMotorVoltage().getValueAsDouble();
+    }
+    public double getTurnMotorSupplyAmps() {
+        return this.turnMotor.getSupplyCurrent().getValueAsDouble();
+    }
+    public double getTurnMotorTorqueAmps() {
+        return this.turnMotor.getTorqueCurrent().getValueAsDouble();
     }
 
     /**
@@ -213,15 +245,6 @@ public class SwerveModuleTalonFXIO implements SwerveModuleIO {
         this.turnAbsoluteEncoder.getConfigurator().apply(turningAbsoluteEncoderConfig);
 
         this.turningAbsoluteEncoderOffset = turningAbsoluteEncoderOffset;
-    }
-
-    /**
-     * Resets the relitive built in encoder of the turn motor to be equal to the offsetted absolute angle reading from the absolute encoder.
-     */
-    public void resetTurningMotorToAbsolute() {
-        this.turnMotor.setPosition((
-            this.turnAbsoluteEncoder.getAbsolutePosition().getValueAsDouble() 
-            - this.turningAbsoluteEncoderOffset) * SwerveDriveConstants.turnGearRatio);
     }
 
     /**
@@ -266,5 +289,42 @@ public class SwerveModuleTalonFXIO implements SwerveModuleIO {
 
         this.turnControlRequest.Position = desiredMotorRotation;
         this.turnMotor.setControl(this.turnControlRequest);
+    }
+
+    @Override
+    public void update() {
+        outputs.driveMotorAppliedVolts = getAppliedDriveMotorVolts();
+        outputs.driveMotorSupplyAmps = getDriveMotorSupplyAmps();
+        outputs.driveMotorTorqueAmps = getDriveMotorTorqueAmps();
+        outputs.driveMotorDistanceRotations = getDriveMotorDistanceRotations();
+        outputs.driveMotorDistanceMeters = getDriveMotorDistanceMeters();
+        outputs.driveMotorRPS = getDriveMotorRPS();
+        outputs.driveMotorSpeedMetersPerSecond = getDriveMotorMPS();
+
+        outputs.turnMotorAppliedVolts = getAppliedTurnMotorVolts();
+        outputs.turnMotorSupplyAmps = getTurnMotorSupplyAmps();
+        outputs.turnMotorTorqueAmps = getTurnMotorTorqueAmps();
+        outputs.turnMotorAbsolutePositionRotations = getTurnMotorAbsolutePositionRotations();
+        outputs.turnMotorRelativePositionRotations = getTurnMotorRelativePositionRotations();
+        outputs.turnMotorRPS = getTurnMotorRPS();
+        outputs.turnMotorDesiredPositionRotations = this.turnControlRequest.Position;
+
+
+        updatePIDValuesFromNetworkTables();
+    }
+    
+    @Override
+    public SwerveModuleOutputs getOutputs() {
+        return outputs;
+    }
+
+    /**
+     * Resets the relitive built in encoder of the turn motor to be equal to the offsetted absolute angle reading from the absolute encoder.
+     */
+    @Override
+    public void resetTurningMotorToAbsolute() {
+        this.turnMotor.setPosition((
+            this.turnAbsoluteEncoder.getAbsolutePosition().getValueAsDouble() 
+            - this.turningAbsoluteEncoderOffset) * SwerveDriveConstants.turnGearRatio);
     }
 }
