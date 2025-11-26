@@ -2,6 +2,7 @@ package binarycrows.robot.Utils.Gamepad;
 
 import binarycrows.robot.MainStateManager;
 import binarycrows.robot.StateRequest;
+import binarycrows.robot.Utils.LogIOInputs;
 import edu.wpi.first.wpilibj.GenericHID;
 
 @SuppressWarnings("rawtypes")
@@ -67,7 +68,9 @@ public class GenericGamepad {
     }
 
     public double getAxis(int axis) {
-        return this.gamepad.getRawAxis(axis);
+        double value = this.gamepad.getRawAxis(axis);
+        LogIOInputs.logToStateTable(value, "Gamepad/" + gamepad.getPort() + "/Axis/" + axis);
+        return value;
     }
     public double getPOV(int pov) {
         return this.gamepad.getPOV(pov);

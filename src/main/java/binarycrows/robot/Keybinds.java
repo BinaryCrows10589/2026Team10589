@@ -7,8 +7,6 @@ import binarycrows.robot.Utils.StateRequestUtils;
 import binarycrows.robot.Utils.Gamepad.GenericGamepad;
 import binarycrows.robot.Utils.Gamepad.XboxGamepad;
 import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.Vector;
-import edu.wpi.first.wpilibj.RobotBase;
 
 public class Keybinds {
     public static GenericGamepad driverController = new XboxGamepad(0);

@@ -16,8 +16,8 @@ public class SwerveModuleSim implements SwerveModuleIO {
 
     private static final double LOOP_PERIOD_SECS = 0.02; // TODO: make this in a constants file
 
-    LinearSystem<N2, N1, N2> driveMotorLinearSystem = edu.wpi.first.math.system.plant.LinearSystemId.createDCMotorSystem(DCMotor.getKrakenX60(1), .025/SwerveDriveConstants.driveGearRatio, 1);
-    LinearSystem<N2, N1, N2> turnMotorLinearSystem = edu.wpi.first.math.system.plant.LinearSystemId.createDCMotorSystem(DCMotor.getKrakenX60(1), 0.004/SwerveDriveConstants.turnGearRatio, 1);
+    LinearSystem<N2, N1, N2> driveMotorLinearSystem = edu.wpi.first.math.system.plant.LinearSystemId.createDCMotorSystem(DCMotor.getKrakenX60(1), 0.0025, 1);
+    LinearSystem<N2, N1, N2> turnMotorLinearSystem = edu.wpi.first.math.system.plant.LinearSystemId.createDCMotorSystem(DCMotor.getKrakenX60(1), 0.0004, 1);
 
     private DCMotorSim driveMotor = new DCMotorSim(driveMotorLinearSystem, DCMotor.getKrakenX60(1));
     private DCMotorSim turnMotor = new DCMotorSim(turnMotorLinearSystem, DCMotor.getKrakenX60(1));
@@ -52,7 +52,6 @@ public class SwerveModuleSim implements SwerveModuleIO {
         
 
         double turnVolts = MathUtil.clamp(this.turnPIDController.calculate(this.turnMotor.getAngularPositionRotations(), this.desiredPositionRotations), -12, 12);
-
         outputs.driveMotorRPS = this.driveMotor.getAngularVelocityRPM() / 60.0;
         outputs.driveMotorSpeedMetersPerSecond = outputs.driveMotorRPS * SwerveDriveConstants.driveConversionVelocityFactor;
         outputs.driveMotorDistanceRotations = this.driveMotor.getAngularPositionRotations();

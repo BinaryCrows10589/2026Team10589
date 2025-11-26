@@ -12,33 +12,33 @@ public final class SwerveDriveConstants {
     public static final String backLeftModuleName = "BackLeftModule";
     public static final String backRightModuleName = "BackRightModule";
 
-    public static final boolean frontLeftDriveInverted = true;
-    public static final boolean frontRightDriveInverted = true;
-    public static final boolean backLeftDriveInverted = true;
-    public static final boolean backRightDriveInverted = false;
+    public static final boolean frontLeftDriveInverted = MetaConstants.isReal;
+    public static final boolean frontRightDriveInverted = MetaConstants.isReal;
+    public static final boolean backLeftDriveInverted = MetaConstants.isReal;
+    public static final boolean backRightDriveInverted = !MetaConstants.isReal;
 
-    public static final boolean frontLeftTurnInverted = true;
-    public static final boolean frontRightTurnInverted = true;
-    public static final boolean backLeftTurnInverted = true;
-    public static final boolean backRightTurnInverted = true;
+    public static final boolean frontLeftTurnInverted = MetaConstants.isReal;
+    public static final boolean frontRightTurnInverted = MetaConstants.isReal;
+    public static final boolean backLeftTurnInverted = MetaConstants.isReal;
+    public static final boolean backRightTurnInverted = MetaConstants.isReal;
 
-    public static final double frontLeftTurnEncoderOffset = 0.300049;
-    public static final double frontRightTurnEncoderOffset = 0.368164;
-    public static final double backLeftTurnEncoderOffset = 0.186768;
-    public static final double backRightTurnEncoderOffset = 0.154053;
+    public static final double frontLeftTurnEncoderOffset = MetaConstants.isReal ? 0.300049 : 0;
+    public static final double frontRightTurnEncoderOffset = MetaConstants.isReal ? 0.368164 : 0;
+    public static final double backLeftTurnEncoderOffset = MetaConstants.isReal ? 0.186768 : 0;
+    public static final double backRightTurnEncoderOffset = MetaConstants.isReal ? 0.154053 : 0;
 
     public static final int maxDriveMotorVoltage = 13;
     public static final int maxTurnMotorVoltage = 2;
 
     public static final double maxSpeedMPS = 4.9;
 
-    public static final double turnPIDValueP = .26;
+    public static final double turnPIDValueP = MetaConstants.isReal ? .26 : 1;
     public static final double turnPIDValueI = 0;
     public static final double turnPIDValueD = 0;
     public static final double turnPIDValueFF = 0;
     public static final double turnPIDValueIZone = 0.5 / 360; // 1/2 degrees converted to rotations
 
-    public static final double turnGearRatio = 12.1;
+    public static final double turnGearRatio = MetaConstants.isReal ? 12.1 : 1;
 
     public static final double maxAngleDeltaPerFrameDegrees = 30;
 

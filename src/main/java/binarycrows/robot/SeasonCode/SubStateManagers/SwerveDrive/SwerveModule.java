@@ -43,20 +43,24 @@ public class SwerveModule {
 
         LogIOInputs.logToStateTable(getDriveMotorSpeedInMetersPerSecond(), swerveModuleName + "/SpeedMPS");
 
+
+        System.out.println(this.swerveModuleName + " desired module rotations: " + desiredState.angle.getRotations());
+        System.out.println(this.swerveModuleName + " actual module rotations: " + getModuleState().angle.getRotations());
         SwerveModuleState optimizedState = ConversionUtils.optimizeSwerveModuleState(desiredState, getModuleState().angle); 
+        System.out.println(this.swerveModuleName + " desired module rotations: " + optimizedState.angle.getRotations() + "(optimized)");
+
         
-        // Temporary option for drive voltage
-        double driveVoltage = metersPerSecondToVoltage(optimizedState.speedMetersPerSecond); /*optimizedState.speedMetersPerSecond == 0 ? 0 : 
-        MathUtil.clamp((((optimizedState.speedMetersPerSecond/SwerveDriveConstants.maxSpeedMPS) * 12.1)
-        + (SwerveDriveConstants.driveFeedForward * Math.signum(optimizedState.speedMetersPerSecond))), -12.1, 12.1);*/
+        double driveVoltage = metersPerSecondToVoltage(optimizedState.speedMetersPerSecond);
 
-        this.setDesiredModuleDriveVoltage(driveVoltage);
-        this.swerveModuleIO.setDesiredModuleAngle(optimizedState.angle);
 
-        // The other option we need to implement
-        //double desiredRPM = optimizedState.speedMetersPerSecond / SwerveModuleConstants.kDriveConversionVelocityFactor;
-        //this.swerveModuleIO.setDesiredModuleVelocityRPM(desiredRPM);
-        //this.swerveModuleIO.setDesiredModuleDriveVoltage(metersPerSecondToVoltage(optimizedState.speedMetersPerSecond));
+
+        if (!Double.isNaN(optimizedState.speedMetersPerSecond)) { // Sometimes desired speed is so low that it becomes NaN, which propagates and breaks everything...
+
+
+            this.setDesiredModuleDriveVoltage(driveVoltage);
+            this.swerveModuleIO.setDesiredModuleAngle(optimizedState.angle);
+        }
+
     }
 
     public void setDesiredModuleDriveVoltage(double driveVoltage) {

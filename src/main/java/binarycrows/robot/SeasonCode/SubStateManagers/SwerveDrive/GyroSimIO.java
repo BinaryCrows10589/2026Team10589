@@ -1,11 +1,8 @@
 package binarycrows.robot.SeasonCode.SubStateManagers.SwerveDrive;
 
-import com.ctre.phoenix6.configs.Pigeon2Configuration;
-import com.ctre.phoenix6.hardware.Pigeon2;
-
-import binarycrows.robot.SeasonCode.Constants.CANIDs;
-import binarycrows.robot.SeasonCode.Constants.SwerveDriveConstants;
+import binarycrows.robot.SeasonCode.Constants.MetaConstants;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Timer;
 
 public class GyroSimIO implements GyroIO {
@@ -19,6 +16,12 @@ public class GyroSimIO implements GyroIO {
 
     @Override
     public void update() {
-        // leave outputs at their defaults (for now)
+        double currentTime = Timer.getFPGATimestamp();  
+        double deltaTimeSeconds = currentTime - this.lastInputsUpdateTime;
+        this.lastInputsUpdateTime = currentTime;
+        double rotationSpeedRadPerSecond = DriveSubStateManager.getInstance().getChassisSpeeds().omegaRadiansPerSecond;
+
+        outputs.yawAngle = Rotation2d.fromRadians(((rotationSpeedRadPerSecond * deltaTimeSeconds)) + outputs.yawAngle.getRadians()); // Add to the current rotation value by the rotation rate
+        outputs.yawAngleVelocityDegreesPerSecond = Units.radiansToDegrees(rotationSpeedRadPerSecond); // Set the rotation speed
     }
 }

@@ -101,9 +101,15 @@ public class DriveSubStateManager extends SubStateManager<DriveStateRequest> {
         velocityBR.add(backRightSwerveModule.getModuleState().speedMetersPerSecond);
     }
 
+    public ChassisSpeeds getChassisSpeeds() {
+        return SwerveDriveConstants.driveKinematics.toChassisSpeeds(this.swerveModuleStates);
+    }
+
     @Override
     public void periodic() {
         super.periodic();
+
+        swerveModuleStates = getModuleStates(); // Must be ran first because gyro sim is dependent on this value
 
         gyroIO.update();
         poseEstimator.periodic();
@@ -118,7 +124,6 @@ public class DriveSubStateManager extends SubStateManager<DriveStateRequest> {
         LogIOInputs.logObjectToStateTable(backLeftOutputs, "SwerveModule/BackLeft");
         LogIOInputs.logObjectToStateTable(backRightOutputs, "SwerveModule/BackRight");
 
-        swerveModuleStates = getModuleStates();
 
         
         if (swerveModuleStates != null)
@@ -263,6 +268,7 @@ public class DriveSubStateManager extends SubStateManager<DriveStateRequest> {
             LogIOInputs.logToStateTable(translationX, "DriveSubsystem/TranslationX");
             LogIOInputs.logToStateTable(translationY, "DriveSubsystem/TranslationY");
             LogIOInputs.logToStateTable(rotation, "DriveSubsystem/rotation");
+            LogIOInputs.logToStateTable(Keybinds.getRotation(), "DriveSubsystem/rotationraw");
 
             translationMax = SwerveDriveConstants.maxSpeedMetersPerSecond;
             rotationMax = SwerveDriveConstants.maxRotationAnglePerSecond;

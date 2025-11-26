@@ -3,7 +3,6 @@ package binarycrows.robot.Utils;
 import java.lang.reflect.Field;
 
 import binarycrows.robot.StateTable;
-import edu.wpi.first.math.geometry.Rotation2d;
 
 public class LogIOInputs {
     public static void logObjectToStateTable(Object inputs, String path) {

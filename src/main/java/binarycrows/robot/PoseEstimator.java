@@ -4,6 +4,7 @@ import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonPoseEstimator;
 import org.photonvision.PhotonPoseEstimator.PoseStrategy;
 
+import binarycrows.robot.SeasonCode.Constants.MetaConstants;
 import binarycrows.robot.SeasonCode.Constants.SwerveDriveConstants;
 import binarycrows.robot.SeasonCode.Constants.VisionConstants;
 import binarycrows.robot.SeasonCode.SubStateManagers.SwerveDrive.DriveSubStateManager;
@@ -27,6 +28,7 @@ public class PoseEstimator {
     private SwerveDrivePoseEstimator swerveDrivePoseEstimator;
 
     public PoseEstimator(Rotation2d yawAngle, SwerveModulePosition[] modulePositions) {
+        
         configPhotonPoseEstimators();
         swerveDrivePoseEstimator = new SwerveDrivePoseEstimator(
             SwerveDriveConstants.driveKinematics,
@@ -43,6 +45,8 @@ public class PoseEstimator {
         try {
             this.swerveDrivePoseEstimator.update(DriveSubStateManager.getInstance().gyroOutputs.yawAngle,
                 DriveSubStateManager.getInstance().getModulePositions());
+
+            LogIOInputs.logToStateTable(this.swerveDrivePoseEstimator.getEstimatedPosition(), "PoseEstimator/EstimatedPosition");
 
         } catch(Exception E) {
            System.out.println("FAILED TO UPDATE: " + E.getMessage());
