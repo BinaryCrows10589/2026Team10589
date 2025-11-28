@@ -14,12 +14,14 @@ import binarycrows.robot.StateTable;
 import binarycrows.robot.SubStateManager;
 import binarycrows.robot.Enums.StateRequestPriority;
 import binarycrows.robot.Enums.StateRequestStatus;
+import binarycrows.robot.SeasonCode.Constants.CrowMotionConstants;
 import binarycrows.robot.SeasonCode.Constants.MetaConstants;
 import binarycrows.robot.SeasonCode.Constants.SwerveDriveConstants;
 import binarycrows.robot.SeasonCode.Constants.VisionConstants;
 import binarycrows.robot.SeasonCode.SubStateManagers.SwerveDrive.GyroIO.GyroOutputs;
 import binarycrows.robot.SeasonCode.SubStateManagers.SwerveDrive.SwerveModuleIO.SwerveModuleOutputs;
 import binarycrows.robot.Utils.LogIOInputs;
+import binarycrows.robot.Utils.Auton.AutonPoint;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFieldLayout.OriginPosition;
 import edu.wpi.first.math.MathUtil;
@@ -105,6 +107,18 @@ public class DriveSubStateManager extends SubStateManager<DriveStateRequest> {
         return SwerveDriveConstants.driveKinematics.toChassisSpeeds(this.swerveModuleStates);
     }
 
+    private void setRobotPose(Pose2d newRobotPose) {
+        this.poseEstimator.setRobotPose(newRobotPose);
+    }
+
+    public void setRobotPose(AutonPoint newRobotPose) {
+        setRobotPose(newRobotPose.getAutonPoint());
+    }
+
+    public void setRobotStartingPose(AutonPoint newRobotPose) {
+        setRobotPose(newRobotPose.getAutonPoint(false));
+    }
+
     @Override
     public void periodic() {
         super.periodic();
@@ -139,6 +153,12 @@ public class DriveSubStateManager extends SubStateManager<DriveStateRequest> {
                     break;
                 case TELEOP_DRIVE:
                     this.activeStateRequest.updateStatus(StateRequestStatus.RUNNING);
+                    break;
+                case DRIVE_CROWMOTION:
+
+                    CrowMotionConstants.currentTrajectory.init();
+                    this.activeStateRequest.updateStatus(StateRequestStatus.RUNNING);
+                    break;
                 default:
                     frontLeftSwerveModule.stopModuleDrive();
                     this.activeStateRequest.updateStatus(StateRequestStatus.FULFILLED);
@@ -214,6 +234,14 @@ public class DriveSubStateManager extends SubStateManager<DriveStateRequest> {
                     }
                     LogIOInputs.logToStateTable(getDriveDistanceTotal(), "DriveSubsystem/DriveDistance");
 
+                    break;
+                case DRIVE_CROWMOTION:
+                    
+                    CrowMotionConstants.currentTrajectory.runTrajectoryFrame();
+                    drivePeriodic();
+                    if (CrowMotionConstants.currentTrajectory.isCompleted()) {
+                        this.activeStateRequest.updateStatus(StateRequestStatus.FULFILLED);
+                    }
                     break;
                 default:
                 break;

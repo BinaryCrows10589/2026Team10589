@@ -49,17 +49,13 @@ public class SwerveModule {
         SwerveModuleState optimizedState = ConversionUtils.optimizeSwerveModuleState(desiredState, getModuleState().angle); 
         System.out.println(this.swerveModuleName + " desired module rotations: " + optimizedState.angle.getRotations() + "(optimized)");
 
+        if (Double.isNaN(optimizedState.speedMetersPerSecond)) optimizedState.speedMetersPerSecond = 0;
         
         double driveVoltage = metersPerSecondToVoltage(optimizedState.speedMetersPerSecond);
 
 
-
-        if (!Double.isNaN(optimizedState.speedMetersPerSecond)) { // Sometimes desired speed is so low that it becomes NaN, which propagates and breaks everything...
-
-
-            this.setDesiredModuleDriveVoltage(driveVoltage);
-            this.swerveModuleIO.setDesiredModuleAngle(optimizedState.angle);
-        }
+        this.setDesiredModuleDriveVoltage(driveVoltage);
+        this.swerveModuleIO.setDesiredModuleAngle(optimizedState.angle);
 
     }
 

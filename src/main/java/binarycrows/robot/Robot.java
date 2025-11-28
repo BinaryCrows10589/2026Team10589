@@ -16,6 +16,7 @@ import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 
 import binarycrows.robot.CrowMotion.UserSide.CMConfig;
 import binarycrows.robot.CrowMotion.UserSide.RobotProfilingUtils.CMRobotProfile;
+import binarycrows.robot.SeasonCode.Constants.CrowMotionConstants;
 import binarycrows.robot.SeasonCode.Constants.FieldConstants;
 import binarycrows.robot.SeasonCode.Constants.MetaConstants;
 import binarycrows.robot.SeasonCode.Constants.SwerveDriveConstants;
@@ -86,37 +87,32 @@ public class Robot extends LoggedRobot {
       DriveSubStateManager driveSubStateManager = DriveSubStateManager.getInstance();
       
       CMConfig.init(
-        driveSubStateManager::getRobotPoseCM, 
-        driveSubStateManager::getRobotVelocityCM, 
-        driveSubStateManager::driveCM, 
-        SwerveDriveConstants.distanceBetweenCentersOfRightAndLeftWheels, 
+        driveSubStateManager::getRobotPoseCM,
+        driveSubStateManager::getRobotVelocityCM,
+        driveSubStateManager::driveCM,
+        SwerveDriveConstants.distanceBetweenCentersOfRightAndLeftWheels,
         SwerveDriveConstants.distanceBetweenCentersOfFrontAndBackWheels,
-        MetaConstants.isBlueAlliance, 
-        new Supplier() {
-
-          @Override
-          public Object get() {
-            return false;
-          }},
+        MetaConstants.isBlueAlliance,
+        ()->false,
         FieldConstants.fieldWidthMeters,
         FieldConstants.fieldLengthMeters,
-        25, // ???
-        4, // ???
-        4.311, // good
-        3.5, // good
-        3.5, // good
-        .2, // good-ish
-        0.25, // good
-        0.2, // ???
-        4.311, // good
-        360, // good
-        360, // good
-        360, // good
-        1, // good
-        5, // good
-        .5, // good
-        .5, // good
-        10 // good
+        1.5,
+        10,
+        4.3,
+        3.5,
+        4,
+        0,
+        .08,
+        .05,
+        4.311,
+        240,
+        480,
+        480,
+        1,
+        5,
+        .5,
+        1.5,
+        10
         );
 
   }
@@ -134,10 +130,17 @@ public class Robot extends LoggedRobot {
   @Override
   public void autonomousInit() {
     StateTable.putValue("IsDriverControlled", false);
+    MetaConstants.startedAutonomous = false;
   }
 
   @Override
-  public void autonomousPeriodic() {}
+  public void autonomousPeriodic() {
+    if (!MetaConstants.startedAutonomous) {
+
+      AutonManager.runAuton();
+      MetaConstants.startedAutonomous = true;
+    }
+  }
 
   @Override
   public void teleopInit() {

@@ -7,5 +7,7 @@ public final class MetaConstants {
 
     public static boolean isBlueAlliance = true;
 
+    public static boolean startedAutonomous;
+
     public static final boolean isReal = RobotBase.isReal();
 }

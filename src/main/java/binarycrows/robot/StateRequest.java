@@ -67,4 +67,8 @@ public class StateRequest<TYPE extends Enum<TYPE>> {
         return new LoggableStateRequest(status, priority, isLongRunning);
     }
 
+    public void dispatchSelf() {
+        MainStateManager.getInstance().dispatchStateRequest(this);
+    }
+
 }
