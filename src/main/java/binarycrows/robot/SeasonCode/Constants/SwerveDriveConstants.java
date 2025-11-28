@@ -38,7 +38,7 @@ public final class SwerveDriveConstants {
     public static final double turnPIDValueFF = 0;
     public static final double turnPIDValueIZone = 0.5 / 360; // 1/2 degrees converted to rotations
 
-    public static final double turnGearRatio = MetaConstants.isReal ? 12.1 : 1;
+    public static final double turnGearRatio = 12.1;
 
     public static final double maxAngleDeltaPerFrameDegrees = 30;
 

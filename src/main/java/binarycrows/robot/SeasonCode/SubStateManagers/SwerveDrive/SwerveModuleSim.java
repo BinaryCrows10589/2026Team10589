@@ -16,8 +16,8 @@ public class SwerveModuleSim implements SwerveModuleIO {
 
     private static final double LOOP_PERIOD_SECS = 0.02; // TODO: make this in a constants file
 
-    LinearSystem<N2, N1, N2> driveMotorLinearSystem = edu.wpi.first.math.system.plant.LinearSystemId.createDCMotorSystem(DCMotor.getKrakenX60(1), 0.0025, 1);
-    LinearSystem<N2, N1, N2> turnMotorLinearSystem = edu.wpi.first.math.system.plant.LinearSystemId.createDCMotorSystem(DCMotor.getKrakenX60(1), 0.0004, 1);
+    LinearSystem<N2, N1, N2> driveMotorLinearSystem = edu.wpi.first.math.system.plant.LinearSystemId.createDCMotorSystem(DCMotor.getKrakenX60(1), 0.00148, 1);
+    LinearSystem<N2, N1, N2> turnMotorLinearSystem = edu.wpi.first.math.system.plant.LinearSystemId.createDCMotorSystem(DCMotor.getKrakenX60(1), 0.00148, 1);
 
     private DCMotorSim driveMotor = new DCMotorSim(driveMotorLinearSystem, DCMotor.getKrakenX60(1));
     private DCMotorSim turnMotor = new DCMotorSim(turnMotorLinearSystem, DCMotor.getKrakenX60(1));
@@ -81,7 +81,7 @@ public class SwerveModuleSim implements SwerveModuleIO {
     public void setDesiredModuleAngle(Rotation2d desiredModuleAngle) {
         double desiredModuleRotations = desiredModuleAngle.getRotations(); 
 
-        this.desiredPositionRotations = desiredModuleRotations * SwerveDriveConstants.turnGearRatio;
+        this.desiredPositionRotations = desiredModuleRotations;
 
     }
 
