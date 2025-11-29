@@ -15,7 +15,6 @@ import org.littletonrobotics.junction.wpilog.WPILOGReader;
 import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 
 import binarycrows.robot.CrowMotion.UserSide.CMConfig;
-import binarycrows.robot.CrowMotion.UserSide.RobotProfilingUtils.CMRobotProfile;
 import binarycrows.robot.SeasonCode.Constants.CrowMotionConstants;
 import binarycrows.robot.SeasonCode.Constants.FieldConstants;
 import binarycrows.robot.SeasonCode.Constants.MetaConstants;
@@ -85,7 +84,6 @@ public class Robot extends LoggedRobot {
       Keybinds.createKeybinds();
 
       DriveSubStateManager driveSubStateManager = DriveSubStateManager.getInstance();
-      
       CMConfig.init(
         driveSubStateManager::getRobotPoseCM,
         driveSubStateManager::getRobotVelocityCM,
@@ -114,7 +112,6 @@ public class Robot extends LoggedRobot {
         1.5,
         10
         );
-
   }
 
   @Override

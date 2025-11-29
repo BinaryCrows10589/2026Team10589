@@ -53,7 +53,7 @@ public class SwerveModuleSim implements SwerveModuleIO {
 
         double turnVolts = MathUtil.clamp(this.turnPIDController.calculate(this.turnMotor.getAngularPositionRotations(), this.desiredPositionRotations), -12, 12);
         outputs.driveMotorRPS = this.driveMotor.getAngularVelocityRPM() / 60.0;
-        outputs.driveMotorSpeedMetersPerSecond = outputs.driveMotorRPS * SwerveDriveConstants.driveConversionVelocityFactor;
+        outputs.driveMotorSpeedMetersPerSecond = outputs.driveMotorRPS * 60 * SwerveDriveConstants.driveConversionVelocityFactor;
         outputs.driveMotorDistanceRotations = this.driveMotor.getAngularPositionRotations();
         outputs.driveMotorDistanceMeters = (outputs.driveMotorDistanceRotations / SwerveDriveConstants.driveGearRatio) * SwerveDriveConstants.wheelDistancePerRotation;
         outputs.driveMotorAppliedVolts = driveVolts;

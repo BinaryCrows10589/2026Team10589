@@ -6,11 +6,12 @@ import java.util.concurrent.CompletableFuture;
 import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.wpilibj.Notifier;
-import binarycrows.robot.SeasonCode.Constants.CrowMotionConstants;
+
 import binarycrows.robot.CrowMotion.UserSide.CMAutonPoint;
 import binarycrows.robot.CrowMotion.UserSide.CMConfig;
 import binarycrows.robot.CrowMotion.UserSide.CMEvent;
 import binarycrows.robot.CrowMotion.UserSide.CMRotation;
+import binarycrows.robot.SeasonCode.Constants.CrowMotionConstants;
 
 public class CMPathGenerator {
 
@@ -20,7 +21,6 @@ public class CMPathGenerator {
         CompletableFuture<CMPathGenResult> future = new CompletableFuture<>();
 
         Notifier[] holder = new Notifier[1];
-        CrowMotionConstants.pathGenStartTime = System.currentTimeMillis();
         holder[0] = new Notifier(() -> {
             try {
                 CMPathGenResult result = createCMPath(pathTime, controlPoints, rotations, events,

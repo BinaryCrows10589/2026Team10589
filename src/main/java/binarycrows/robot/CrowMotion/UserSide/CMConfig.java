@@ -194,10 +194,5 @@ public class CMConfig {
     public static double getDefaultMaxToleranceDegrees() { return defaultMaxToleranceDegrees; }
     public static double getDefaultDecelerationBufferDegrees() { return defaultDecelerationBufferDegrees; }
 
-    public static int getAverageSwerveModuleVelocityMPS() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getAverageSwerveModuleVelocityMPS'");
-    }
-
     
 }

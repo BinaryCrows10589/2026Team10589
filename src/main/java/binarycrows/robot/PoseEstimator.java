@@ -19,9 +19,6 @@ import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 
 public class PoseEstimator {
-
-
-
     private PhotonCamera[] photonCameras = {new PhotonCamera("Unknown1"), new PhotonCamera("BRModuleCam")};
     private PhotonPoseEstimator[] photonPoseEstimators = new PhotonPoseEstimator[photonCameras.length];
 
@@ -39,7 +36,6 @@ public class PoseEstimator {
         VisionConstants.aprilTagLayout.setOrigin(VisionConstants.originPosition);
 
     }
-
 
     public void periodic() {
         try {

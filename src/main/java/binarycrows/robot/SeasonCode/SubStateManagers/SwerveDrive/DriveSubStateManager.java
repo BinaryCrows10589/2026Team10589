@@ -31,6 +31,7 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.units.Units;
 import edu.wpi.first.wpilibj.Timer;
 
 public class DriveSubStateManager extends SubStateManager<DriveStateRequest> {
@@ -70,6 +71,7 @@ public class DriveSubStateManager extends SubStateManager<DriveStateRequest> {
     public final double driveDistance = 4;
     public double startDriveDistance = 0;
     public boolean hasStartedDrivingDistance = false;
+  
 
 
     public DriveSubStateManager() {
@@ -236,11 +238,12 @@ public class DriveSubStateManager extends SubStateManager<DriveStateRequest> {
 
                     break;
                 case DRIVE_CROWMOTION:
-                    
+                    this.drive(.001,0, 0, true);
+
                     CrowMotionConstants.currentTrajectory.runTrajectoryFrame();
                     drivePeriodic();
                     if (CrowMotionConstants.currentTrajectory.isCompleted()) {
-                        this.activeStateRequest.updateStatus(StateRequestStatus.FULFILLED);
+                       this.activeStateRequest.updateStatus(StateRequestStatus.FULFILLED);
                     }
                     break;
                 default:
@@ -255,11 +258,11 @@ public class DriveSubStateManager extends SubStateManager<DriveStateRequest> {
     }
     public double[] getRobotVelocityCM() {
         ChassisSpeeds speeds = SwerveDriveConstants.driveKinematics.toChassisSpeeds(swerveModuleStates);
-        return new double[] {speeds.vxMetersPerSecond, speeds.vyMetersPerSecond, gyroOutputs.yawAngleVelocityDegreesPerSecond};
+        return new double[] {speeds.vxMetersPerSecond, speeds.vyMetersPerSecond, (speeds.omegaRadiansPerSecond * (180 / Math.PI))};
     }
 
     public void driveCM(double[] speeds) {
-        this.drive(speeds[0], speeds[1], speeds[2], false);
+        this.drive(speeds[0], speeds[1],  ((Math.PI / 180) *  speeds[2]), true);
     }
 
     private double getDriveDistanceTotal() {

@@ -52,6 +52,8 @@ public class SwerveModule {
         if (Double.isNaN(optimizedState.speedMetersPerSecond)) optimizedState.speedMetersPerSecond = 0;
         
         double driveVoltage = metersPerSecondToVoltage(optimizedState.speedMetersPerSecond);
+        
+        //metersPerSecondToVoltage(optimizedState.speedMetersPerSecond);
 
 
         this.setDesiredModuleDriveVoltage(driveVoltage);
@@ -106,11 +108,11 @@ public class SwerveModule {
      */
     public SwerveModulePosition getModulePosition() {
         return new SwerveModulePosition(
-            swerveModuleIO.getOutputs().driveMotorDistanceRotations, Rotation2d.fromRotations(swerveModuleIO.getOutputs().turnMotorRelativePositionRotations));
+            swerveModuleIO.getOutputs().driveMotorDistanceMeters, Rotation2d.fromRotations(swerveModuleIO.getOutputs().turnMotorRelativePositionRotations));
     }
 
     public double getModuleDriveDistance() {
-        return swerveModuleIO.getOutputs().driveMotorDistanceRotations * SwerveDriveConstants.driveConversionPositionFactor;
+        return swerveModuleIO.getOutputs().driveMotorDistanceMeters * SwerveDriveConstants.driveConversionPositionFactor;
     }
 
     /**
