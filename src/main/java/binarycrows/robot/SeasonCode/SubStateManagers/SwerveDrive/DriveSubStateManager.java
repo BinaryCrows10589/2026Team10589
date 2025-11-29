@@ -266,10 +266,10 @@ public class DriveSubStateManager extends SubStateManager<DriveStateRequest> {
     }
 
     private double getDriveDistanceTotal() {
-        return frontLeftSwerveModule.getModuleDriveDistance() - startDriveDistance;
+        return getDriveDistance() - startDriveDistance;
     }
     private double getDriveDistance() {
-        return frontLeftSwerveModule.getModuleDriveDistance();
+        return poseEstimator.getRobotPose().getY();
     }
 
     private double translationMax = SwerveDriveConstants.maxSpeedMetersPerSecond;
