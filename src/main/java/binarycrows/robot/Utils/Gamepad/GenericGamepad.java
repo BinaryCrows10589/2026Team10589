@@ -72,7 +72,7 @@ public class GenericGamepad {
         LogIOInputs.logToStateTable(value, "Gamepad/" + gamepad.getPort() + "/Axis/" + axis);
         return value;
     }
-    public double getPOV(int pov) {
+    public int getPOV(int pov) {
         return this.gamepad.getPOV(pov);
     }
 

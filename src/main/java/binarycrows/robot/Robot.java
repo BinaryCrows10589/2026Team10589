@@ -24,6 +24,7 @@ import binarycrows.robot.Utils.LogIOInputs;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj.RobotBase;
+import gg.questnav.questnav.QuestNav;
 
 /**
  * The methods in this class are called automatically corresponding to each mode, as described in
@@ -34,6 +35,9 @@ public class Robot extends LoggedRobot {
 
   @SuppressWarnings("rawtypes")
   private ArrayList<SubStateManager> subStateManagers;
+
+  
+  QuestNav questNav = new QuestNav();
   /**
    * This function is run when the robot is first started up and should be used for any
    * initialization code.
@@ -116,6 +120,7 @@ public class Robot extends LoggedRobot {
 
   @Override
   public void robotPeriodic() {
+    questNav.commandPeriodic();
     subStateManagers.forEach(subStateManager -> {
         subStateManager.periodic();
         LogIOInputs.logToStateTable(subStateManager.activeStateRequest, subStateManager.toString() + "/ActiveStateRequest");
@@ -134,9 +139,13 @@ public class Robot extends LoggedRobot {
   public void autonomousPeriodic() {
     if (!MetaConstants.startedAutonomous) {
 
-      AutonManager.runAuton();
+      runAuton();
       MetaConstants.startedAutonomous = true;
     }
+  }
+
+  public void runAuton() {
+    
   }
 
   @Override

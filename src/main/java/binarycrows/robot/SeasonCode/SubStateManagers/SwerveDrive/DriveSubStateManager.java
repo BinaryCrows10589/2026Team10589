@@ -309,7 +309,7 @@ public class DriveSubStateManager extends SubStateManager<DriveStateRequest> {
 
             throttle = Math.pow(throttle, 5);
             
-            double speed = throttle * translationMax;
+            double speed = throttle * translationMax * 0.05;
 
             if(speed != 0) {
                 double translationVectorMagnitude = Math.sqrt(translationX*translationX + translationY*translationY);
@@ -322,6 +322,8 @@ public class DriveSubStateManager extends SubStateManager<DriveStateRequest> {
                 translationYSpeed = 0;
             }
             double rotationSpeed = MathUtil.clamp(rotation, -rotationMax, rotationMax);
+
+
 
 
             if(StateTable.getValueAsBoolean("AxisLock")) {
@@ -348,6 +350,10 @@ public class DriveSubStateManager extends SubStateManager<DriveStateRequest> {
         }
     }
 
+    public void resetRobotPose() {
+        poseEstimator.resetRobotPose();
+    }
+
     public void drive(double desiredXVelocity, double desiredYVelocity, double desiredRotationalVelocity, boolean isFieldRelative) {
         LogIOInputs.logToStateTable(desiredXVelocity, "Driver/XVelocity");
         LogIOInputs.logToStateTable(desiredYVelocity, "Driver/YVelocity");
@@ -357,7 +363,16 @@ public class DriveSubStateManager extends SubStateManager<DriveStateRequest> {
                 desiredRotationalVelocity, this.poseEstimator.getRobotPose().getRotation()) :
             new ChassisSpeeds(desiredXVelocity, desiredYVelocity,
                 desiredRotationalVelocity);
-            
+        switch (Keybinds.getAxisLock()) {
+            case 1:
+            this.desiredChassisSpeeds.vxMetersPerSecond = 0;
+            break;
+            case 2:
+            this.desiredChassisSpeeds.vyMetersPerSecond = 0;
+            break;
+            default:
+            break;
+        }
     }
 
     public void setModuleStates(SwerveModuleState[] desiredStates) {

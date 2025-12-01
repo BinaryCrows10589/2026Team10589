@@ -2,6 +2,7 @@ package binarycrows.robot;
 
 import binarycrows.robot.SeasonCode.Constants.ControlConstants;
 import binarycrows.robot.SeasonCode.SubStateManagers.SwerveDrive.DriveStateRequest;
+import binarycrows.robot.SeasonCode.SubStateManagers.SwerveDrive.DriveSubStateManager;
 import binarycrows.robot.Utils.ConversionUtils;
 import binarycrows.robot.Utils.StateRequestUtils;
 import binarycrows.robot.Utils.Gamepad.GenericGamepad;
@@ -62,6 +63,10 @@ public class Keybinds {
             XboxGamepad.XboxGamepadID.y, 
             StateRequestUtils.createStateRequestRunnable(DriveStateRequest.DRIVE_DISTANCE_TEST)
         );
+        driverController.onPress(
+            XboxGamepad.XboxGamepadID.left_bumper, 
+            DriveSubStateManager.getInstance()::resetRobotPose
+        );
     }
 
     public static double[] getTranslation() {
@@ -83,5 +88,21 @@ public class Keybinds {
     }
     public static double getThrottle() {
         return driverController.getAxis(XboxGamepad.XboxGamepadID.right_trigger);
+    }
+    private static int axisLock = 0; // 0 - None, 1 - X, 2 - Y
+    public static int getAxisLock() {
+        int pov = driverController.getPOV(XboxGamepad.XboxGamepadID.dpad);
+        if (pov != -1) {
+            if (pov == 0) {
+                axisLock = 2;
+            }
+            else if (pov == 90) {
+                axisLock = 1;
+            }
+            else {
+                axisLock = 0;
+            }
+        }
+        return axisLock;
     }
 }
