@@ -17,8 +17,7 @@ public class CMTest1 {
         new CMAutonPoint[] {
             new CMAutonPoint(0, 0, false),
             new CMAutonPoint(2, 2, false),
-            new CMAutonPoint(1.5, 3, false),
-            new CMAutonPoint(10, 1, false)
+            new CMAutonPoint(3, 1.5, false)
         }, 
         new CMRotation[] {
             new CMRotation(10, 1, .25, 1, 5, .5, 10, 1),

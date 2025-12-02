@@ -131,6 +131,7 @@ public class Robot extends LoggedRobot {
 
   @Override
   public void autonomousInit() {
+    System.out.println("Autonomous init");
     StateTable.putValue("IsDriverControlled", false);
     MetaConstants.startedAutonomous = false;
   }
@@ -139,13 +140,9 @@ public class Robot extends LoggedRobot {
   public void autonomousPeriodic() {
     if (!MetaConstants.startedAutonomous) {
 
-      runAuton();
+      AutonManager.runAuton();
       MetaConstants.startedAutonomous = true;
     }
-  }
-
-  public void runAuton() {
-    
   }
 
   @Override
