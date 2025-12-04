@@ -50,7 +50,7 @@ public final class SwerveDriveConstants {
 
     public static final double voltageForMaxSpeed = 12.1;
 
-    public static final double wheelDiameterMeters = ConversionUtils.inchesToMeters(3.45916880449);
+    public static final double wheelDiameterMeters = ConversionUtils.inchesToMeters(3.44126817438);
     public static final double driveGearRatio = 1296/209;
 
 

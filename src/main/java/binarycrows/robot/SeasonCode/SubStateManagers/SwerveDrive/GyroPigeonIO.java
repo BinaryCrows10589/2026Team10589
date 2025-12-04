@@ -31,22 +31,22 @@ public class GyroPigeonIO implements GyroIO {
         updateGyroAngle();
         updateOutputs();
         
-        if (Math.abs(previousGyroValue.minus(outputs.yawAngle).getDegrees()) > SwerveDriveConstants.maxAngleDeltaPerFrameDegrees) {
+        /*if (Math.abs(previousGyroValue.minus(outputs.yawAngle).getDegrees()) > SwerveDriveConstants.maxAngleDeltaPerFrameDegrees) {
             this.gyro.setYaw(previousGyroValue.getDegrees());
-        } else {
-            previousGyroValue = outputs.yawAngle;
-        }
+        } else {*/
+        previousGyroValue = outputs.yawAngle;
+        //}
 
     }
 
     public void updateGyroAngle() {
-        this.outputs.yawAngle = this.gyro.getRotation2d().plus(Rotation2d.kCW_90deg);
+        this.outputs.yawAngle = this.gyro.getRotation2d();
         this.outputs.yawAngleVelocityDegreesPerSecond = this.gyro.getAngularVelocityZDevice().getValueAsDouble();
     }
     public void updateOutputs() {
     }
     public void updatePreviousGyroAngle() {
-        previousGyroValue = this.gyro.getRotation2d().plus(Rotation2d.kCW_90deg);
+        previousGyroValue = this.gyro.getRotation2d();
     }
 
     @Override

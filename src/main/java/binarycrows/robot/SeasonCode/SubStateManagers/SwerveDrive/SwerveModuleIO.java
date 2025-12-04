@@ -26,6 +26,8 @@ public interface SwerveModuleIO {
         public double driveMotorAppliedVolts = 0.0;
         public double driveMotorSupplyAmps = 0.0;
         public double driveMotorTorqueAmps = 0.0;
+
+        public double initialDistanceMeters = 0.0;
     
         public double turnMotorAbsolutePositionRotations = 0.0;
         public double turnMotorRelativePositionRotations = 0.0;
