@@ -7,6 +7,8 @@ import java.util.HashMap;
 
 import org.photonvision.PhotonPoseEstimator;
 
+import com.ctre.phoenix6.swerve.SwerveModuleConstants;
+
 import binarycrows.robot.Keybinds;
 import binarycrows.robot.PoseEstimator;
 import binarycrows.robot.StateRequest;
@@ -309,13 +311,20 @@ public class DriveSubStateManager extends SubStateManager<DriveStateRequest> {
 
             throttle = Math.pow(throttle, 5);
             
-            double speed = throttle * translationMax * 0.05;
+            double speed = throttle * translationMax;
 
             if(speed != 0) {
                 double translationVectorMagnitude = Math.sqrt(translationX*translationX + translationY*translationY);
 
                 translationXSpeed = translationX / translationVectorMagnitude * speed;
                 translationYSpeed = translationY / translationVectorMagnitude * speed;
+
+            } else if (translationX != 0 && translationY != 0)
+            {
+                double translationVectorMagnitude = Math.sqrt(translationX*translationX + translationY*translationY);
+
+                translationXSpeed = translationX / translationVectorMagnitude * 0.001;
+                translationYSpeed = translationY / translationVectorMagnitude * 0.001;
 
             } else {
                 translationXSpeed = 0;
