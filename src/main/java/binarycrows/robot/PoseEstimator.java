@@ -48,7 +48,7 @@ public class PoseEstimator {
             PoseEstimatorConstants.swerveDrivePoseEstimateTrust, PoseEstimatorConstants.visionPoseEstimateTrust);
         PoseEstimatorConstants.aprilTagLayout.setOrigin(PoseEstimatorConstants.originPosition);
 
-        visionNotifier.startPeriodic(.1);
+        //visionNotifier.startPeriodic(.1);
     }
 
     public void periodic() {
@@ -144,7 +144,7 @@ public class PoseEstimator {
                         Pose2d fudgedPosed = new Pose2d(estimatedPose2d.getX() + xFudge, estimatedPose2d.getY() + yFudge, Rotation2d.fromDegrees(estimatedPose2d.getRotation().getDegrees() + rotFudge));
                         if(!DriverStation.isEnabled() || TolorenceUtil.inPoseTolorence(fudgedPosed, estimatedPose2d,
                             PoseEstimatorConstants.maxPoseDeltaFromCurrent)) {
-                            swerveDrivePoseEstimator.addVisionMeasurement(fudgedPosed, estimatedPose.timestampSeconds);
+                            swerveDrivePoseEstimator.addVisionMeasurement(fudgedPosed, estimatedPose.timestampSeconds, PoseEstimatorConstants.visionPoseEstimateTrust);
                         }
                     }
                 }
