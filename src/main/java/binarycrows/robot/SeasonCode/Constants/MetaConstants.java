@@ -9,5 +9,7 @@ public final class MetaConstants {
 
     public static boolean startedAutonomous = false;
 
+    public static boolean updateVision = false;
+
     public static final boolean isReal = RobotBase.isReal();
 }
