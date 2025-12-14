@@ -16,8 +16,8 @@ import binarycrows.robot.SeasonCode.Constants.MetaConstants;
 import binarycrows.robot.SeasonCode.Constants.SwerveDriveConstants;
 import binarycrows.robot.SeasonCode.Constants.PoseEstimatorConstants;
 import binarycrows.robot.SeasonCode.SubStateManagers.SwerveDrive.DriveSubStateManager;
+import binarycrows.robot.Utils.ConversionUtils;
 import binarycrows.robot.Utils.LogIOInputs;
-import binarycrows.robot.Utils.TolorenceUtil;
 import binarycrows.robot.Utils.Auton.AutonPoint;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -29,11 +29,14 @@ import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Notifier;
+import gg.questnav.questnav.PoseFrame;
+import gg.questnav.questnav.QuestNav;
 
 public class PoseEstimator {
     private PhotonCamera[] photonCameras = {new PhotonCamera("Unknown1"), new PhotonCamera("BRModuleCam")};
     private PhotonPoseEstimator[] photonPoseEstimators = new PhotonPoseEstimator[photonCameras.length];
     private SwerveDrivePoseEstimator swerveDrivePoseEstimator;
+    private QuestNav questNav = new QuestNav();
 
     private Notifier visionNotifier = new Notifier(this::addVisionMeasurments);
 
@@ -48,11 +51,12 @@ public class PoseEstimator {
             PoseEstimatorConstants.swerveDrivePoseEstimateTrust, PoseEstimatorConstants.visionPoseEstimateTrust);
         PoseEstimatorConstants.aprilTagLayout.setOrigin(PoseEstimatorConstants.originPosition);
 
-        //visionNotifier.startPeriodic(.1);
+        visionNotifier.startPeriodic(.1);
     }
 
     public void periodic() {
         try {
+            questNav.commandPeriodic();
             this.swerveDrivePoseEstimator.update(DriveSubStateManager.getInstance().gyroOutputs.yawAngle,
                 DriveSubStateManager.getInstance().getModulePositions());
 
@@ -142,7 +146,7 @@ public class PoseEstimator {
                         EstimatedRobotPose estimatedPose = estimatedPosition3d.get();
                         Pose2d estimatedPose2d = estimatedPose.estimatedPose.toPose2d();
                         Pose2d fudgedPosed = new Pose2d(estimatedPose2d.getX() + xFudge, estimatedPose2d.getY() + yFudge, Rotation2d.fromDegrees(estimatedPose2d.getRotation().getDegrees() + rotFudge));
-                        if(!DriverStation.isEnabled() || TolorenceUtil.inPoseTolorence(fudgedPosed, estimatedPose2d,
+                        if(!DriverStation.isEnabled() || ConversionUtils.getIsInTolerance(fudgedPosed, estimatedPose2d,
                             PoseEstimatorConstants.maxPoseDeltaFromCurrent)) {
                             swerveDrivePoseEstimator.addVisionMeasurement(fudgedPosed, estimatedPose.timestampSeconds, PoseEstimatorConstants.visionPoseEstimateTrust);
                         }
@@ -150,6 +154,24 @@ public class PoseEstimator {
                 }
             }
             
+        }
+        if(MetaConstants.updateQuestNav && questNav.isTracking()) { // TODO: THIS WILL CHANGE ON NEXT QUESTNAV UPDATE! isTracking will become per-frame instead of a method on questNav.
+            // Get the latest pose data frames from the Quest
+            
+            PoseFrame[] questFrames = questNav.getAllUnreadPoseFrames();
+
+            // Loop over the pose data frames and send them to the pose estimator
+            for (PoseFrame questFrame : questFrames) {
+                    Pose3d questPose = questFrame.questPose3d();
+                    double timestamp = questFrame.dataTimestamp();
+
+                    // Transform by the mount pose to get your robot pose
+                    Pose3d robotPose = questPose.transformBy(PoseEstimatorConstants.robotToQuestOffset.inverse());
+
+                    // Add the measurement to our estimator
+                    System.out.println(robotPose);
+                    //swerveDrivePoseEstimator.addVisionMeasurement(robotPose.toPose2d(), timestamp, PoseEstimatorConstants.questNavPoseEstimateTrust);
+                }
         }
     
     }

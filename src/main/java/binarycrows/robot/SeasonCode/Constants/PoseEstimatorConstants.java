@@ -7,11 +7,13 @@ import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.Vector;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.numbers.N3;
 
 public final class PoseEstimatorConstants {
     public static final Vector<N3> swerveDrivePoseEstimateTrust = VecBuilder.fill(0.05, 0.05, 0.1);
     public static final Vector<N3> visionPoseEstimateTrust = VecBuilder.fill(.2, .2, 0);
+    public static final Vector<N3> questNavPoseEstimateTrust = VecBuilder.fill(.9, .9, 0);
 
     public static final AprilTagFieldLayout aprilTagLayout = AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeAndyMark);
     public static final double maxAmbiguity = .02;
@@ -28,4 +30,15 @@ public final class PoseEstimatorConstants {
         {0, 0, 0, 0, 0, 0}, // Tag 3
         // ect
     };
+
+    /*
+    
+    X: Positive -> Forward from robot center
+    Y: Positive -> Left from robot center
+    Z: Positive -> Up from robot center
+    Yaw (Z): Rotation -> Counter-clockwise (right-handed) rotation around the Z axis
+    Pitch (Y): Rotation -> Counter-clockwise (right-handed) rotation around the Y axis
+    Roll (X): Rotation -> Counter-clockwise (right-handed) rotation around the X axis
+ */
+    public static final Transform3d robotToQuestOffset = new Transform3d(); //TODO: update to real quest position
 }
