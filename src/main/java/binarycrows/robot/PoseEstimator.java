@@ -52,6 +52,7 @@ public class PoseEstimator {
         PoseEstimatorConstants.aprilTagLayout.setOrigin(PoseEstimatorConstants.originPosition);
 
         visionNotifier.startPeriodic(.1);
+
     }
 
     public void periodic() {
@@ -85,6 +86,9 @@ public class PoseEstimator {
         DriveSubStateManager.getInstance().resetGyro(new Rotation2d());
         swerveDrivePoseEstimator.resetPosition(DriveSubStateManager.getInstance().getGyroAngleRotation2d(),
             DriveSubStateManager.getInstance().getModulePositions(), new Pose2d());
+
+        questNav.setPose(Pose3d.kZero);
+
         
     }
 
@@ -155,13 +159,16 @@ public class PoseEstimator {
             }
             
         }
-        if(MetaConstants.updateQuestNav && questNav.isTracking()) { // TODO: THIS WILL CHANGE ON NEXT QUESTNAV UPDATE! isTracking will become per-frame instead of a method on questNav.
+        if(MetaConstants.updateQuestNav) { // && questNav.isTracking() TODO: THIS WILL CHANGE ON NEXT QUESTNAV UPDATE! isTracking will become per-frame instead of a method on questNav.
             // Get the latest pose data frames from the Quest
-            
+            try {
             PoseFrame[] questFrames = questNav.getAllUnreadPoseFrames();
+            LogIOInputs.logToStateTable(questFrames.length > 0, "QuestNav/HasFrames");
 
             // Loop over the pose data frames and send them to the pose estimator
             for (PoseFrame questFrame : questFrames) {
+                LogIOInputs.logToStateTable(questFrames.length > 0, "QuestNav/HasFrames");
+
                     Pose3d questPose = questFrame.questPose3d();
                     double timestamp = questFrame.dataTimestamp();
 
@@ -169,10 +176,19 @@ public class PoseEstimator {
                     Pose3d robotPose = questPose.transformBy(PoseEstimatorConstants.robotToQuestOffset.inverse());
 
                     // Add the measurement to our estimator
-                    System.out.println(robotPose);
+                    LogIOInputs.logToStateTable(robotPose, "QuestNav/RobotPose");
+                    LogIOInputs.logToStateTable(timestamp, "QuestNav/LastUpdateTimestamp");
                     //swerveDrivePoseEstimator.addVisionMeasurement(robotPose.toPose2d(), timestamp, PoseEstimatorConstants.questNavPoseEstimateTrust);
                 }
+                LogIOInputs.logToStateTable(true, "QuestNav/Updating");
+            } catch (Exception e) {
+                System.out.println(e.getMessage());
+            }
+        } else {
+            LogIOInputs.logToStateTable(false, "QuestNav/HasFrames");
+            LogIOInputs.logToStateTable(false, "QuestNav/Updating");
         }
+        
     
     }
 }

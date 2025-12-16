@@ -288,12 +288,13 @@ public class DriveSubStateManager extends SubStateManager<DriveStateRequest> {
     private void drivePeriodic() {
         if(StateTable.getValueAsBoolean("IsDriverControlled")) {
             boolean slowMode = StateTable.getValueAsBoolean("SlowMode");
-            double throttle = slowMode ?
-            Keybinds.getThrottle() * SwerveDriveConstants.maxSpeedMetersPerSecond * SwerveDriveConstants.translationXSlowModeMultipler :
-            Keybinds.getThrottle() * SwerveDriveConstants.maxSpeedMetersPerSecond;
             double[] translation = Keybinds.getTranslation();
-            double translationX = translation[0];
-            double translationY = translation[1];
+            double translationX = slowMode ?
+                translation[0] * SwerveDriveConstants.maxSpeedMetersPerSecond * SwerveDriveConstants.translationXSlowModeMultipler :
+                translation[0] * SwerveDriveConstants.maxSpeedMetersPerSecond;
+            double translationY = slowMode ?
+                translation[1] * SwerveDriveConstants.maxSpeedMetersPerSecond * SwerveDriveConstants.translationXSlowModeMultipler :
+                translation[1] * SwerveDriveConstants.maxSpeedMetersPerSecond;
             double rotation = slowMode ? 
             Keybinds.getRotation() * SwerveDriveConstants.maxRotationAnglePerSecond * SwerveDriveConstants.rotationSlowModeMultipler : 
             Keybinds.getRotation() * SwerveDriveConstants.maxRotationAnglePerSecond;
@@ -309,27 +310,23 @@ public class DriveSubStateManager extends SubStateManager<DriveStateRequest> {
             double translationXSpeed;
             double translationYSpeed;
 
-            throttle = Math.pow(throttle, 5);
+            boolean normalizeTranslationMaximum = false;
             
-            double speed = throttle * translationMax;
-
-            if(speed != 0) {
-                double translationVectorMagnitude = Math.sqrt(translationX*translationX + translationY*translationY);
-
-                translationXSpeed = translationX / translationVectorMagnitude * speed;
-                translationYSpeed = translationY / translationVectorMagnitude * speed;
-
-            } else if (translationX != 0 && translationY != 0)
-            {
-                double translationVectorMagnitude = Math.sqrt(translationX*translationX + translationY*translationY);
-
-                translationXSpeed = translationX / translationVectorMagnitude * 0.001;
-                translationYSpeed = translationY / translationVectorMagnitude * 0.001;
-
-            } else {
-                translationXSpeed = 0;
-                translationYSpeed = 0;
-            }
+            if (normalizeTranslationMaximum) {
+                double normalizedSpeed = Math.sqrt(Math.pow(translationX, 2) + Math.pow(translationY, 2));
+                if(normalizedSpeed != 0) {
+                    double translationFactor = MathUtil.clamp(normalizedSpeed, -translationMax, translationMax) / normalizedSpeed;
+                    translationXSpeed = translationX * translationFactor;
+                    translationYSpeed = translationY * translationFactor;
+                } else {
+                    translationXSpeed = MathUtil.clamp(translationX, -translationMax, translationMax);
+                    translationYSpeed = MathUtil.clamp(translationY, -translationMax, translationMax);
+                }
+               
+            } else { 
+                translationXSpeed = MathUtil.clamp(translationX, -translationMax, translationMax);
+                translationYSpeed = MathUtil.clamp(translationY, -translationMax, translationMax);
+           } 
             double rotationSpeed = MathUtil.clamp(rotation, -rotationMax, rotationMax);
 
 

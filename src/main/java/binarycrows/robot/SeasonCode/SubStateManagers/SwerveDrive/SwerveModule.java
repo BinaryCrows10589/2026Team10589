@@ -84,7 +84,7 @@ public class SwerveModule {
    
     public double metersPerSecondToVoltage(double desiredMetersPerSecond) {
 
-        if (desiredMetersPerSecond < SwerveDriveConstants.mpsLerpTableCutoff) {
+        //if (desiredMetersPerSecond < SwerveDriveConstants.mpsLerpTableCutoff) {
             double percentOfMaxSpeed = desiredMetersPerSecond / SwerveDriveConstants.maxSpeedMPS;
             double appliedFeedforwardVoltage = (desiredMetersPerSecond != 0 ? SwerveDriveConstants.voltageFeedForward : 0) *
                 Math.signum(desiredMetersPerSecond);
@@ -93,9 +93,9 @@ public class SwerveModule {
                 appliedFeedforwardVoltage;
             double clampedVoltage = MathUtil.clamp(unclampedVoltage, -SwerveDriveConstants.voltageForMaxSpeed, SwerveDriveConstants.voltageForMaxSpeed);
             return clampedVoltage;
-        } else {
-            return lerpTable.metersPerSecondToVoltage(desiredMetersPerSecond, desiredMetersPerSecond-1);
-        }
+        //} else {
+        //    return lerpTable.metersPerSecondToVoltage(desiredMetersPerSecond, desiredMetersPerSecond-1);
+        //}
     }
 
     public void stopModuleDrive() {

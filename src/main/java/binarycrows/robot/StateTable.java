@@ -11,6 +11,7 @@ import org.littletonrobotics.junction.Logger;
 
 import binarycrows.robot.SeasonCode.Constants.MetaConstants;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 
@@ -74,6 +75,9 @@ public class StateTable {
     public static synchronized Pose2d getValueAsPose2d(String path) {
         return (Pose2d) getValue(path);
     }
+    public static synchronized Pose3d getValueAsPose3d(String path) {
+        return (Pose3d) getValue(path);
+    }
     public static synchronized Object getValue(String path) {
         return stateTableObjects.get(path);
     }
@@ -101,6 +105,7 @@ public class StateTable {
         else if (fieldValue instanceof String             ) Logger.recordOutput(absolutePath, (String             ) fieldValue);
         else if (fieldValue instanceof Rotation2d         ) Logger.recordOutput(absolutePath, (Rotation2d         ) fieldValue);
         else if (fieldValue instanceof Pose2d             ) Logger.recordOutput(absolutePath, (Pose2d             ) fieldValue);
+        else if (fieldValue instanceof Pose3d             ) Logger.recordOutput(absolutePath, (Pose3d             ) fieldValue);
         else if (fieldValue instanceof boolean[]          ) Logger.recordOutput(absolutePath, (boolean[]          ) fieldValue);
         else if (fieldValue instanceof int[]              ) Logger.recordOutput(absolutePath, (int[]              ) fieldValue);
         else if (fieldValue instanceof long[]             ) Logger.recordOutput(absolutePath, (long[]             ) fieldValue);

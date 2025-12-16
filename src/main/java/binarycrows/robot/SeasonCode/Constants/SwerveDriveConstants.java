@@ -60,10 +60,10 @@ public final class SwerveDriveConstants {
     public static final double driveConversionVelocityFactor = driveConversionPositionFactor / 60.0; /* Figure why this sixty is here. It was last season */ //Probably to undo the *60 in the swerve module IO when getting MPS
 
     public static final double distanceBetweenCentersOfRightAndLeftWheels = ConversionUtils.inchesToMeters(24);
-        public static final double distanceBetweenCentersOfFrontAndBackWheels = ConversionUtils.inchesToMeters(24);
-        public static final double radiusFromCenterToFarthestSwerveModule = Math
-        .sqrt(((distanceBetweenCentersOfRightAndLeftWheels * distanceBetweenCentersOfRightAndLeftWheels)
-            + (distanceBetweenCentersOfFrontAndBackWheels * distanceBetweenCentersOfFrontAndBackWheels)));
+    public static final double distanceBetweenCentersOfFrontAndBackWheels = ConversionUtils.inchesToMeters(24);
+    public static final double radiusFromCenterToFarthestSwerveModule = Math.sqrt(
+        ((distanceBetweenCentersOfRightAndLeftWheels * distanceBetweenCentersOfRightAndLeftWheels) + (
+            distanceBetweenCentersOfFrontAndBackWheels * distanceBetweenCentersOfFrontAndBackWheels)));
 
     public static final SwerveDriveKinematics driveKinematics = new SwerveDriveKinematics(
         new Translation2d(distanceBetweenCentersOfFrontAndBackWheels / 2,

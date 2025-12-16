@@ -86,9 +86,6 @@ public class Keybinds {
     public static double getRotation() {
         return -ConversionUtils.applyDeadband(driverController.getAxis(XboxGamepad.XboxGamepadID.right_stick_x), ControlConstants.driveControllerDeadband) * ControlConstants.maxSpeedFraction;
     }
-    public static double getThrottle() {
-        return driverController.getAxis(XboxGamepad.XboxGamepadID.right_trigger) * 0.2;
-    }
     private static int axisLock = 0; // 0 - None, 1 - X, 2 - Y
     public static int getAxisLock() {
         int pov = driverController.getPOV(XboxGamepad.XboxGamepadID.dpad);
