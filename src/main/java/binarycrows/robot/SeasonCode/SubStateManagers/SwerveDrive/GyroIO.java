@@ -7,6 +7,8 @@ public interface GyroIO {
     public class GyroOutputs {
         public Rotation2d yawAngle = Rotation2d.kZero;
         public double yawAngleVelocityDegreesPerSecond = 0;
+        public double xAccelerationMetersPerSecondPerSecond = 0;
+        public double yAccelerationMetersPerSecondPerSecond = 0;
     }
 
     public default void update() {}

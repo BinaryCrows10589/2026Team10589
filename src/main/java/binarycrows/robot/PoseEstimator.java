@@ -23,12 +23,14 @@ import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Notifier;
+import edu.wpi.first.wpilibj.Timer;
 import gg.questnav.questnav.PoseFrame;
 import gg.questnav.questnav.QuestNav;
 
@@ -40,6 +42,10 @@ public class PoseEstimator {
 
     private Notifier visionNotifier = new Notifier(this::addVisionMeasurments);
 
+    private ChassisSpeeds lastChassisSpeeds;
+    private Pose2d lastRobotPose;
+    private long lastFrameStart = -1;
+    private double dt;
     public PoseEstimator(Rotation2d yawAngle, SwerveModulePosition[] modulePositions) {
         
         configPhotonPoseEstimators();
@@ -56,11 +62,26 @@ public class PoseEstimator {
     }
 
     public void periodic() {
+        if(this.lastFrameStart != -1) {
+            this.dt = (System.currentTimeMillis() - this.lastFrameStart) / 1000.0;
+        } else {
+            this.dt = 1/50;
+        }
+        this.lastFrameStart = System.currentTimeMillis();
+
         try {
             questNav.commandPeriodic();
             this.swerveDrivePoseEstimator.update(DriveSubStateManager.getInstance().gyroOutputs.yawAngle,
                 DriveSubStateManager.getInstance().getModulePositions());
 
+            if(this.lastChassisSpeeds != null && this.lastRobotPose != null) {
+                double xPose = (DriveSubStateManager.getInstance().gyroOutputs.xAccelerationMetersPerSecondPerSecond * dt + this.lastChassisSpeeds.vxMetersPerSecond) * dt + this.lastRobotPose.getX();
+                double yPose = (DriveSubStateManager.getInstance().gyroOutputs.yAccelerationMetersPerSecondPerSecond * dt + this.lastChassisSpeeds.vyMetersPerSecond) * dt + this.lastRobotPose.getY();
+                double timestamp = Timer.getFPGATimestamp();
+                //TODO:EnableswerveDrivePoseEstimator.addVisionMeasurement(new Pose2d(xPose, yPose, this.swerveDrivePoseEstimator.getEstimatedPosition().getRotation()), timestamp, PoseEstimatorConstants.visionPoseEstimateTrust);
+            }
+            this.lastRobotPose = this.swerveDrivePoseEstimator.getEstimatedPosition();
+            this.lastChassisSpeeds = SwerveDriveConstants.driveKinematics.toChassisSpeeds(DriveSubStateManager.getInstance().swerveModuleStates);
             LogIOInputs.logToStateTable(this.swerveDrivePoseEstimator.getEstimatedPosition(), "PoseEstimator/EstimatedPosition");
 
         } catch(Exception E) {

@@ -44,6 +44,9 @@ public class GyroPigeonIO implements GyroIO {
         this.outputs.yawAngleVelocityDegreesPerSecond = this.gyro.getAngularVelocityZDevice().getValueAsDouble();
     }
     public void updateOutputs() {
+        this.outputs.xAccelerationMetersPerSecondPerSecond = this.gyro.getAccelerationX().getValueAsDouble() * 9.80665;
+        this.outputs.yAccelerationMetersPerSecondPerSecond = this.gyro.getAccelerationY().getValueAsDouble() * 9.80665;
+
     }
     public void updatePreviousGyroAngle() {
         previousGyroValue = this.gyro.getRotation2d();
