@@ -40,7 +40,7 @@ public class SwerveModuleTalonFX implements SwerveModuleIO {
 
     // If this works and we have a CTRE subscripting try enablign FOC
     private VoltageOut driveControlVoltageRequest = new VoltageOut(0);
-
+    
     private PositionDutyCycle turnControlRequest = new PositionDutyCycle(0);
 
     private RuntimeTunablePIDValues turnMotorPIDConstantTuner;

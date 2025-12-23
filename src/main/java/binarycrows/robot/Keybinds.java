@@ -67,6 +67,10 @@ public class Keybinds {
             XboxGamepad.XboxGamepadID.left_bumper, 
             DriveSubStateManager.getInstance()::resetRobotPose
         );
+        driverController.onPress(
+            XboxGamepad.XboxGamepadID.right_bumper, 
+            DriveSubStateManager.getInstance()::toggleSlowMode
+        );
     }
 
     public static double[] getTranslation() {

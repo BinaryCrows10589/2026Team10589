@@ -22,17 +22,19 @@ public final class SwerveDriveConstants {
     public static final boolean backLeftTurnInverted = MetaConstants.isReal;
     public static final boolean backRightTurnInverted = MetaConstants.isReal;
 
-    public static final double frontLeftTurnEncoderOffset = MetaConstants.isReal ? 0.298828 : 0;
-    public static final double frontRightTurnEncoderOffset = MetaConstants.isReal ? 0.366455 : 0;
-    public static final double backLeftTurnEncoderOffset = MetaConstants.isReal ? 0.184326 : 0;
-    public static final double backRightTurnEncoderOffset = MetaConstants.isReal ? 0.154297 : 0;
+    public static final double frontLeftTurnEncoderOffset = MetaConstants.isReal ? 0.302490 : 0;
+    public static final double frontRightTurnEncoderOffset = MetaConstants.isReal ? 0.369629 : 0;
+    public static final double backLeftTurnEncoderOffset = MetaConstants.isReal ? 0.192383 : 0;
+    public static final double backRightTurnEncoderOffset = MetaConstants.isReal ? 0.156006 : 0;
 
     public static final int maxDriveMotorVoltage = 13;
-    public static final int maxTurnMotorVoltage = 2;
+    public static final int maxTurnMotorVoltage = 1;
 
-    public static final double maxSpeedMPS = 4.9;
+    public static final double maxSpeedMPS = 4.672;
 
-    public static final double turnPIDValueP = MetaConstants.isReal ? .26 : 1;
+    // Poorly calculated acceleration: 2.72419825073 MPS
+
+    public static final double turnPIDValueP = MetaConstants.isReal ? .165 : 1;
     public static final double turnPIDValueI = 0;
     public static final double turnPIDValueD = 0;
     public static final double turnPIDValueFF = 0;
@@ -50,7 +52,7 @@ public final class SwerveDriveConstants {
 
     public static final double voltageForMaxSpeed = 12.1;
 
-    public static final double wheelDiameterMeters = ConversionUtils.inchesToMeters(3.44535284021);
+    public static final double wheelDiameterMeters = ConversionUtils.inchesToMeters(3.47123485669);
     public static final double driveGearRatio = 1458/209;
 
 

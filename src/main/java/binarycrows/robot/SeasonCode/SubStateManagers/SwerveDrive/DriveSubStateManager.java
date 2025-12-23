@@ -74,6 +74,7 @@ public class DriveSubStateManager extends SubStateManager<DriveStateRequest> {
     public double startDriveDistance = 0;
     public boolean hasStartedDrivingDistance = false;
   
+    public long trajectoryStartTime = -1;
 
 
     public DriveSubStateManager() {
@@ -123,6 +124,13 @@ public class DriveSubStateManager extends SubStateManager<DriveStateRequest> {
         setRobotPose(newRobotPose.getAutonPoint(false));
     }
 
+    public void toggleSlowMode() {
+        StateTable.putValue("SlowMode", !StateTable.getValueAsBoolean("SlowMode"));
+    }
+
+    private long startTimestamp = -1;
+    private double maxSpeed = 0;
+
     @Override
     public void periodic() {
         super.periodic();
@@ -159,7 +167,7 @@ public class DriveSubStateManager extends SubStateManager<DriveStateRequest> {
                     this.activeStateRequest.updateStatus(StateRequestStatus.RUNNING);
                     break;
                 case DRIVE_CROWMOTION:
-
+                    trajectoryStartTime = System.currentTimeMillis();
                     CrowMotionConstants.currentTrajectory.init();
                     this.activeStateRequest.updateStatus(StateRequestStatus.RUNNING);
                     break;
@@ -223,6 +231,18 @@ public class DriveSubStateManager extends SubStateManager<DriveStateRequest> {
                 break;
                 case TELEOP_DRIVE:
                     drivePeriodic();
+                    ChassisSpeeds speeds = getChassisSpeeds();
+                    double speed = Math.sqrt(speeds.vxMetersPerSecond * speeds.vxMetersPerSecond + speeds.vyMetersPerSecond * speeds.vyMetersPerSecond);
+                    LogIOInputs.logToStateTable(speed, "speed");
+                    if (speed > maxSpeed) maxSpeed = speed;
+
+                    LogIOInputs.logToStateTable(maxSpeed, "maxSpeed");
+                    if (startTimestamp == -1 && speed > 0.05) {
+                        startTimestamp = System.currentTimeMillis();
+                    }
+                    else if (speed > SwerveDriveConstants.maxSpeedMPS - 0.05) {
+                        LogIOInputs.logToStateTable((System.currentTimeMillis() - startTimestamp) /1000.0, "timeToReachMaxSpeedSec");
+                    }
                     break;
                 case DRIVE_DISTANCE_TEST:
                     if (!hasStartedDrivingDistance) {
@@ -244,14 +264,19 @@ public class DriveSubStateManager extends SubStateManager<DriveStateRequest> {
 
                     CrowMotionConstants.currentTrajectory.runTrajectoryFrame();
                     drivePeriodic();
-                    if (CrowMotionConstants.currentTrajectory.isCompleted()) {
+                    if (CrowMotionConstants.currentTrajectory.isCompleted() && this.activeStateRequest.getStatus() != StateRequestStatus.FULFILLED) {
                        this.activeStateRequest.updateStatus(StateRequestStatus.FULFILLED);
+                       LogIOInputs.logToStateTable((System.currentTimeMillis() - trajectoryStartTime) / 1000.0, "DriveSubsystem/LastTrajectoryTimeSec");
                     }
                     break;
                 default:
                 break;
         }
 
+    }
+
+    public Pose2d getRobotPose() {
+        return poseEstimator.getRobotPose();
     }
 
     public double[] getRobotPoseCM() {
