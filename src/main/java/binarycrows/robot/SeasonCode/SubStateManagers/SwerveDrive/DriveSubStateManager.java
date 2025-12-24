@@ -67,6 +67,7 @@ public class DriveSubStateManager extends SubStateManager<DriveStateRequest> {
     private ArrayList<Double> velocityBR = new ArrayList<Double>();
     private int consecutiveMovement = 0;
     private final int maxConsecutiveMovement = 100;
+    private int trajectoryArrayIndex = 0;
 
     private Timer voltageRecordingTimer = new Timer();
 
@@ -128,6 +129,24 @@ public class DriveSubStateManager extends SubStateManager<DriveStateRequest> {
         StateTable.putValue("SlowMode", !StateTable.getValueAsBoolean("SlowMode"));
     }
 
+    @Override
+    public void recieveStateRequest(StateRequest request) {
+        if (request.getStateRequestType() == DriveStateRequest.DRIVE_CROWMOTION) {
+            if (CrowMotionConstants.currentTrajectory == null || CrowMotionConstants.currentTrajectory.isCompleted()) {
+                request.updateStatus(StateRequestStatus.REJECTED);
+                LogIOInputs.logStateRequestRejection(request, "currentTrajectory is null or already completed");
+                return;
+            }
+        } else if (request.getStateRequestType() == DriveStateRequest.DRIVE_CROWMOTION_ARRAY) {
+            if (CrowMotionConstants.currentTrajectoryArray == null) {
+                request.updateStatus(StateRequestStatus.REJECTED);
+                LogIOInputs.logStateRequestRejection(request, "currentTrajectoryArray is null");
+                return;
+            }
+        }
+        super.recieveStateRequest(request);
+    }
+
     private long startTimestamp = -1;
     private double maxSpeed = 0;
 
@@ -167,8 +186,20 @@ public class DriveSubStateManager extends SubStateManager<DriveStateRequest> {
                     this.activeStateRequest.updateStatus(StateRequestStatus.RUNNING);
                     break;
                 case DRIVE_CROWMOTION:
+                    
                     trajectoryStartTime = System.currentTimeMillis();
                     CrowMotionConstants.currentTrajectory.init();
+                    this.activeStateRequest.updateStatus(StateRequestStatus.RUNNING);
+                    break;
+                case DRIVE_CROWMOTION_ARRAY:
+                    trajectoryArrayIndex = 0;
+                    if (CrowMotionConstants.currentTrajectoryArray.length == 0) {
+                        this.activeStateRequest.updateStatus(StateRequestStatus.FULFILLED);
+                        break;
+                    }
+                    CrowMotionConstants.currentTrajectoryArray[trajectoryArrayIndex].init();
+                    CrowMotionConstants.currentTrajectory = CrowMotionConstants.currentTrajectoryArray[trajectoryArrayIndex];
+
                     this.activeStateRequest.updateStatus(StateRequestStatus.RUNNING);
                     break;
                 default:
@@ -179,98 +210,116 @@ public class DriveSubStateManager extends SubStateManager<DriveStateRequest> {
             
 
         }
-        switch (this.activeStateRequest.getStateRequestType()) {
-            case CONSTRUCT_VOLTAGE_TABLE:
+        if (this.activeStateRequest.getStatus() == StateRequestStatus.RUNNING) {
+            switch (this.activeStateRequest.getStateRequestType()) {
+                case CONSTRUCT_VOLTAGE_TABLE:
 
-            
+                
 
-                LogIOInputs.logToStateTable(currentVoltageTableTargetValue, "DriveSubsystem/VoltageTableTargetValue");
-                LogIOInputs.logToStateTable(voltageRecordingTimer.get(), "DriveSubsystem/VoltageRecordingTimeElapsed");
+                    LogIOInputs.logToStateTable(currentVoltageTableTargetValue, "DriveSubsystem/VoltageTableTargetValue");
+                    LogIOInputs.logToStateTable(voltageRecordingTimer.get(), "DriveSubsystem/VoltageRecordingTimeElapsed");
 
-                if (consecutiveMovement > maxConsecutiveMovement) {
-                    if (currentVoltageTableTargetValue <= 0) {
-                        
-                        this.activeStateRequest.updateStatus(StateRequestStatus.FULFILLED);
-                        this.returnToDefaultState();
-                        recordVoltageTableValue();
-                        LogIOInputs.logToStateTable(voltage, "DriveSubsystem/Voltage");
+                    if (consecutiveMovement > maxConsecutiveMovement) {
+                        if (currentVoltageTableTargetValue <= 0) {
+                            
+                            this.activeStateRequest.updateStatus(StateRequestStatus.FULFILLED);
+                            this.returnToDefaultState();
+                            recordVoltageTableValue();
+                            LogIOInputs.logToStateTable(voltage, "DriveSubsystem/Voltage");
+                        }
+                        else {
+                                recordVoltageTableValue();
+                                currentVoltageTableTargetValue -= voltageTableStep;
+                                System.out.println("Dec voltage to " + currentVoltageTableTargetValue);
+                                frontLeftSwerveModule.setDesiredModuleDriveVoltage(currentVoltageTableTargetValue);
+                                frontRightSwerveModule.setDesiredModuleDriveVoltage(currentVoltageTableTargetValue);
+                                backLeftSwerveModule.setDesiredModuleDriveVoltage(currentVoltageTableTargetValue);
+                                backRightSwerveModule.setDesiredModuleDriveVoltage(currentVoltageTableTargetValue);
+                        }
                     }
                     else {
+                        if (
+                            frontLeftSwerveModule.getModuleState().speedMetersPerSecond != 0 &&
+                            frontRightSwerveModule.getModuleState().speedMetersPerSecond != 0 &&
+                            backLeftSwerveModule.getModuleState().speedMetersPerSecond != 0 &&
+                            backRightSwerveModule.getModuleState().speedMetersPerSecond != 0
+                            ) {
+                            consecutiveMovement++;
+                            System.out.println("Moving!");
+                            
+                        } else {
+                            consecutiveMovement = 0;
                             recordVoltageTableValue();
-                            currentVoltageTableTargetValue -= voltageTableStep;
-                            System.out.println("Dec voltage to " + currentVoltageTableTargetValue);
+                            currentVoltageTableTargetValue += voltageTableStep;
+                            System.out.println("Inc voltage to " + currentVoltageTableTargetValue);
                             frontLeftSwerveModule.setDesiredModuleDriveVoltage(currentVoltageTableTargetValue);
                             frontRightSwerveModule.setDesiredModuleDriveVoltage(currentVoltageTableTargetValue);
                             backLeftSwerveModule.setDesiredModuleDriveVoltage(currentVoltageTableTargetValue);
                             backRightSwerveModule.setDesiredModuleDriveVoltage(currentVoltageTableTargetValue);
+                        }
                     }
-                }
-                else {
-                    if (
-                        frontLeftSwerveModule.getModuleState().speedMetersPerSecond != 0 &&
-                        frontRightSwerveModule.getModuleState().speedMetersPerSecond != 0 &&
-                        backLeftSwerveModule.getModuleState().speedMetersPerSecond != 0 &&
-                        backRightSwerveModule.getModuleState().speedMetersPerSecond != 0
-                        ) {
-                        consecutiveMovement++;
-                        System.out.println("Moving!");
-                        
-                    } else {
-                        consecutiveMovement = 0;
-                        recordVoltageTableValue();
-                        currentVoltageTableTargetValue += voltageTableStep;
-                        System.out.println("Inc voltage to " + currentVoltageTableTargetValue);
-                        frontLeftSwerveModule.setDesiredModuleDriveVoltage(currentVoltageTableTargetValue);
-                        frontRightSwerveModule.setDesiredModuleDriveVoltage(currentVoltageTableTargetValue);
-                        backLeftSwerveModule.setDesiredModuleDriveVoltage(currentVoltageTableTargetValue);
-                        backRightSwerveModule.setDesiredModuleDriveVoltage(currentVoltageTableTargetValue);
-                    }
-                }
 
-                
-                break;
-                case TELEOP_DRIVE:
-                    drivePeriodic();
-                    ChassisSpeeds speeds = getChassisSpeeds();
-                    double speed = Math.sqrt(speeds.vxMetersPerSecond * speeds.vxMetersPerSecond + speeds.vyMetersPerSecond * speeds.vyMetersPerSecond);
-                    LogIOInputs.logToStateTable(speed, "speed");
-                    if (speed > maxSpeed) maxSpeed = speed;
-
-                    LogIOInputs.logToStateTable(maxSpeed, "maxSpeed");
-                    if (startTimestamp == -1 && speed > 0.05) {
-                        startTimestamp = System.currentTimeMillis();
-                    }
-                    else if (speed > SwerveDriveConstants.maxSpeedMPS - 0.05) {
-                        LogIOInputs.logToStateTable((System.currentTimeMillis() - startTimestamp) /1000.0, "timeToReachMaxSpeedSec");
-                    }
-                    break;
-                case DRIVE_DISTANCE_TEST:
-                    if (!hasStartedDrivingDistance) {
-                        hasStartedDrivingDistance = true;
-                        startDriveDistance = getDriveDistance();
-                        //this.drive(0.1, 0, 0, false);
-                    }
-                    if (getDriveDistanceTotal() >= driveDistance) {
-                        this.drive(0, 0, 0, true);
                     
-                    } else {
-                        this.drive(0.1, 0, 0, true);
-                    }
-                    LogIOInputs.logToStateTable(getDriveDistanceTotal(), "DriveSubsystem/DriveDistance");
-
                     break;
-                case DRIVE_CROWMOTION:
-                    this.drive(.001,0, 0, true);
+                    case TELEOP_DRIVE:
+                        drivePeriodic();
+                        ChassisSpeeds speeds = getChassisSpeeds();
+                        double speed = Math.sqrt(speeds.vxMetersPerSecond * speeds.vxMetersPerSecond + speeds.vyMetersPerSecond * speeds.vyMetersPerSecond);
+                        LogIOInputs.logToStateTable(speed, "speed");
+                        if (speed > maxSpeed) maxSpeed = speed;
 
-                    CrowMotionConstants.currentTrajectory.runTrajectoryFrame();
-                    drivePeriodic();
-                    if (CrowMotionConstants.currentTrajectory.isCompleted() && this.activeStateRequest.getStatus() != StateRequestStatus.FULFILLED) {
-                       this.activeStateRequest.updateStatus(StateRequestStatus.FULFILLED);
-                       LogIOInputs.logToStateTable((System.currentTimeMillis() - trajectoryStartTime) / 1000.0, "DriveSubsystem/LastTrajectoryTimeSec");
-                    }
+                        LogIOInputs.logToStateTable(maxSpeed, "maxSpeed");
+                        if (startTimestamp == -1 && speed > 0.05) {
+                            startTimestamp = System.currentTimeMillis();
+                        }
+                        else if (speed > SwerveDriveConstants.maxSpeedMPS - 0.05) {
+                            LogIOInputs.logToStateTable((System.currentTimeMillis() - startTimestamp) /1000.0, "timeToReachMaxSpeedSec");
+                        }
+                        break;
+                    case DRIVE_DISTANCE_TEST:
+                        if (!hasStartedDrivingDistance) {
+                            hasStartedDrivingDistance = true;
+                            startDriveDistance = getDriveDistance();
+                            //this.drive(0.1, 0, 0, false);
+                        }
+                        if (getDriveDistanceTotal() >= driveDistance) {
+                            this.drive(0, 0, 0, true);
+                        
+                        } else {
+                            this.drive(0.1, 0, 0, true);
+                        }
+                        LogIOInputs.logToStateTable(getDriveDistanceTotal(), "DriveSubsystem/DriveDistance");
+
+                        break;
+                    case DRIVE_CROWMOTION:
+                        this.drive(.001,0, 0, true);
+
+                        CrowMotionConstants.currentTrajectory.runTrajectoryFrame();
+                        drivePeriodic();
+                        if (CrowMotionConstants.currentTrajectory.isCompleted() && this.activeStateRequest.getStatus() != StateRequestStatus.FULFILLED) {
+                        this.activeStateRequest.updateStatus(StateRequestStatus.FULFILLED);
+                        LogIOInputs.logToStateTable((System.currentTimeMillis() - trajectoryStartTime) / 1000.0, "DriveSubsystem/LastTrajectoryTimeSec");
+                        }
+                        break;
+                    case DRIVE_CROWMOTION_ARRAY:
+                        this.drive(.001,0, 0, true);
+
+                        CrowMotionConstants.currentTrajectory.runTrajectoryFrame();
+                        drivePeriodic();
+                        if (CrowMotionConstants.currentTrajectory.isCompleted() && this.activeStateRequest.getStatus() != StateRequestStatus.FULFILLED) {
+                            trajectoryArrayIndex++;
+                            if (trajectoryArrayIndex >= CrowMotionConstants.currentTrajectoryArray.length) {
+                                this.activeStateRequest.updateStatus(StateRequestStatus.FULFILLED);
+                            } else {
+                                CrowMotionConstants.currentTrajectoryArray[trajectoryArrayIndex].init();
+                                CrowMotionConstants.currentTrajectory = CrowMotionConstants.currentTrajectoryArray[trajectoryArrayIndex];
+                            }
+                        }
+                        break;
+                    
+                    default:
                     break;
-                default:
-                break;
+            }
         }
 
     }

@@ -18,38 +18,68 @@ import edu.wpi.first.math.geometry.Pose2d;
 public class CMTest1 {
     public static void initialize() {
         DriveSubStateManager.getInstance().setRobotStartingPose(new AutonPoint(0, 0, 0, false));
-        CrowMotionConstants.currentTrajectory = 
-        new CMTrajectory(
-            "TestTraj",
-                new CMAutonPoint[] {
-                    new CMAutonPoint(0,0, false),
-                    new CMAutonPoint(2, -1, false),
-                    new CMAutonPoint(5.09, 0, false)
-                }, 
-                new CMRotation[] {
-                    new CMRotation(0, 
-                    1, 
-                    1,
-                     5, 
-                     5, 
-                     .5, 
-                     10, 
-                     1),
-                   
+        CrowMotionConstants.currentTrajectoryArray = new CMTrajectory[] {
+            new CMTrajectory(
+                "TestTraj1",
+                    new CMAutonPoint[] {
+                        new CMAutonPoint(0,0, false),
+                        new CMAutonPoint(2, -1, false),
+                        new CMAutonPoint(5.09, 0, false)
                     }, 
-                    null,
-                    4,
-                    8,
-                    TrajectoryPriority.SPLIT_PROPORTIONALLY,
-                    4,
-                    4,
-                    3,
-                    2.5,
-                    true,
-                    .05,
-                    .01,
-                    new double[] {.01, .01}, .04, 50
-                );
+                    new CMRotation[] {
+                        new CMRotation(0, 
+                        1, 
+                        1,
+                        5, 
+                        5, 
+                        .5, 
+                        10, 
+                        1),
+                    
+                        }, 
+                        null,
+                        4,
+                        8,
+                        TrajectoryPriority.SPLIT_PROPORTIONALLY,
+                        4,
+                        4,
+                        3,
+                        2.5,
+                        true,
+                        .05,
+                        .01,
+                        new double[] {.01, .01}, .04, 50),
+                    new CMTrajectory(
+                "TestTraj2",
+                    new CMAutonPoint[] {
+                        new CMAutonPoint(5.09,0, false),
+                        new CMAutonPoint(2, -1, false),
+                        new CMAutonPoint(0, 0, false)
+                    }, 
+                    new CMRotation[] {
+                        new CMRotation(0, 
+                        1, 
+                        1,
+                        5, 
+                        5, 
+                        .5, 
+                        10, 
+                        1),
+                    
+                        }, 
+                        null,
+                        4,
+                        8,
+                        TrajectoryPriority.SPLIT_PROPORTIONALLY,
+                        4,
+                        4,
+                        3,
+                        2.5,
+                        true,
+                        .05,
+                        .01,
+                        new double[] {.01, .01}, .04, 50),
+            };
     }
 }
 

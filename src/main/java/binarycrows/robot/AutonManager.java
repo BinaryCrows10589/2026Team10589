@@ -8,6 +8,6 @@ import binarycrows.robot.SeasonCode.SubStateManagers.SwerveDrive.DriveSubStateMa
 public class AutonManager {
     public static void runAuton() {
         CMTest1.initialize();
-        (new StateRequest<DriveStateRequest>(DriveStateRequest.DRIVE_CROWMOTION, StateRequestPriority.NORMAL)).dispatchSelf();
+        (new StateRequest<DriveStateRequest>(DriveStateRequest.DRIVE_CROWMOTION_ARRAY, StateRequestPriority.NORMAL)).dispatchSelf();
     }
 }
