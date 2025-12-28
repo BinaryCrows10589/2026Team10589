@@ -14,6 +14,7 @@ import org.photonvision.targeting.PhotonTrackedTarget;
 import binarycrows.robot.CrowMotion.UserSide.CMAutonPoint;
 import binarycrows.robot.SeasonCode.Constants.MetaConstants;
 import binarycrows.robot.SeasonCode.Constants.SwerveDriveConstants;
+import binarycrows.robot.SeasonCode.Constants.VisionConstants;
 import binarycrows.robot.SeasonCode.Constants.PoseEstimatorConstants;
 import binarycrows.robot.SeasonCode.SubStateManagers.SwerveDrive.DriveSubStateManager;
 import binarycrows.robot.Utils.ConversionUtils;
@@ -35,7 +36,7 @@ import gg.questnav.questnav.PoseFrame;
 import gg.questnav.questnav.QuestNav;
 
 public class PoseEstimator {
-    private PhotonCamera[] photonCameras = {new PhotonCamera("Unknown1"), new PhotonCamera("BRModuleCam")};
+    private PhotonCamera[] photonCameras = {new PhotonCamera("Cam1"), new PhotonCamera("Cam2")}; //TODO: add camera names here
     private PhotonPoseEstimator[] photonPoseEstimators = new PhotonPoseEstimator[photonCameras.length];
     private SwerveDrivePoseEstimator swerveDrivePoseEstimator;
     private QuestNav questNav = new QuestNav();
@@ -74,14 +75,13 @@ public class PoseEstimator {
             this.swerveDrivePoseEstimator.update(DriveSubStateManager.getInstance().gyroOutputs.yawAngle,
                 DriveSubStateManager.getInstance().getModulePositions());
 
-            if(this.lastChassisSpeeds != null && this.lastRobotPose != null && Math.sqrt(this.lastChassisSpeeds.vxMetersPerSecond * this.lastChassisSpeeds.vxMetersPerSecond + this.lastChassisSpeeds.vyMetersPerSecond * this.lastChassisSpeeds.vyMetersPerSecond) > .05) {
+            // Accelerometer data algorithm (was less accurate than odometry and didn't help drift)
+            /*if(this.lastChassisSpeeds != null && this.lastRobotPose != null && Math.sqrt(this.lastChassisSpeeds.vxMetersPerSecond * this.lastChassisSpeeds.vxMetersPerSecond + this.lastChassisSpeeds.vyMetersPerSecond * this.lastChassisSpeeds.vyMetersPerSecond) > .05) {
                 double xPose = (DriveSubStateManager.getInstance().gyroOutputs.xAccelerationMetersPerSecondPerSecond * dt + this.lastChassisSpeeds.vxMetersPerSecond) * dt + this.lastRobotPose.getX();
                 double yPose = (DriveSubStateManager.getInstance().gyroOutputs.yAccelerationMetersPerSecondPerSecond * dt + this.lastChassisSpeeds.vyMetersPerSecond) * dt + this.lastRobotPose.getY();
                 double timestamp = Timer.getFPGATimestamp();
-               // swerveDrivePoseEstimator.addVisionMeasurement(new Pose2d(xPose, yPose, this.swerveDrivePoseEstimator.getEstimatedPosition().getRotation()), timestamp, PoseEstimatorConstants.visionPoseEstimateTrust);
-            }
-            this.lastRobotPose = this.swerveDrivePoseEstimator.getEstimatedPosition();
-            this.lastChassisSpeeds = SwerveDriveConstants.driveKinematics.toChassisSpeeds(DriveSubStateManager.getInstance().swerveModuleStates);
+               swerveDrivePoseEstimator.addVisionMeasurement(new Pose2d(xPose, yPose, this.swerveDrivePoseEstimator.getEstimatedPosition().getRotation()), timestamp, PoseEstimatorConstants.visionPoseEstimateTrust);
+            }*/
             LogIOInputs.logToStateTable(this.swerveDrivePoseEstimator.getEstimatedPosition(), "PoseEstimator/EstimatedPosition");
 
         } catch(Exception E) {
@@ -118,9 +118,8 @@ public class PoseEstimator {
     }
 
     private void configPhotonPoseEstimators() {
-        //this.photonPoseEstimators[0] = new PhotonPoseEstimator(VisionConstants.aprilTagLayout, PoseStrategy.LOWEST_AMBIGUITY, VisionConstants.kBackLeftCameraToCenter);
-        //this.photonPoseEstimators[1] = new PhotonPoseEstimator(VisionConstants.aprilTagLayout, PoseStrategy.LOWEST_AMBIGUITY, VisionConstants.kBackRightCameraToCenter);
-        System.out.println("Don't forget to configure the photon position estimators someday..."); //TODO
+        this.photonPoseEstimators[0] = new PhotonPoseEstimator(VisionConstants.aprilTagLayout, PoseStrategy.LOWEST_AMBIGUITY, VisionConstants.frontLeftCameraToCenter);
+        this.photonPoseEstimators[1] = new PhotonPoseEstimator(VisionConstants.aprilTagLayout, PoseStrategy.LOWEST_AMBIGUITY, VisionConstants.frontRightCameraToCenter);
     }
 
 
