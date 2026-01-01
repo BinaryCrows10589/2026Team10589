@@ -44,10 +44,7 @@ public class SwerveModule {
         LogIOInputs.logToStateTable(getDriveMotorSpeedInMetersPerSecond(), swerveModuleName + "/SpeedMPS");
 
 
-        System.out.println(this.swerveModuleName + " desired module rotations: " + desiredState.angle.getRotations());
-        System.out.println(this.swerveModuleName + " actual module rotations: " + getModuleState().angle.getRotations());
         SwerveModuleState optimizedState = ConversionUtils.optimizeSwerveModuleState(desiredState, getModuleState().angle); 
-        System.out.println(this.swerveModuleName + " desired module rotations: " + optimizedState.angle.getRotations() + "(optimized)");
 
         if (Double.isNaN(optimizedState.speedMetersPerSecond)) optimizedState.speedMetersPerSecond = 0;
         

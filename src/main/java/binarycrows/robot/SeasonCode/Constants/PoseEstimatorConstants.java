@@ -25,11 +25,51 @@ public final class PoseEstimatorConstants {
       This was just a simply way I thought of first
       The system must give blue and red offsets for each tag for both x and y */
     // Index in first array is tag ID, index in second ID is blueX, blueY, blueRotDeg, redX, redY, redRotDeg
-    public static final int[][] tagFudgeOffsets = new int[][] {
+    public static final double[][] tagFudgeOffsets = new double[][] {
         {0, 0, 0, 0, 0, 0}, // Tag 1
         {0, 0, 0, 0, 0, 0}, // Tag 2
         {0, 0, 0, 0, 0, 0}, // Tag 3
-        // ect
+        {0, 0, 0, 0, 0, 0}, // Tag 3
+        {0, 0, 0, 0, 0, 0}, // Tag 3
+        {0, 0, 0, 0, 0, 0}, // Tag 3
+        {0, 0, 0, 0, 0, 0}, // Tag 3
+        {0, 0, 0, 0, 0, 0}, // Tag 3
+        {0, 0, 0, 0, 0, 0}, // Tag 3
+        {0, 0, 0, 0, 0, 0}, // Tag 3
+        {0, 0, 0, 0, 0, 0}, // Tag 3
+        {0, 0, 0, 0, 0, 0}, // Tag 3
+        {0, 0, 0, 0, 0, 0}, // Tag 3
+        {0, 0, 0, 0, 0, 0}, // Tag 3
+        {0, 0, 0, 0, 0, 0}, // Tag 3
+        {0, 0, 0, 0, 0, 0}, // Tag 16
+        {0, 0, 0, 0, 0, 0}, // Tag 3
+        {0, 0, 0, 0, 0, 0}, // Tag 3
+        {0, 0, 0, 0, 0, 0}, // Tag 3
+        {0, 0, 0, 0, 0, 0}, // Tag 3
+        {0, 0, 0, 0, 0, 0}, // Tag 3
+        {0, 0, 0, 0, 0, 0}, // Tag 3
+        {0, 0, 0, 0, 0, 0}, // Tag 3
+        {0, 0, 0, 0, 0, 0}, // Tag 3
+        {0, 0, 0, 0, 0, 0}, // Tag 3
+        {0, 0, 0, 0, 0, 0}, // Tag 3
+        {0, 0, 0, 0, 0, 0}, // Tag 3
+        {0, 0, 0, 0, 0, 0}, // Tag 3
+        {0, 0, 0, 0, 0, 0}, // Tag 3
+        {0, 0, 0, 0, 0, 0}, // Tag 3
+        {0, 0, 0, 0, 0, 0}, // Tag 3
+        {0, 0, 0, 0, 0, 0}, // Tag 3
+        {0, 0, 0, 0, 0, 0}, // Tag 3
+        {0, 0, 0, 0, 0, 0}, // Tag 3
+        {0, 0, 0, 0, 0, 0}, // Tag 3
+        {0, 0, 0, 0, 0, 0}, // Tag 3
+        {0, 0, 0, 0, 0, 0}, // Tag 3
+        {0, 0, 0, 0, 0, 0}, // Tag 3
+        {0, 0, 0, 0, 0, 0}, // Tag 3
+        {0, 0, 0, 0, 0, 0}, // Tag 3
+        {0, 0, 0, 0, 0, 0}, // Tag 3
+        {0, 0, 0, 0, 0, 0}, // Tag 3
+        {0, 0, 0, 0, 0, 0}, // Tag 3
+        {0, 0, 0, 0, 0, 0}, // Tag 3
     };
 
     /*

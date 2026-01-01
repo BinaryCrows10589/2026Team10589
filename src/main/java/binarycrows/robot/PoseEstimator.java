@@ -36,7 +36,7 @@ import gg.questnav.questnav.PoseFrame;
 import gg.questnav.questnav.QuestNav;
 
 public class PoseEstimator {
-    private PhotonCamera[] photonCameras = {new PhotonCamera("Cam1"), new PhotonCamera("Cam2")}; //TODO: add camera names here
+    private PhotonCamera[] photonCameras = {new PhotonCamera("BLModuleCam"), new PhotonCamera("FLModuleCam")}; //TODO: add camera names here
     private PhotonPoseEstimator[] photonPoseEstimators = new PhotonPoseEstimator[photonCameras.length];
     private SwerveDrivePoseEstimator swerveDrivePoseEstimator;
     private QuestNav questNav = new QuestNav();
@@ -57,12 +57,12 @@ public class PoseEstimator {
             new Pose2d(),
             PoseEstimatorConstants.swerveDrivePoseEstimateTrust, PoseEstimatorConstants.visionPoseEstimateTrust);
         PoseEstimatorConstants.aprilTagLayout.setOrigin(PoseEstimatorConstants.originPosition);
-
         visionNotifier.startPeriodic(.1);
 
     }
 
     public void periodic() {
+
         if(this.lastFrameStart != -1) {
             this.dt = (System.currentTimeMillis() - this.lastFrameStart) / 1000.0;
         } else {
@@ -118,8 +118,8 @@ public class PoseEstimator {
     }
 
     private void configPhotonPoseEstimators() {
-        this.photonPoseEstimators[0] = new PhotonPoseEstimator(VisionConstants.aprilTagLayout, PoseStrategy.LOWEST_AMBIGUITY, VisionConstants.frontLeftCameraToCenter);
-        this.photonPoseEstimators[1] = new PhotonPoseEstimator(VisionConstants.aprilTagLayout, PoseStrategy.LOWEST_AMBIGUITY, VisionConstants.frontRightCameraToCenter);
+        this.photonPoseEstimators[0] = new PhotonPoseEstimator(VisionConstants.aprilTagLayout, PoseStrategy.LOWEST_AMBIGUITY, VisionConstants.frontRightCameraToCenter);
+        this.photonPoseEstimators[1] = new PhotonPoseEstimator(VisionConstants.aprilTagLayout, PoseStrategy.LOWEST_AMBIGUITY, VisionConstants.frontLeftCameraToCenter);
     }
 
 
@@ -158,11 +158,11 @@ public class PoseEstimator {
                 if (bestResult != null) {
                     Optional<EstimatedRobotPose> estimatedPosition3d = estimator.update(bestResult);
                     if(estimatedPosition3d.isPresent()) {
-                        int id = bestTarget.fiducialId;
-                        double xFudge = MetaConstants.isBlueAlliance ? 
+                        int id = bestTarget.fiducialId - 1;
+                        double xFudge = MetaConstants.isBlueAlliance ?
                         PoseEstimatorConstants.tagFudgeOffsets[id][0] : PoseEstimatorConstants.tagFudgeOffsets[id][3];
                     
-                        double yFudge = MetaConstants.isBlueAlliance ? 
+                        double yFudge = MetaConstants.isBlueAlliance ?
                         PoseEstimatorConstants.tagFudgeOffsets[id][1] : PoseEstimatorConstants.tagFudgeOffsets[id][4];
 
                         double rotFudge = MetaConstants.isBlueAlliance ? 
@@ -186,11 +186,13 @@ public class PoseEstimator {
             LogIOInputs.logToStateTable(questFrames.length > 0, "QuestNav/HasFrames");
             LogIOInputs.logToStateTable(questNav.getBatteryPercent(), "QuestNav/Battery");
 
+
             // Loop over the pose data frames and send them to the pose estimator
             for (PoseFrame questFrame : questFrames) {
                 LogIOInputs.logToStateTable(questFrames.length > 0, "QuestNav/HasFrames");
 
                     Pose3d questPose = questFrame.questPose3d();
+
                     double timestamp = questFrame.dataTimestamp();
 
                     // Transform by the mount pose to get your robot pose
@@ -199,6 +201,11 @@ public class PoseEstimator {
                     // Add the measurement to our estimator
                     LogIOInputs.logToStateTable(robotPose, "QuestNav/RobotPose");
                     LogIOInputs.logToStateTable(timestamp, "QuestNav/LastUpdateTimestamp");
+                    
+            if (Double.isNaN(swerveDrivePoseEstimator.getEstimatedPosition().getX())) {
+                swerveDrivePoseEstimator.resetPosition(DriveSubStateManager.getInstance().getGyroAngleRotation2d(),
+                DriveSubStateManager.getInstance().getModulePositions(), robotPose.toPose2d());
+            }
                     swerveDrivePoseEstimator.addVisionMeasurement(robotPose.toPose2d(), timestamp, PoseEstimatorConstants.questNavPoseEstimateTrust);
                 }
                 LogIOInputs.logToStateTable(true, "QuestNav/Updating");

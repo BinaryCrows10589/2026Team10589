@@ -1,5 +1,6 @@
 package binarycrows.robot;
 
+import binarycrows.robot.Enums.StateRequestPriority;
 import binarycrows.robot.SeasonCode.Constants.ControlConstants;
 import binarycrows.robot.SeasonCode.SubStateManagers.SwerveDrive.DriveStateRequest;
 import binarycrows.robot.SeasonCode.SubStateManagers.SwerveDrive.DriveSubStateManager;
@@ -11,9 +12,13 @@ import edu.wpi.first.math.MathUtil;
 
 public class Keybinds {
     public static GenericGamepad driverController = new XboxGamepad(0);
+    public static GenericGamepad buttonController = new XboxGamepad(1);
+
 
     public static void periodic() {
         driverController.periodic();
+        buttonController.periodic();
+
     }
 
     public static void createKeybinds() {
@@ -71,6 +76,12 @@ public class Keybinds {
             XboxGamepad.XboxGamepadID.right_bumper, 
             DriveSubStateManager.getInstance()::toggleSlowMode
         );
+
+        buttonController.onPress(
+            XboxGamepad.XboxGamepadID.b, 
+            new StateRequest<DriveStateRequest>(DriveStateRequest.DRIVE_CROWMOTION_AUTOPOSITIONING, StateRequestPriority.NORMAL),
+            true
+            );
     }
 
     public static double[] getTranslation() {

@@ -14,24 +14,31 @@ public class GenericGamepad {
      * Each index has an array with onPress at 0 and onRelease at 1
      */
     protected Runnable[][] buttonMap;
+    protected boolean[] lastFrameReadings;
 
     protected GenericHID gamepad;
 
     public GenericGamepad(int portID, int numButtons) {
         this.gamepad = new GenericHID(portID);
         buttonMap = new Runnable[numButtons][2];
+        lastFrameReadings = new boolean[numButtons];
 
     }
 
     public void periodic() {
         for(int i = 0; i < buttonMap.length; i++) {
             if(this.gamepad.getRawButtonPressed(i+1)) {
-                if(this.buttonMap[i][0] != null)
+                
+                if(this.buttonMap[i][0] != null && !this.lastFrameReadings[i])
                     this.buttonMap[i][0].run();
+
+                this.lastFrameReadings[i] = true;
             }
-            if(this.gamepad.getRawButtonReleased(i+1)) {
+            if(this.gamepad.getRawButtonReleased(i+1) && this.lastFrameReadings[i]) {
                 if(this.buttonMap[i][1] != null)
                     this.buttonMap[i][1].run();
+
+                    this.lastFrameReadings[i] = false;
             }
         }
     }

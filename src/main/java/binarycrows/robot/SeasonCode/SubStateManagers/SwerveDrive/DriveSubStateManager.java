@@ -14,6 +14,10 @@ import binarycrows.robot.PoseEstimator;
 import binarycrows.robot.StateRequest;
 import binarycrows.robot.StateTable;
 import binarycrows.robot.SubStateManager;
+import binarycrows.robot.CrowMotion.UserSide.CMAutonPoint;
+import binarycrows.robot.CrowMotion.UserSide.CMRotation;
+import binarycrows.robot.CrowMotion.UserSide.CMTrajectory;
+import binarycrows.robot.CrowMotion.UserSide.CMTrajectory.TrajectoryPriority;
 import binarycrows.robot.Enums.StateRequestPriority;
 import binarycrows.robot.Enums.StateRequestStatus;
 import binarycrows.robot.SeasonCode.Constants.CrowMotionConstants;
@@ -132,17 +136,52 @@ public class DriveSubStateManager extends SubStateManager<DriveStateRequest> {
     @Override
     public void recieveStateRequest(StateRequest request) {
         if (request.getStateRequestType() == DriveStateRequest.DRIVE_CROWMOTION) {
+            StateTable.putValue("IsDriverControlled", false);
+
             if (CrowMotionConstants.currentTrajectory == null || CrowMotionConstants.currentTrajectory.isCompleted()) {
                 request.updateStatus(StateRequestStatus.REJECTED);
                 LogIOInputs.logStateRequestRejection(request, "currentTrajectory is null or already completed");
                 return;
             }
         } else if (request.getStateRequestType() == DriveStateRequest.DRIVE_CROWMOTION_ARRAY) {
+            StateTable.putValue("IsDriverControlled", false);
+
             if (CrowMotionConstants.currentTrajectoryArray == null) {
                 request.updateStatus(StateRequestStatus.REJECTED);
                 LogIOInputs.logStateRequestRejection(request, "currentTrajectoryArray is null");
                 return;
             }
+        } else if (request.getStateRequestType() == DriveStateRequest.DRIVE_CROWMOTION_AUTOPOSITIONING) {
+            StateTable.putValue("IsDriverControlled", false);
+            Pose2d currentRobotPose = poseEstimator.getRobotPose();
+            System.out.println("Start autopositioning...");
+
+            CrowMotionConstants.currentTrajectory = new CMTrajectory(
+                "TestTraj1",
+                    new CMAutonPoint[] {
+                        new CMAutonPoint(4, -2, false)
+                    }, 
+                    new CMRotation[] {
+                        new CMRotation(-140, 0, 1, 240, 240, 240, 3, false)
+                    }, 
+                        null,
+                        4,
+                        8,
+                        TrajectoryPriority.SPLIT_PROPORTIONALLY,
+                        2.5,
+                        3,
+                        3,
+                        Math.sqrt(getChassisSpeeds().vxMetersPerSecond * getChassisSpeeds().vxMetersPerSecond + 
+                        getChassisSpeeds().vyMetersPerSecond * getChassisSpeeds().vyMetersPerSecond),
+                        true,
+                        .05,
+                        .02,
+                        new double[] {.02, .02}, .04, 50);
+            request = new StateRequest<DriveStateRequest>(DriveStateRequest.DRIVE_CROWMOTION, request.getPriority());
+        }
+        else if (request.getStateRequestType() == DriveStateRequest.TELEOP_DRIVE) {
+            StateTable.putValue("IsDriverControlled", true);
+
         }
         super.recieveStateRequest(request);
     }
@@ -292,7 +331,8 @@ public class DriveSubStateManager extends SubStateManager<DriveStateRequest> {
 
                         break;
                     case DRIVE_CROWMOTION:
-                        this.drive(.001,0, 0, true);
+                        //this.drive(.001,0, 0, true);
+                        System.out.println("Driving...");
 
                         CrowMotionConstants.currentTrajectory.runTrajectoryFrame();
                         drivePeriodic();

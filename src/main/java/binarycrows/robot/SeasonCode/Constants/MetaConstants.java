@@ -10,7 +10,7 @@ public final class MetaConstants {
     public static boolean startedAutonomous = false;
 
     public static boolean updateVision = false;
-    public static boolean updateQuestNav = true;
+    public static boolean updateQuestNav = false;
 
     public static boolean lastUpdatedVision = false;
 
