@@ -130,8 +130,11 @@ public class DriveSubStateManager extends SubStateManager<DriveStateRequest> {
         setRobotPose(newRobotPose.getAutonPoint(false));
     }
 
-    public void toggleSlowMode() {
-        StateTable.putValue("SlowMode", !StateTable.getValueAsBoolean("SlowMode"));
+    public void enableSlowMode() {
+        StateTable.putValue("SlowMode", true);
+    }
+    public void disableSlowMode() {
+        StateTable.putValue("SlowMode", false);
     }
 
     @Override

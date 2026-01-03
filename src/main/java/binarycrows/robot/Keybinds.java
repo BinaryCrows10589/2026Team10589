@@ -74,7 +74,8 @@ public class Keybinds {
         );
         driverController.onPress(
             XboxGamepad.XboxGamepadID.right_bumper, 
-            DriveSubStateManager.getInstance()::toggleSlowMode
+            DriveSubStateManager.getInstance()::enableSlowMode,
+            DriveSubStateManager.getInstance()::disableSlowMode
         );
 
         buttonController.onPress(
