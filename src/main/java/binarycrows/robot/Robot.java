@@ -10,15 +10,20 @@ import java.util.function.Supplier;
 import org.littletonrobotics.junction.LogFileUtil;
 import org.littletonrobotics.junction.LoggedRobot;
 import org.littletonrobotics.junction.Logger;
+import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 import org.littletonrobotics.junction.networktables.NT4Publisher;
 import org.littletonrobotics.junction.wpilog.WPILOGReader;
 import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 
 import binarycrows.robot.CrowMotion.UserSide.CMConfig;
+import binarycrows.robot.Enums.StateRequestPriority;
+import binarycrows.robot.SeasonCode.Autons.Test.CMTest1;
+import binarycrows.robot.SeasonCode.Autons.Test.CMTest2;
 import binarycrows.robot.SeasonCode.Constants.CrowMotionConstants;
 import binarycrows.robot.SeasonCode.Constants.FieldConstants;
 import binarycrows.robot.SeasonCode.Constants.MetaConstants;
 import binarycrows.robot.SeasonCode.Constants.SwerveDriveConstants;
+import binarycrows.robot.SeasonCode.SubStateManagers.SwerveDrive.DriveStateRequest;
 import binarycrows.robot.SeasonCode.SubStateManagers.SwerveDrive.DriveSubStateManager;
 import binarycrows.robot.Utils.LogIOInputs;
 import edu.wpi.first.wpilibj.PowerDistribution;
@@ -35,6 +40,9 @@ public class Robot extends LoggedRobot {
   @SuppressWarnings("rawtypes")
   private ArrayList<SubStateManager> subStateManagers;
 
+
+  private final LoggedDashboardChooser<Runnable> chooser = new LoggedDashboardChooser<>("AutonPath");
+
   
   /**
    * This function is run when the robot is first started up and should be used for any
@@ -44,8 +52,11 @@ public class Robot extends LoggedRobot {
     
     MainStateManager.getInstance(); // Initialize the MainStateManager
 
-    
+    // Initialize autonomous chooser
+    chooser.addDefaultOption("CMTest1", CMTest1::initialize);
+    chooser.addOption("CMTest2", CMTest2::initialize);  
   }
+
   @SuppressWarnings("resource")
   @Override
   public void robotInit() {
@@ -80,6 +91,7 @@ public class Robot extends LoggedRobot {
       StateTable.putValue("AxisLock", false);
       
       StateTable.putValue("IsDriverControlled", true);
+      
 
       subStateManagers = MainStateManager.getInstance().getSubStateManagers();
 
@@ -137,7 +149,8 @@ public class Robot extends LoggedRobot {
   public void autonomousPeriodic() {
     if (!MetaConstants.startedAutonomous) {
 
-      AutonManager.runAuton();
+      chooser.get().run();
+      (new StateRequest<DriveStateRequest>(DriveStateRequest.DRIVE_CROWMOTION_ARRAY, StateRequestPriority.NORMAL)).dispatchSelf();
       MetaConstants.startedAutonomous = true;
     }
   }
