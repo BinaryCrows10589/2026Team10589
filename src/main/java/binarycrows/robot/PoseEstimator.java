@@ -14,7 +14,6 @@ import org.photonvision.targeting.PhotonTrackedTarget;
 import binarycrows.robot.CrowMotion.UserSide.CMAutonPoint;
 import binarycrows.robot.SeasonCode.Constants.MetaConstants;
 import binarycrows.robot.SeasonCode.Constants.SwerveDriveConstants;
-import binarycrows.robot.SeasonCode.Constants.VisionConstants;
 import binarycrows.robot.SeasonCode.Constants.PoseEstimatorConstants;
 import binarycrows.robot.SeasonCode.SubStateManagers.SwerveDrive.DriveSubStateManager;
 import binarycrows.robot.Utils.ConversionUtils;
@@ -36,17 +35,22 @@ import gg.questnav.questnav.PoseFrame;
 import gg.questnav.questnav.QuestNav;
 
 public class PoseEstimator {
-    private PhotonCamera[] photonCameras = {new PhotonCamera("BLModuleCam"), new PhotonCamera("FLModuleCam")}; //TODO: add camera names here
+    private PhotonCamera[] photonCameras = {new PhotonCamera("BLModuleCam"), new PhotonCamera("FLModuleCam")};
     private PhotonPoseEstimator[] photonPoseEstimators = new PhotonPoseEstimator[photonCameras.length];
     private SwerveDrivePoseEstimator swerveDrivePoseEstimator;
     private QuestNav questNav = new QuestNav();
 
     private Notifier visionNotifier = new Notifier(this::addVisionMeasurments);
 
+    // These are for Eli and David's gyro acceleration algorithm
+    // It did not increase accuracy so it has been disabled
+    /*
     private ChassisSpeeds lastChassisSpeeds;
     private Pose2d lastRobotPose;
-    private long lastFrameStart = -1;
     private double dt;
+    private long lastFrameStart = -1;
+    */
+
     public PoseEstimator(Rotation2d yawAngle, SwerveModulePosition[] modulePositions) {
         
         configPhotonPoseEstimators();
@@ -63,12 +67,13 @@ public class PoseEstimator {
 
     public void periodic() {
 
-        if(this.lastFrameStart != -1) {
+        /*if(this.lastFrameStart != -1) {
             this.dt = (System.currentTimeMillis() - this.lastFrameStart) / 1000.0;
         } else {
             this.dt = 1/50;
         }
         this.lastFrameStart = System.currentTimeMillis();
+        */
 
         try {
             questNav.commandPeriodic();
@@ -85,7 +90,7 @@ public class PoseEstimator {
             LogIOInputs.logToStateTable(this.swerveDrivePoseEstimator.getEstimatedPosition(), "PoseEstimator/EstimatedPosition");
 
         } catch(Exception E) {
-           System.out.println("FAILED TO UPDATE: " + E.getMessage());
+           System.out.println("FAILED TO UPDATE POSE ESTIMATOR: " + E.getMessage());
         }
     }
 
@@ -118,8 +123,8 @@ public class PoseEstimator {
     }
 
     private void configPhotonPoseEstimators() {
-        this.photonPoseEstimators[0] = new PhotonPoseEstimator(VisionConstants.aprilTagLayout, PoseStrategy.LOWEST_AMBIGUITY, VisionConstants.frontRightCameraToCenter);
-        this.photonPoseEstimators[1] = new PhotonPoseEstimator(VisionConstants.aprilTagLayout, PoseStrategy.LOWEST_AMBIGUITY, VisionConstants.frontLeftCameraToCenter);
+        this.photonPoseEstimators[0] = new PhotonPoseEstimator(PoseEstimatorConstants.aprilTagLayout, PoseStrategy.LOWEST_AMBIGUITY, PoseEstimatorConstants.frontRightCameraToCenter);
+        this.photonPoseEstimators[1] = new PhotonPoseEstimator(PoseEstimatorConstants.aprilTagLayout, PoseStrategy.LOWEST_AMBIGUITY, PoseEstimatorConstants.frontLeftCameraToCenter);
     }
 
 
@@ -158,15 +163,16 @@ public class PoseEstimator {
                 if (bestResult != null) {
                     Optional<EstimatedRobotPose> estimatedPosition3d = estimator.update(bestResult);
                     if(estimatedPosition3d.isPresent()) {
+                        double[][] tagFudgeOffsets = PoseEstimatorConstants.tagFudgeOffsets.get(camera.getName());
                         int id = bestTarget.fiducialId - 1;
                         double xFudge = MetaConstants.isBlueAlliance ?
-                        PoseEstimatorConstants.tagFudgeOffsets[id][0] : PoseEstimatorConstants.tagFudgeOffsets[id][3];
+                        tagFudgeOffsets[id][0] : tagFudgeOffsets[id][3];
                     
                         double yFudge = MetaConstants.isBlueAlliance ?
-                        PoseEstimatorConstants.tagFudgeOffsets[id][1] : PoseEstimatorConstants.tagFudgeOffsets[id][4];
+                        tagFudgeOffsets[id][1] : tagFudgeOffsets[id][4];
 
                         double rotFudge = MetaConstants.isBlueAlliance ? 
-                        PoseEstimatorConstants.tagFudgeOffsets[id][2] : PoseEstimatorConstants.tagFudgeOffsets[id][5];
+                        tagFudgeOffsets[id][2] : tagFudgeOffsets[id][5];
                         EstimatedRobotPose estimatedPose = estimatedPosition3d.get();
                         Pose2d estimatedPose2d = estimatedPose.estimatedPose.toPose2d();
                         Pose2d fudgedPosed = new Pose2d(estimatedPose2d.getX() + xFudge, estimatedPose2d.getY() + yFudge, Rotation2d.fromDegrees(estimatedPose2d.getRotation().getDegrees() + rotFudge));

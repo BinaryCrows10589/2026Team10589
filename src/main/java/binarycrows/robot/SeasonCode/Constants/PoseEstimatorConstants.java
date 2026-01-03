@@ -1,5 +1,7 @@
 package binarycrows.robot.SeasonCode.Constants;
 
+import java.util.Map;
+
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFieldLayout.OriginPosition;
 import edu.wpi.first.apriltag.AprilTagFields;
@@ -21,56 +23,76 @@ public final class PoseEstimatorConstants {
     public static final Pose2d maxPoseDeltaFromCurrent = new Pose2d(1, 1, Rotation2d.fromDegrees(10));
     public static OriginPosition originPosition = OriginPosition.kBlueAllianceWallRightSide;
     public static final int[] kExcludedTags = new int[] {};
-    /* TODO: BOYNE, you may want to change the implimentaiton of this. 
-      This was just a simply way I thought of first
-      The system must give blue and red offsets for each tag for both x and y */
     // Index in first array is tag ID, index in second ID is blueX, blueY, blueRotDeg, redX, redY, redRotDeg
-    public static final double[][] tagFudgeOffsets = new double[][] {
-        {0, 0, 0, 0, 0, 0}, // Tag 1
-        {0, 0, 0, 0, 0, 0}, // Tag 2
-        {0, 0, 0, 0, 0, 0}, // Tag 3
-        {0, 0, 0, 0, 0, 0}, // Tag 3
-        {0, 0, 0, 0, 0, 0}, // Tag 3
-        {0, 0, 0, 0, 0, 0}, // Tag 3
-        {0, 0, 0, 0, 0, 0}, // Tag 3
-        {0, 0, 0, 0, 0, 0}, // Tag 3
-        {0, 0, 0, 0, 0, 0}, // Tag 3
-        {0, 0, 0, 0, 0, 0}, // Tag 3
-        {0, 0, 0, 0, 0, 0}, // Tag 3
-        {0, 0, 0, 0, 0, 0}, // Tag 3
-        {0, 0, 0, 0, 0, 0}, // Tag 3
-        {0, 0, 0, 0, 0, 0}, // Tag 3
-        {0, 0, 0, 0, 0, 0}, // Tag 3
-        {0, 0, 0, 0, 0, 0}, // Tag 16
-        {0, 0, 0, 0, 0, 0}, // Tag 3
-        {0, 0, 0, 0, 0, 0}, // Tag 3
-        {0, 0, 0, 0, 0, 0}, // Tag 3
-        {0, 0, 0, 0, 0, 0}, // Tag 3
-        {0, 0, 0, 0, 0, 0}, // Tag 3
-        {0, 0, 0, 0, 0, 0}, // Tag 3
-        {0, 0, 0, 0, 0, 0}, // Tag 3
-        {0, 0, 0, 0, 0, 0}, // Tag 3
-        {0, 0, 0, 0, 0, 0}, // Tag 3
-        {0, 0, 0, 0, 0, 0}, // Tag 3
-        {0, 0, 0, 0, 0, 0}, // Tag 3
-        {0, 0, 0, 0, 0, 0}, // Tag 3
-        {0, 0, 0, 0, 0, 0}, // Tag 3
-        {0, 0, 0, 0, 0, 0}, // Tag 3
-        {0, 0, 0, 0, 0, 0}, // Tag 3
-        {0, 0, 0, 0, 0, 0}, // Tag 3
-        {0, 0, 0, 0, 0, 0}, // Tag 3
-        {0, 0, 0, 0, 0, 0}, // Tag 3
-        {0, 0, 0, 0, 0, 0}, // Tag 3
-        {0, 0, 0, 0, 0, 0}, // Tag 3
-        {0, 0, 0, 0, 0, 0}, // Tag 3
-        {0, 0, 0, 0, 0, 0}, // Tag 3
-        {0, 0, 0, 0, 0, 0}, // Tag 3
-        {0, 0, 0, 0, 0, 0}, // Tag 3
-        {0, 0, 0, 0, 0, 0}, // Tag 3
-        {0, 0, 0, 0, 0, 0}, // Tag 3
-        {0, 0, 0, 0, 0, 0}, // Tag 3
-        {0, 0, 0, 0, 0, 0}, // Tag 3
-    };
+    public static final Map<String, double[][]> tagFudgeOffsets = Map.of(
+      "FLModuleCam", new double[][] {
+                        {0, 0, 0, 0, 0, 0}, // Tag 1
+                        {0, 0, 0, 0, 0, 0}, // Tag 2
+                        {0, 0, 0, 0, 0, 0}, // Tag 3
+                        {0, 0, 0, 0, 0, 0}, // Tag 4
+                        {0, 0, 0, 0, 0, 0}, // Tag 5
+                        {0, 0, 0, 0, 0, 0}, // Tag 6
+                        {0, 0, 0, 0, 0, 0}, // Tag 7
+                        {0, 0, 0, 0, 0, 0}, // Tag 8
+                        {0, 0, 0, 0, 0, 0}, // Tag 9
+                        {0, 0, 0, 0, 0, 0}, // Tag 10
+                        {0, 0, 0, 0, 0, 0}, // Tag 11
+                        {0, 0, 0, 0, 0, 0}, // Tag 12
+                        {0, 0, 0, 0, 0, 0}, // Tag 13
+                        {0, 0, 0, 0, 0, 0}, // Tag 14
+                        {0, 0, 0, 0, 0, 0}, // Tag 15
+                        {0, 0, 0, 0, 0, 0}, // Tag 16
+                        {0, 0, 0, 0, 0, 0}, // Tag 17
+                        {0, 0, 0, 0, 0, 0}, // Tag 18
+                        {0, 0, 0, 0, 0, 0}, // Tag 19
+                        {0, 0, 0, 0, 0, 0}, // Tag 20
+                        {0, 0, 0, 0, 0, 0}, // Tag 21
+                        {0, 0, 0, 0, 0, 0}, // Tag 22
+                        {0, 0, 0, 0, 0, 0}, // Tag 23
+                        {0, 0, 0, 0, 0, 0}, // Tag 24
+                        {0, 0, 0, 0, 0, 0}, // Tag 25
+                        {0, 0, 0, 0, 0, 0}, // Tag 26
+                        {0, 0, 0, 0, 0, 0}, // Tag 27
+                        {0, 0, 0, 0, 0, 0}, // Tag 28
+                        {0, 0, 0, 0, 0, 0}, // Tag 29
+                        {0, 0, 0, 0, 0, 0}, // Tag 30
+                        {0, 0, 0, 0, 0, 0}, // Tag 31
+                        {0, 0, 0, 0, 0, 0}, // Tag 32
+    },
+  "BLModuleCam", new double[][] {
+                        {0, 0, 0, 0, 0, 0}, // Tag 1
+                        {0, 0, 0, 0, 0, 0}, // Tag 2
+                        {0, 0, 0, 0, 0, 0}, // Tag 3
+                        {0, 0, 0, 0, 0, 0}, // Tag 4
+                        {0, 0, 0, 0, 0, 0}, // Tag 5
+                        {0, 0, 0, 0, 0, 0}, // Tag 6
+                        {0, 0, 0, 0, 0, 0}, // Tag 7
+                        {0, 0, 0, 0, 0, 0}, // Tag 8
+                        {0, 0, 0, 0, 0, 0}, // Tag 9
+                        {0, 0, 0, 0, 0, 0}, // Tag 10
+                        {0, 0, 0, 0, 0, 0}, // Tag 11
+                        {0, 0, 0, 0, 0, 0}, // Tag 12
+                        {0, 0, 0, 0, 0, 0}, // Tag 13
+                        {0, 0, 0, 0, 0, 0}, // Tag 14
+                        {0, 0, 0, 0, 0, 0}, // Tag 15
+                        {0, 0, 0, 0, 0, 0}, // Tag 16
+                        {0, 0, 0, 0, 0, 0}, // Tag 17
+                        {0, 0, 0, 0, 0, 0}, // Tag 18
+                        {0, 0, 0, 0, 0, 0}, // Tag 19
+                        {0, 0, 0, 0, 0, 0}, // Tag 20
+                        {0, 0, 0, 0, 0, 0}, // Tag 21
+                        {0, 0, 0, 0, 0, 0}, // Tag 22
+                        {0, 0, 0, 0, 0, 0}, // Tag 23
+                        {0, 0, 0, 0, 0, 0}, // Tag 24
+                        {0, 0, 0, 0, 0, 0}, // Tag 25
+                        {0, 0, 0, 0, 0, 0}, // Tag 26
+                        {0, 0, 0, 0, 0, 0}, // Tag 27
+                        {0, 0, 0, 0, 0, 0}, // Tag 28
+                        {0, 0, 0, 0, 0, 0}, // Tag 29
+                        {0, 0, 0, 0, 0, 0}, // Tag 30
+                        {0, 0, 0, 0, 0, 0}, // Tag 31
+                        {0, 0, 0, 0, 0, 0}, // Tag 32
+    });
 
     /*
     
@@ -81,5 +103,8 @@ public final class PoseEstimatorConstants {
     Pitch (Y): Rotation -> Counter-clockwise (right-handed) rotation around the Y axis
     Roll (X): Rotation -> Counter-clockwise (right-handed) rotation around the X axis
  */
-    public static final Transform3d robotToQuestOffset = new Transform3d(.34, 0, 0, Rotation3d.kZero); //TODO: update to real quest position
+    public static final Transform3d robotToQuestOffset = new Transform3d(.34, 0, 0, Rotation3d.kZero);
+
+    public static final Transform3d frontLeftCameraToCenter = new Transform3d(.37, .31, .904875, new Rotation3d(0, Rotation2d.fromDegrees(-15).getRadians(), Rotation2d.fromDegrees(45).getRadians()));
+    public static final Transform3d frontRightCameraToCenter = new Transform3d(.37, -.31, .904875, new Rotation3d(0, Rotation2d.fromDegrees(-15).getRadians(), Rotation2d.fromDegrees(-45).getRadians()));
 }
