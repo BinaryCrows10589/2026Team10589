@@ -39,6 +39,14 @@ public class MainStateManager extends Thread {
     public void run() {
         isRunning = true;
         while (isRunning) {
+            synchronized(this) {
+            while (activeStateRequestGroups.size() == 0)
+                try {
+                    wait();
+                } catch (InterruptedException e) {
+                    System.out.println("Resume MainStateManager");
+                }
+            }
             periodic();
         }
 
@@ -64,7 +72,8 @@ public class MainStateManager extends Thread {
             if (stateRequestGroup instanceof SequentialGroup) { // Sequential Command Group
                 SequentialGroup sequentialGroup = (SequentialGroup) stateRequestGroup;
 
-                // This case (we have ran out of commands) be handled by the SequentialGroup... but you never know.
+
+                // This case (we have ran out of commands) should be handled by the SequentialGroup... but you never know.
                 if (sequentialGroup.currentStateRequestIndex >= sequentialGroup.getLength()) {
                     sequentialGroup.updateStatus(StateRequestStatus.FULFILLED);
                     finishedStateRequestGroups.add(sequentialGroup);
@@ -104,15 +113,18 @@ public class MainStateManager extends Thread {
     }
 
     @SuppressWarnings("unchecked")
-    public void dispatchStateRequest(StateRequest stateRequest) {
+    public synchronized void dispatchStateRequest(StateRequest stateRequest) {
         if (stateRequest instanceof StateRequestGroup) {
+            System.out.println("Group");
             StateRequestGroup stateRequestGroup = (StateRequestGroup) stateRequest;
             activeStateRequestGroups.add(stateRequestGroup);
             stateRequestGroup.updateStatus(StateRequestStatus.PENDING);
+            this.notify();
+        } else {
+            Class stateRequestType = stateRequest.getStateRequestType().getClass();
+            SubStateManager targetManager = resolveSubStateManager(stateRequestType);
+            targetManager.recieveStateRequest(stateRequest);
         }
-        Class stateRequestType = stateRequest.getStateRequestType().getClass();
-        SubStateManager targetManager = resolveSubStateManager(stateRequestType);
-        targetManager.recieveStateRequest(stateRequest);
     }
 
     public void requestReturnToDefaultState(SubStateManager subStateManager) {

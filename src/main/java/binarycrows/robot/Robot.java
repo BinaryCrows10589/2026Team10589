@@ -16,6 +16,7 @@ import org.littletonrobotics.junction.wpilog.WPILOGReader;
 import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 
 import binarycrows.robot.CrowMotion.UserSide.CMConfig;
+import binarycrows.robot.CrowMotion.UserSide.CMStateRequest;
 import binarycrows.robot.Enums.StateRequestPriority;
 import binarycrows.robot.SeasonCode.Autons.Test.CMTest1;
 import binarycrows.robot.SeasonCode.Autons.Test.CMTest2;
@@ -25,7 +26,12 @@ import binarycrows.robot.SeasonCode.Constants.MetaConstants;
 import binarycrows.robot.SeasonCode.Constants.SwerveDriveConstants;
 import binarycrows.robot.SeasonCode.SubStateManagers.SwerveDrive.DriveStateRequest;
 import binarycrows.robot.SeasonCode.SubStateManagers.SwerveDrive.DriveSubStateManager;
+import binarycrows.robot.StateRequestGroup.SequentialGroup;
+import binarycrows.robot.StateRequestGroup.StateRequestGroup;
 import binarycrows.robot.Utils.LogIOInputs;
+import binarycrows.robot.Utils.Auton.Auton;
+import binarycrows.robot.Utils.Auton.AutonPoint;
+import edu.wpi.first.math.Pair;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj.RobotBase;
@@ -41,7 +47,7 @@ public class Robot extends LoggedRobot {
   private ArrayList<SubStateManager> subStateManagers;
 
 
-  private final LoggedDashboardChooser<Runnable> chooser = new LoggedDashboardChooser<>("AutonPath");
+  private final LoggedDashboardChooser<Auton> chooser = new LoggedDashboardChooser<>("AutonPath");
 
   
   /**
@@ -51,10 +57,6 @@ public class Robot extends LoggedRobot {
   public Robot() {
     
     MainStateManager.getInstance(); // Initialize the MainStateManager
-
-    // Initialize autonomous chooser
-    chooser.addDefaultOption("CMTest1", CMTest1::initialize);
-    chooser.addOption("CMTest2", CMTest2::initialize);  
   }
 
   @SuppressWarnings("resource")
@@ -84,6 +86,8 @@ public class Robot extends LoggedRobot {
       MainStateManager.getInstance().registerSubStateManagers(
         new DriveSubStateManager()
       );
+
+      MainStateManager.getInstance().start();
 
 
       StateTable.putValue("SlowMode", false);
@@ -126,6 +130,12 @@ public class Robot extends LoggedRobot {
         1.5,
         10
         );
+
+
+
+    // Initialize autonomous chooser
+    chooser.addDefaultOption("CMTest1", new Auton(CMTest1.startingPoint, CMTest1.getAutonomous()));
+    chooser.addOption("CMTest2", new Auton(CMTest2.startingPoint, CMTest2.getAutonomous()));  
   }
 
   @Override
@@ -136,11 +146,11 @@ public class Robot extends LoggedRobot {
 
         LogIOInputs.logToStateTable(subStateManager.activeStateRequest.getStateRequestType().name(), subStateManager.toString() + "/ActiveStateRequest/Name");
     });
+    
   }
 
   @Override
   public void autonomousInit() {
-    System.out.println("Autonomous init");
     StateTable.putValue("IsDriverControlled", false);
     MetaConstants.startedAutonomous = false;
   }
@@ -148,9 +158,9 @@ public class Robot extends LoggedRobot {
   @Override
   public void autonomousPeriodic() {
     if (!MetaConstants.startedAutonomous) {
-
-      chooser.get().run();
-      (new StateRequest<DriveStateRequest>(DriveStateRequest.DRIVE_CROWMOTION_ARRAY, StateRequestPriority.NORMAL)).dispatchSelf();
+      Auton auton = chooser.get();
+      DriveSubStateManager.getInstance().setRobotPose(auton.startingPoint);
+      auton.dispatchSelf();
       MetaConstants.startedAutonomous = true;
     }
   }
@@ -172,7 +182,8 @@ public class Robot extends LoggedRobot {
   }
 
   @Override
-  public void disabledPeriodic() {}
+  public void disabledPeriodic() {
+  }
 
   @Override
   public void testInit() {}

@@ -16,6 +16,7 @@ import binarycrows.robot.StateTable;
 import binarycrows.robot.SubStateManager;
 import binarycrows.robot.CrowMotion.UserSide.CMAutonPoint;
 import binarycrows.robot.CrowMotion.UserSide.CMRotation;
+import binarycrows.robot.CrowMotion.UserSide.CMStateRequest;
 import binarycrows.robot.CrowMotion.UserSide.CMTrajectory;
 import binarycrows.robot.CrowMotion.UserSide.CMTrajectory.TrajectoryPriority;
 import binarycrows.robot.Enums.StateRequestPriority;
@@ -135,6 +136,15 @@ public class DriveSubStateManager extends SubStateManager<DriveStateRequest> {
 
     @Override
     public void recieveStateRequest(StateRequest request) {
+
+
+
+        // Initialize trajectory from CMStateRequest
+        if (request instanceof CMStateRequest) {
+            CrowMotionConstants.currentTrajectory = ((CMStateRequest)request).trajectory;
+            CrowMotionConstants.currentTrajectory.init();
+        }
+
         if (request.getStateRequestType() == DriveStateRequest.DRIVE_CROWMOTION) {
             StateTable.putValue("IsDriverControlled", false);
 
@@ -215,6 +225,8 @@ public class DriveSubStateManager extends SubStateManager<DriveStateRequest> {
 
         // Resolve pending state request
         if (this.activeStateRequest.getStatus() == StateRequestStatus.PENDING) {
+
+
             switch (this.activeStateRequest.getStateRequestType()) {
                 case CONSTRUCT_VOLTAGE_TABLE:
                     voltageRecordingTimer.reset();
@@ -246,7 +258,6 @@ public class DriveSubStateManager extends SubStateManager<DriveStateRequest> {
                     this.activeStateRequest.updateStatus(StateRequestStatus.FULFILLED);
                     break;
             }
-            
 
         }
         if (this.activeStateRequest.getStatus() == StateRequestStatus.RUNNING) {
@@ -337,8 +348,8 @@ public class DriveSubStateManager extends SubStateManager<DriveStateRequest> {
                         CrowMotionConstants.currentTrajectory.runTrajectoryFrame();
                         drivePeriodic();
                         if (CrowMotionConstants.currentTrajectory.isCompleted() && this.activeStateRequest.getStatus() != StateRequestStatus.FULFILLED) {
-                        this.activeStateRequest.updateStatus(StateRequestStatus.FULFILLED);
-                        LogIOInputs.logToStateTable((System.currentTimeMillis() - trajectoryStartTime) / 1000.0, "DriveSubsystem/LastTrajectoryTimeSec");
+                            this.activeStateRequest.updateStatus(StateRequestStatus.FULFILLED);
+                            LogIOInputs.logToStateTable((System.currentTimeMillis() - trajectoryStartTime) / 1000.0, "DriveSubsystem/LastTrajectoryTimeSec");
                         }
                         break;
                     case DRIVE_CROWMOTION_ARRAY:
