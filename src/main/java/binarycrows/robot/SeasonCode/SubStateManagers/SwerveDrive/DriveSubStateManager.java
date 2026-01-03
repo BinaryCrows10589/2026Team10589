@@ -137,6 +137,13 @@ public class DriveSubStateManager extends SubStateManager<DriveStateRequest> {
         StateTable.putValue("SlowMode", false);
     }
 
+    public void enableForceRobotRelative() {
+        StateTable.putValue("ForceRobotRelative", true);
+    }
+    public void disableForceRobotRelative() {
+        StateTable.putValue("ForceRobotRelative", false);
+    }
+
     @Override
     public void recieveStateRequest(StateRequest request) {
 
@@ -460,8 +467,8 @@ public class DriveSubStateManager extends SubStateManager<DriveStateRequest> {
 
 
 
-            if(StateTable.getValueAsBoolean("AxisLock")) {
-                drive(-translationXSpeed, -translationYSpeed, rotationSpeed, false);
+            if(StateTable.getValueAsBoolean("ForceRobotRelative")) {
+                drive(translationXSpeed, translationYSpeed, rotationSpeed, false);
             } else {
                 drive(translationXSpeed, translationYSpeed, rotationSpeed,true);
             }

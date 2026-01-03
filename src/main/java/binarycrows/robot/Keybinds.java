@@ -65,11 +65,12 @@ public class Keybinds {
             StateRequestUtils.createStateRequestRunnable(DriveStateRequest.TELEOP_DRIVE)
         );
         driverController.onPress(
-            XboxGamepad.XboxGamepadID.y, 
-            StateRequestUtils.createStateRequestRunnable(DriveStateRequest.DRIVE_DISTANCE_TEST)
+            XboxGamepad.XboxGamepadID.left_bumper, 
+            DriveSubStateManager.getInstance()::enableForceRobotRelative,
+            DriveSubStateManager.getInstance()::disableForceRobotRelative
         );
         driverController.onPress(
-            XboxGamepad.XboxGamepadID.left_bumper, 
+            XboxGamepad.XboxGamepadID.y, 
             DriveSubStateManager.getInstance()::resetRobotPose
         );
         driverController.onPress(

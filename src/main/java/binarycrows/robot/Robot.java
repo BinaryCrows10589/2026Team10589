@@ -95,6 +95,8 @@ public class Robot extends LoggedRobot {
       StateTable.putValue("AxisLock", false);
       
       StateTable.putValue("IsDriverControlled", true);
+
+      StateTable.putValue("ForceRobotRelative", false);
       
 
       subStateManagers = MainStateManager.getInstance().getSubStateManagers();
