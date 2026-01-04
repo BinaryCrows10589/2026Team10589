@@ -146,7 +146,10 @@ public class Robot extends LoggedRobot {
     // Initialize autonomous chooser
     chooser.addDefaultOption("CMTest1", new Auton(CMTest1.startingPoint, CMTest1.getAutonomous()));
     chooser.addOption("CMTest2", new Auton(CMTest2.startingPoint, CMTest2.getAutonomous()));  
+
+    // Final updates
     updateAlliance();
+    DriveSubStateManager.getInstance().resetRobotPose();
   }
 
   @Override

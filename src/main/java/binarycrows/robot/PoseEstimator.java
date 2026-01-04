@@ -24,6 +24,7 @@ import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
@@ -42,6 +43,8 @@ public class PoseEstimator {
     private QuestNav questNav = new QuestNav();
 
     private Notifier visionNotifier = new Notifier(this::addVisionMeasurments);
+
+    private Pose3d lastQuestNavPose;
 
     // These are for Eli and David's gyro acceleration algorithm
     // It did not increase accuracy so it has been disabled
@@ -107,6 +110,8 @@ public class PoseEstimator {
         DriveSubStateManager.getInstance().resetGyro(newRobotPose.getRotation());
         this.swerveDrivePoseEstimator.resetPosition(DriveSubStateManager.getInstance().getGyroAngleRotation2d(),
         DriveSubStateManager.getInstance().getModulePositions(), newRobotPose);
+
+        PoseEstimatorConstants.questToWorldTransform = new Transform3d(lastQuestNavPose, new Pose3d(newRobotPose));
     }
 
     public void resetRobotPose() {
@@ -114,7 +119,7 @@ public class PoseEstimator {
         swerveDrivePoseEstimator.resetPosition(DriveSubStateManager.getInstance().getGyroAngleRotation2d(),
             DriveSubStateManager.getInstance().getModulePositions(), new Pose2d());
 
-        questNav.setPose(Pose3d.kZero.transformBy(PoseEstimatorConstants.robotToQuestOffset));
+        PoseEstimatorConstants.questToWorldTransform = new Transform3d(lastQuestNavPose, new Pose3d());
 
         
     }
@@ -205,16 +210,18 @@ public class PoseEstimator {
 
                     Pose3d questPose = questFrame.questPose3d();
 
+                    lastQuestNavPose = questPose;
+
                     double timestamp = questFrame.dataTimestamp();
 
                     // Transform by the mount pose to get your robot pose
-                    Pose3d robotPose = questPose.transformBy(PoseEstimatorConstants.robotToQuestOffset.inverse());
+                    Pose3d robotPose = questPose.transformBy(PoseEstimatorConstants.robotToQuestOffset.inverse()).transformBy(PoseEstimatorConstants.questToWorldTransform);
 
                     // Add the measurement to our estimator
                     LogIOInputs.logToStateTable(robotPose, "QuestNav/RobotPose");
                     LogIOInputs.logToStateTable(timestamp, "QuestNav/LastUpdateTimestamp");
                     
-            if (Double.isNaN(swerveDrivePoseEstimator.getEstimatedPosition().getX())) {
+            if (Double.isNaN(swerveDrivePoseEstimator.getEstimatedPosition().getX())) { // TODO: This is a band-aid fix, figure out why NaN is occurring if possible
                 swerveDrivePoseEstimator.resetPosition(DriveSubStateManager.getInstance().getGyroAngleRotation2d(),
                 DriveSubStateManager.getInstance().getModulePositions(), robotPose.toPose2d());
             }

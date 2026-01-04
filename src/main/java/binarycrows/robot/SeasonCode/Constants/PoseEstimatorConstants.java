@@ -106,6 +106,8 @@ public final class PoseEstimatorConstants {
  */
     public static final Transform3d robotToQuestOffset = new Transform3d(.34, 0, 0, Rotation3d.kZero);
 
+    public static Transform3d questToWorldTransform = new Transform3d(0, 0, 0, Rotation3d.kZero);
+
     public static final Transform3d frontLeftCameraToCenter = new Transform3d(.37, .31, .904875, new Rotation3d(0, Rotation2d.fromDegrees(-15).getRadians(), Rotation2d.fromDegrees(45).getRadians()));
     public static final Transform3d frontRightCameraToCenter = new Transform3d(.37, -.31, .904875, new Rotation3d(0, Rotation2d.fromDegrees(-15).getRadians(), Rotation2d.fromDegrees(-45).getRadians()));
 }
