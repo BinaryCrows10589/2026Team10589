@@ -114,6 +114,10 @@ public class DriveSubStateManager extends SubStateManager<DriveStateRequest> {
         velocityBR.add(backRightSwerveModule.getModuleState().speedMetersPerSecond);
     }
 
+    public void updatePoseEstimatorAlliance() {
+        poseEstimator.updateAlliance();
+    }
+
     public ChassisSpeeds getChassisSpeeds() {
         return SwerveDriveConstants.driveKinematics.toChassisSpeeds(this.swerveModuleStates);
     }
@@ -409,7 +413,7 @@ public class DriveSubStateManager extends SubStateManager<DriveStateRequest> {
         return poseEstimator.getRobotPose().getY();
     }
 
-    private double translationMax = SwerveDriveConstants.maxSpeedMetersPerSecond;
+    private double translationMax = SwerveDriveConstants.maxSpeedMPS;
     private boolean normalizeTranslationMaximum = false;
     private double rotationMax = SwerveDriveConstants.maxRotationAnglePerSecond;
 
@@ -425,11 +429,11 @@ public class DriveSubStateManager extends SubStateManager<DriveStateRequest> {
             boolean slowMode = StateTable.getValueAsBoolean("SlowMode");
             double[] translation = Keybinds.getTranslation();
             double translationX = slowMode ?
-                translation[0] * SwerveDriveConstants.maxSpeedMetersPerSecond * SwerveDriveConstants.translationXSlowModeMultipler :
-                translation[0] * SwerveDriveConstants.maxSpeedMetersPerSecond;
+                translation[0] * SwerveDriveConstants.maxSpeedMPS * SwerveDriveConstants.translationXSlowModeMultipler :
+                translation[0] * SwerveDriveConstants.maxSpeedMPS;
             double translationY = slowMode ?
-                translation[1] * SwerveDriveConstants.maxSpeedMetersPerSecond * SwerveDriveConstants.translationXSlowModeMultipler :
-                translation[1] * SwerveDriveConstants.maxSpeedMetersPerSecond;
+                translation[1] * SwerveDriveConstants.maxSpeedMPS * SwerveDriveConstants.translationXSlowModeMultipler :
+                translation[1] * SwerveDriveConstants.maxSpeedMPS;
             double rotation = slowMode ? 
             Keybinds.getRotation() * SwerveDriveConstants.maxRotationAnglePerSecond * SwerveDriveConstants.rotationSlowModeMultipler : 
             Keybinds.getRotation() * SwerveDriveConstants.maxRotationAnglePerSecond;
@@ -439,7 +443,7 @@ public class DriveSubStateManager extends SubStateManager<DriveStateRequest> {
             LogIOInputs.logToStateTable(rotation, "DriveSubsystem/rotation");
             LogIOInputs.logToStateTable(Keybinds.getRotation(), "DriveSubsystem/rotationraw");
 
-            translationMax = SwerveDriveConstants.maxSpeedMetersPerSecond;
+            translationMax = SwerveDriveConstants.maxSpeedMPS;
             rotationMax = SwerveDriveConstants.maxRotationAnglePerSecond;
 
             double translationXSpeed;
@@ -519,7 +523,7 @@ public class DriveSubStateManager extends SubStateManager<DriveStateRequest> {
     public void setModuleStates(SwerveModuleState[] desiredStates) {
         LogIOInputs.logToStateTable(desiredStates, "DriveSubsystem/DesiredModuleStates");
         SwerveDriveKinematics.desaturateWheelSpeeds(
-        desiredStates, SwerveDriveConstants.maxSpeedMetersPerSecond);
+        desiredStates, SwerveDriveConstants.maxSpeedMPS);
         this.frontLeftSwerveModule.setDesiredModuleState(desiredStates[0]);
         this.frontRightSwerveModule.setDesiredModuleState(desiredStates[1]);
         this.backLeftSwerveModule.setDesiredModuleState(desiredStates[2]);
@@ -572,27 +576,5 @@ public class DriveSubStateManager extends SubStateManager<DriveStateRequest> {
     }
 
     
-    //TODO:(Elijah) To fix this simply move it to a pose estimator state manager and has all of the vision stuff. I can help you impliment the vision state manager if needed
-    public void updateAlliance() { //TODO: Make this not need to be disabled...
-        
-        //if(MetaConstants.hasAllianceChanged) {
-            //AprilTagFieldLayout fieldTags = photonPoseEstimators[0].getFieldTags();
-            //if(MetaConstants.isBlueAlliance) {
-            //    fieldTags.setOrigin(OriginPosition.kBlueAllianceWallRightSide);
-            //    VisionConstants.originPosition = OriginPosition.kBlueAllianceWallRightSide;
-            //    VisionConstants.kExcludedTags = VisionConstants.kExcludedTagsBlue;
-            //} else {
-            //    fieldTags.setOrigin(OriginPosition.kRedAllianceWallRightSide);
-            //    VisionConstants.originPosition = OriginPosition.kRedAllianceWallRightSide;
-            //    VisionConstants.kExcludedTags = VisionConstants.kExcludedTagsRed;
-            //}
-            //TODO: Dispabled for crowmotion testing
-            //setRobotPose(flipAlliance(getRobotPose()));
-            //for(PhotonPoseEstimator photonPoseEstimator : this.photonPoseEstimators) {
-            //    photonPoseEstimator.getFieldTags().setOrigin(VisionConstants.originPosition);
-            //    Logger.recordOutput("Vision/OrginPosition", photonPoseEstimator.getFieldTags().getOrigin());
-            //}
-            //Logger.recordOutput("Vision/OrginPosition", photonPoseEstimators[0].getFieldTags().getOrigin());
-        //}    
-    }
+    
 }

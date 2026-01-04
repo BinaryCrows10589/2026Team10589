@@ -77,8 +77,6 @@ public final class SwerveDriveConstants {
         new Translation2d(-distanceBetweenCentersOfFrontAndBackWheels / 2,
             -distanceBetweenCentersOfRightAndLeftWheels / 2));
 
-    public static final double maxSpeedMetersPerSecond = 4.3;
-
     public static final double maxRotationAnglePerSecond = 11.4;
 
     public static final double translationXSlowModeMultipler = .2;

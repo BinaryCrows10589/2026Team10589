@@ -135,6 +135,10 @@ public class CMConfig {
         CMConfig.defaultDecelerationBufferDegrees = decelBufferDegrees;
     }
 
+    public static void updateAlliance(boolean isBlueAlliance) {
+        CMConfig.isBlueAlliance = isBlueAlliance;
+    }
+
     private static double calculateDrivebaseCircumference(double distanceBetweenCentersOfRightAndLeftWheels, double distanceBetweenCentersOfFrontAndBackWheels) {
         double majorAxis = Math.max(distanceBetweenCentersOfRightAndLeftWheels, distanceBetweenCentersOfFrontAndBackWheels);
         double minorAxis = Math.min(distanceBetweenCentersOfRightAndLeftWheels, distanceBetweenCentersOfFrontAndBackWheels);

@@ -19,6 +19,7 @@ import binarycrows.robot.SeasonCode.SubStateManagers.SwerveDrive.DriveSubStateMa
 import binarycrows.robot.Utils.ConversionUtils;
 import binarycrows.robot.Utils.LogIOInputs;
 import binarycrows.robot.Utils.Auton.AutonPoint;
+import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
@@ -119,7 +120,12 @@ public class PoseEstimator {
     }
 
     public void updateAlliance() {
-        DriveSubStateManager.getInstance().updateAlliance();
+        
+        setRobotPose(new AutonPoint(getRobotPose()).getAutonPoint());
+        for(PhotonPoseEstimator photonPoseEstimator : this.photonPoseEstimators) {
+            photonPoseEstimator.getFieldTags().setOrigin(PoseEstimatorConstants.originPosition);
+        }
+        LogIOInputs.logToStateTable(photonPoseEstimators[0].getFieldTags().getOrigin(), "Vision/OrginPosition");
     }
 
     private void configPhotonPoseEstimators() {
@@ -145,7 +151,7 @@ public class PoseEstimator {
                 for (PhotonPipelineResult result : results) {
                     for (PhotonTrackedTarget target : result.getTargets()) {
                         boolean excluded = false;
-                        for(int id : PoseEstimatorConstants.kExcludedTags) {
+                        for(int id : MetaConstants.isBlueAlliance ? PoseEstimatorConstants.tagWhitelistBlue : PoseEstimatorConstants.tagWhitelistRed) {
                             if(id == target.fiducialId) {
                                 excluded = true;
                                 continue;

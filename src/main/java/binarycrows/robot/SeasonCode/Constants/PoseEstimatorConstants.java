@@ -22,7 +22,8 @@ public final class PoseEstimatorConstants {
     public static final double maxAmbiguity = .02;
     public static final Pose2d maxPoseDeltaFromCurrent = new Pose2d(1, 1, Rotation2d.fromDegrees(10));
     public static OriginPosition originPosition = OriginPosition.kBlueAllianceWallRightSide;
-    public static final int[] kExcludedTags = new int[] {};
+    public static final int[] tagWhitelistRed = new int[] {};
+    public static final int[] tagWhitelistBlue = new int[] {};
     // Index in first array is tag ID, index in second ID is blueX, blueY, blueRotDeg, redX, redY, redRotDeg
     public static final Map<String, double[][]> tagFudgeOffsets = Map.of(
       "FLModuleCam", new double[][] {

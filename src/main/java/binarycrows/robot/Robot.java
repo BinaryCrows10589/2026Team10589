@@ -4,6 +4,7 @@
 
 package binarycrows.robot;
 
+import java.net.ContentHandler;
 import java.util.ArrayList;
 import java.util.function.Supplier;
 
@@ -15,14 +16,18 @@ import org.littletonrobotics.junction.networktables.NT4Publisher;
 import org.littletonrobotics.junction.wpilog.WPILOGReader;
 import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 
+import com.ctre.phoenix6.swerve.SwerveModuleConstants;
+
 import binarycrows.robot.CrowMotion.UserSide.CMConfig;
 import binarycrows.robot.CrowMotion.UserSide.CMStateRequest;
 import binarycrows.robot.Enums.StateRequestPriority;
 import binarycrows.robot.SeasonCode.Autons.Test.CMTest1;
 import binarycrows.robot.SeasonCode.Autons.Test.CMTest2;
+import binarycrows.robot.SeasonCode.Constants.ControlConstants;
 import binarycrows.robot.SeasonCode.Constants.CrowMotionConstants;
 import binarycrows.robot.SeasonCode.Constants.FieldConstants;
 import binarycrows.robot.SeasonCode.Constants.MetaConstants;
+import binarycrows.robot.SeasonCode.Constants.PoseEstimatorConstants;
 import binarycrows.robot.SeasonCode.Constants.SwerveDriveConstants;
 import binarycrows.robot.SeasonCode.SubStateManagers.SwerveDrive.DriveStateRequest;
 import binarycrows.robot.SeasonCode.SubStateManagers.SwerveDrive.DriveSubStateManager;
@@ -31,10 +36,13 @@ import binarycrows.robot.StateRequestGroup.StateRequestGroup;
 import binarycrows.robot.Utils.LogIOInputs;
 import binarycrows.robot.Utils.Auton.Auton;
 import binarycrows.robot.Utils.Auton.AutonPoint;
+import edu.wpi.first.apriltag.AprilTagFieldLayout.OriginPosition;
 import edu.wpi.first.math.Pair;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj.RobotBase;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 
 /**
  * The methods in this class are called automatically corresponding to each mode, as described in
@@ -122,7 +130,7 @@ public class Robot extends LoggedRobot {
         0,
         .08,
         .05,
-        4.311,
+        SwerveDriveConstants.maxSpeedMPS,
         240,
         480,
         480,
@@ -138,10 +146,12 @@ public class Robot extends LoggedRobot {
     // Initialize autonomous chooser
     chooser.addDefaultOption("CMTest1", new Auton(CMTest1.startingPoint, CMTest1.getAutonomous()));
     chooser.addOption("CMTest2", new Auton(CMTest2.startingPoint, CMTest2.getAutonomous()));  
+    updateAlliance();
   }
 
   @Override
   public void robotPeriodic() {
+    updateAlliance();
     subStateManagers.forEach(subStateManager -> {
         subStateManager.periodic();
         LogIOInputs.logToStateTable(subStateManager.activeStateRequest, subStateManager.toString() + "/ActiveStateRequest");
@@ -198,6 +208,17 @@ public class Robot extends LoggedRobot {
 
   @Override
   public void simulationPeriodic() {}
+
+  public void updateAlliance() {
+    boolean isBlueAlliance = DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Blue;
+    if (MetaConstants.isBlueAlliance != isBlueAlliance) { // Alliance has switched
+        MetaConstants.isBlueAlliance = isBlueAlliance;
+        CMConfig.updateAlliance(isBlueAlliance);
+        PoseEstimatorConstants.originPosition = isBlueAlliance ? OriginPosition.kBlueAllianceWallRightSide : OriginPosition.kRedAllianceWallRightSide;
+        PoseEstimatorConstants.aprilTagLayout.setOrigin(PoseEstimatorConstants.originPosition);
+        DriveSubStateManager.getInstance().updatePoseEstimatorAlliance();
+    }
+  }
 
   
 }
