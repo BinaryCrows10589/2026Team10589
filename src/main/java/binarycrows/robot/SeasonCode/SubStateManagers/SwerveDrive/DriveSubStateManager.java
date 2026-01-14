@@ -177,7 +177,6 @@ public class DriveSubStateManager extends SubStateManager<DriveStateRequest> {
         } else if (request.getStateRequestType() == DriveStateRequest.DRIVE_CROWMOTION_AUTOPOSITIONING) {
             StateTable.putValue("IsDriverControlled", false);
             Pose2d currentRobotPose = poseEstimator.getRobotPose();
-            System.out.println("Start autopositioning...");
 
             CrowMotionConstants.currentTrajectory = new CMTrajectory(
                 "TestTraj1",
@@ -355,9 +354,6 @@ public class DriveSubStateManager extends SubStateManager<DriveStateRequest> {
 
                         break;
                     case DRIVE_CROWMOTION:
-                        //this.drive(.001,0, 0, true);
-                        System.out.println("Driving...");
-
                         CrowMotionConstants.currentTrajectory.runTrajectoryFrame();
                         drivePeriodic();
                         if (CrowMotionConstants.currentTrajectory.isCompleted() && this.activeStateRequest.getStatus() != StateRequestStatus.FULFILLED) {

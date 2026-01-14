@@ -18,7 +18,7 @@ public class GyroPigeonIO implements GyroIO {
     }
 
     private void configureGyro() {
-        this.gyro = new Pigeon2(CANIDs.gyro, SwerveDriveConstants.CANLoopName);
+        this.gyro = new Pigeon2(CANIDs.CANivore.gyro, SwerveDriveConstants.CANLoopName);
         this.gyro.getConfigurator().apply(new Pigeon2Configuration());
         this.gyro.reset();
         updateGyroAngle();

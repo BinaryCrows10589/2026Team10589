@@ -144,12 +144,18 @@ public class Robot extends LoggedRobot {
 
 
     // Initialize autonomous chooser
-    chooser.addDefaultOption("CMTest1", new Auton(CMTest1.startingPoint, CMTest1.getAutonomous()));
-    chooser.addOption("CMTest2", new Auton(CMTest2.startingPoint, CMTest2.getAutonomous()));  
+    chooser.addDefaultOption("CMTest1", new Auton(CMTest1.startingPoint, CMTest1::getAutonomous));
+    chooser.addOption("CMTest2", new Auton(CMTest2.startingPoint, CMTest2::getAutonomous));
+
+    onAutonSelect(chooser.get()); // Initialize first autonomous that is selected
+
+    chooser.onChange(this::onAutonSelect);
+
 
     // Final updates
     updateAlliance();
     DriveSubStateManager.getInstance().resetRobotPose();
+
   }
 
   @Override
@@ -164,6 +170,10 @@ public class Robot extends LoggedRobot {
     
   }
 
+  public void onAutonSelect(Auton auton) {
+    auton.buildAuton();
+  }
+
   @Override
   public void autonomousInit() {
     StateTable.putValue("IsDriverControlled", false);
@@ -174,6 +184,7 @@ public class Robot extends LoggedRobot {
   public void autonomousPeriodic() {
     if (!MetaConstants.startedAutonomous) {
       Auton auton = chooser.get();
+      if (auton.getLength() == 0) auton.buildAuton(); // In case it wasn't built for some reason (should NEVER be necessary!)
       DriveSubStateManager.getInstance().setRobotPose(auton.startingPoint);
       auton.dispatchSelf();
       MetaConstants.startedAutonomous = true;

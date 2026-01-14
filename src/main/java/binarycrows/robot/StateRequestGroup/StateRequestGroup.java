@@ -8,12 +8,11 @@ import binarycrows.robot.Enums.StateRequestPriority;
 public abstract class StateRequestGroup extends StateRequest<NullStateRequestType> {
 
     protected StateRequest[] children;
-    protected long requestTimeout;
     @SuppressWarnings("unused")
     private StateRequest faultyStateRequest; // Records which state request caused this group to fail if it ever fails.
 
     public StateRequestGroup(StateRequestPriority priority, long requestTimeout, StateRequest... children) {
-        super(null, priority, true);
+        super(null, priority);
         this.children = children;
         this.requestTimeout = requestTimeout;
     }
@@ -23,5 +22,8 @@ public abstract class StateRequestGroup extends StateRequest<NullStateRequestTyp
     public void setFaultyStateRequest(StateRequest faultyStateRequest) {
         this.faultyStateRequest = faultyStateRequest;
     }
+
+
+    
 
 }

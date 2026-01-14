@@ -19,7 +19,6 @@ public class LerpTable {
         double y1 = lerpValue[lowerIndex];
         double x2 = lerpKey[higherIndex];
         double y2 = lerpValue[higherIndex];
-        System.out.println("(" + x1 + "," + y1 + "), (" + x2 + "," + y2 + ")");
         return (y2-y1) / (x2-x1) * (value-x1) + y1; // Two-point form of a line
     }
 
@@ -28,6 +27,8 @@ public class LerpTable {
     private int[] findClosestIndices(double x){
         int subArrayStart = 0;
         int subArrayEnd = lerpKey.length - 1;
+        if (x < lerpKey[0]) return new int[] {0,0};
+        if (x > lerpKey[lerpKey.length-1]) return new int[] {lerpKey.length-1, lerpKey.length-1};
         
         while (subArrayStart <= subArrayEnd){
             

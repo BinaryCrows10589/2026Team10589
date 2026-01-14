@@ -1,8 +1,14 @@
 package binarycrows.robot.SeasonCode.SubStateManagers.CANdle;
 
+import com.ctre.phoenix6.CANBus;
+import com.ctre.phoenix6.configs.CANdleConfiguration;
 import com.ctre.phoenix6.controls.SolidColor;
 import com.ctre.phoenix6.hardware.CANdle;
+import com.ctre.phoenix6.signals.LossOfSignalBehaviorValue;
 import com.ctre.phoenix6.signals.RGBWColor;
+import com.ctre.phoenix6.signals.StatusLedWhenActiveValue;
+import com.ctre.phoenix6.signals.StripTypeValue;
+import com.ctre.phoenix6.signals.VBatOutputModeValue;
 
 import binarycrows.robot.StateRequest;
 import binarycrows.robot.SubStateManager;
@@ -14,15 +20,29 @@ import binarycrows.robot.SeasonCode.SubStateManagers.SwerveDrive.DriveStateReque
 public class CANdleSubStateManager extends SubStateManager<CANdleStateRequest> {
 
     private CANdle candle;
+    private CANdleConfiguration candleConfiguration;
 
     public CANdleSubStateManager() {
         super();
-        candle = new CANdle(CANIDs.CANdle);
+        init();
     }
 
     @Override
     public void recieveStateRequest(StateRequest request) {
         super.recieveStateRequest(request);
+    }
+
+    /**
+     * This configures the CANdle
+     */
+    public void init() {
+        this.candle = new CANdle(CANIDs.CANivore.CANdle);
+        this.candleConfiguration = new CANdleConfiguration();
+        this.candleConfiguration.CANdleFeatures.StatusLedWhenActive = StatusLedWhenActiveValue.Enabled;
+        this.candleConfiguration.LED.LossOfSignalBehavior = LossOfSignalBehaviorValue.KeepRunning;
+        this.candleConfiguration.LED.StripType = StripTypeValue.RGB;
+        this.candleConfiguration.CANdleFeatures.VBatOutputMode = VBatOutputModeValue.Modulated;
+        this.candle.getConfigurator().apply(candleConfiguration);
     }
 
     @Override
@@ -39,6 +59,15 @@ public class CANdleSubStateManager extends SubStateManager<CANdleStateRequest> {
                 case GREEN:
                     setColor(new RGBWColor(0, 255, 0));
                     break;
+                case SHOOT_OUT_OF_RANGE:
+                    setColorRange(0, 10, new RGBWColor(255, 0, 0));
+                    break;
+                case SHOOT_CLOSE_TO_RANGE:
+                    setColorRange(0, 10, new RGBWColor(255, 255, 0));
+                    break;
+                case SHOOT_IN_RANGE:
+                    setColorRange(0, 10, new RGBWColor(0, 255, 0));
+                    break;
                 default:
                     break;
             }
@@ -49,6 +78,10 @@ public class CANdleSubStateManager extends SubStateManager<CANdleStateRequest> {
     public void setColor(RGBWColor color) {
         candle.setControl(new SolidColor(0, CANdleConstants.numberOfLEDs).withColor(color));
 
+    }
+
+    public void setColorRange(int start, int end, RGBWColor color) {
+        candle.setControl(new SolidColor(start, end).withColor(color));
     }
 
     @Override

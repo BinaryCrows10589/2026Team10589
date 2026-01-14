@@ -21,7 +21,7 @@ public class CMTest1 {
     public static Pair<AutonPoint,StateRequest[]> getPair() {
         return new Pair<>(startingPoint, getAutonomous());
     }
-    public static AutonPoint startingPoint = new AutonPoint(0, 0, 0);
+    public static AutonPoint startingPoint = new AutonPoint(3.6, 2.5, 0);
 
     public static StateRequest[] getAutonomous() {
         return new StateRequest[] {
@@ -29,8 +29,9 @@ public class CMTest1 {
                 new CMTrajectory(
                     "TestTraj1",
                         new CMAutonPoint[] {
-                            new CMAutonPoint(0,0, false),
-                            new CMAutonPoint(2, -1, false),
+                            new CMAutonPoint(3.6,2.5, false),
+                            new CMAutonPoint(7.75, 1.65, false),
+                            new CMAutonPoint(7.75, 4, false),
                             new CMAutonPoint(5.09, 0, false)
                         }, 
                         new CMRotation[] {

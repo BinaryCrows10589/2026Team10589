@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
+import binarycrows.robot.Enums.StateRequestGroupChildTimeoutBehavior;
 import binarycrows.robot.Enums.StateRequestStatus;
 import binarycrows.robot.StateRequestGroup.SequentialGroup;
 import binarycrows.robot.StateRequestGroup.StateRequestGroup;
@@ -67,7 +68,10 @@ public class MainStateManager extends Thread {
 
             if (stateRequestGroup.status == StateRequestStatus.PENDING) {
                 stateRequestGroup.updateStatus(StateRequestStatus.RUNNING);
+                stateRequestGroup.setTimeOfDeployment();
             }
+
+            if (stateRequestGroup.getIsTimedOut()) stateRequestGroup.updateStatus(StateRequestStatus.TIMED_OUT);
 
             if (stateRequestGroup instanceof SequentialGroup) { // Sequential Command Group
                 SequentialGroup sequentialGroup = (SequentialGroup) stateRequestGroup;
@@ -83,6 +87,8 @@ public class MainStateManager extends Thread {
                 StateRequest childStateRequest = sequentialGroup.getCurrentStateRequest();
                 StateRequestStatus requestStatus = childStateRequest.getStatus();
 
+                if (childStateRequest.getIsTimedOut()) childStateRequest.updateStatus(StateRequestStatus.TIMED_OUT);
+
                 if (requestStatus == StateRequestStatus.FRESH) {
 
                     dispatchStateRequest(childStateRequest);
@@ -95,11 +101,14 @@ public class MainStateManager extends Thread {
                     requestStatus == StateRequestStatus.CANCELLED || 
                     requestStatus == StateRequestStatus.OVERRIDDEN || 
                     requestStatus == StateRequestStatus.REJECTED ||
-                    requestStatus == StateRequestStatus.TIMED_OUT) {
+                    (requestStatus == StateRequestStatus.TIMED_OUT && childStateRequest.getChildTimeoutBehavior() == StateRequestGroupChildTimeoutBehavior.KILL)) {
                         
                         sequentialGroup.updateStatus(requestStatus);
                         sequentialGroup.setFaultyStateRequest(childStateRequest);
                         finishedStateRequestGroups.add(sequentialGroup);
+                        
+                } else if (requestStatus == StateRequestStatus.TIMED_OUT && childStateRequest.getChildTimeoutBehavior() == StateRequestGroupChildTimeoutBehavior.SKIP) {
+                    sequentialGroup.increment();
                 }
             } else { // Any other command group class
                 throw new UnsupportedOperationException("The class '" + stateRequestGroup.getClass().getCanonicalName() + "' has no StateRequestGroup behavior implementation");
@@ -115,15 +124,16 @@ public class MainStateManager extends Thread {
     @SuppressWarnings("unchecked")
     public synchronized void dispatchStateRequest(StateRequest stateRequest) {
         if (stateRequest instanceof StateRequestGroup) {
-            System.out.println("Group");
             StateRequestGroup stateRequestGroup = (StateRequestGroup) stateRequest;
             activeStateRequestGroups.add(stateRequestGroup);
             stateRequestGroup.updateStatus(StateRequestStatus.PENDING);
-            this.notify();
+            this.notify(); // Trigger MainStateManager to wake up and start processing groups again.
         } else {
             Class stateRequestType = stateRequest.getStateRequestType().getClass();
             SubStateManager targetManager = resolveSubStateManager(stateRequestType);
+            stateRequest.setTimeOfDeployment();
             targetManager.recieveStateRequest(stateRequest);
+            
         }
     }
 

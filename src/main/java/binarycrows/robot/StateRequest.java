@@ -2,33 +2,44 @@ package binarycrows.robot;
 
 import java.util.Map;
 
+import binarycrows.robot.Enums.StateRequestGroupChildTimeoutBehavior;
 import binarycrows.robot.Enums.StateRequestPriority;
 import binarycrows.robot.Enums.StateRequestStatus;
 
 public class StateRequest<TYPE extends Enum<TYPE>> {
 
-    public record LoggableStateRequest(StateRequestStatus status, StateRequestPriority priority, boolean isLongRunning) {}
+    public record LoggableStateRequest(StateRequestStatus status, StateRequestPriority priority) {}
 
     protected StateRequestStatus status = StateRequestStatus.FRESH;
     private TYPE stateRequestType;
     private StateRequestPriority priority;
-    private boolean isLongRunning;
-    
+
+    protected long requestTimeout;
+    private long timeOfDeployment;
+
+    protected StateRequestGroupChildTimeoutBehavior childTimeoutBehavior;
+
+    /**
+     * State requests are objects that are passed between state managers to request that a subsystem put itself into a particular state.
+     * @param stateRequestType The type of state request that this is, which is derived from an enum provided by the targeted substate manager
+     * @param priority A priority level of this state request to determine what it can and cannot override.
+     * @param childTimeoutBehavior A behavior for the parent state request group (if any) to adopt if this request were to time out.
+     */
+    public StateRequest(TYPE stateRequestType, StateRequestPriority priority, StateRequestGroupChildTimeoutBehavior childTimeoutBehavior) {
+        this.stateRequestType = stateRequestType;
+        this.priority = priority;
+        this.status = StateRequestStatus.FRESH;
+        this.childTimeoutBehavior = childTimeoutBehavior;
+    }
+
 
     /**
      * State requests are objects that are passed between state managers to request that a subsystem put itself into a particular state.
      * @param stateRequestType The type of state request that this is, which is derived from an enum provided by the targeted substate manager
      * @param priority A priority level of this state request to determine what it can and cannot override.
      */
-    public StateRequest(TYPE stateRequestType, StateRequestPriority priority, boolean isLongRunning) {
-        this.stateRequestType = stateRequestType;
-        this.priority = priority;
-        this.isLongRunning = isLongRunning;
-        this.status = StateRequestStatus.FRESH;
-    }
-
     public StateRequest(TYPE stateRequestType, StateRequestPriority priority) {
-        this(stateRequestType, priority, false);
+        this(stateRequestType, priority, StateRequestGroupChildTimeoutBehavior.KILL);
     }
 
     /**
@@ -40,6 +51,10 @@ public class StateRequest<TYPE extends Enum<TYPE>> {
 
     public TYPE getStateRequestType() {
         return this.stateRequestType;
+    }
+
+    public StateRequestGroupChildTimeoutBehavior getChildTimeoutBehavior() {
+        return this.childTimeoutBehavior;
     }
 
     @SuppressWarnings("rawtypes")
@@ -59,16 +74,22 @@ public class StateRequest<TYPE extends Enum<TYPE>> {
         return this.priority;
     }
 
-    public boolean getIsLongRunning() {
-        return this.isLongRunning;
-    }
 
     public LoggableStateRequest getAsLoggable() {
-        return new LoggableStateRequest(status, priority, isLongRunning);
+        return new LoggableStateRequest(status, priority);
     }
 
     public void dispatchSelf() {
         MainStateManager.getInstance().dispatchStateRequest(this);
+    }
+
+
+    public void setTimeOfDeployment() {
+        this.timeOfDeployment = System.currentTimeMillis();
+    }
+
+    public boolean getIsTimedOut() {
+        return System.currentTimeMillis() - this.timeOfDeployment >= requestTimeout;
     }
 
 }

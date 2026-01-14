@@ -69,31 +69,31 @@ public class SwerveModuleTalonFX implements SwerveModuleIO {
 
         switch (this.swerveModuleName) {
             case SwerveDriveConstants.frontLeftModuleName:
-                configDriveMotor(CANIDs.frontLeftDriveMotor, SwerveDriveConstants.frontLeftDriveInverted);
+                configDriveMotor(CANIDs.CANivore.frontLeftDriveMotor, SwerveDriveConstants.frontLeftDriveInverted);
 
-                configTurnMotor(CANIDs.frontLeftTurnMotor, SwerveDriveConstants.frontLeftTurnInverted);
-                configTurningAbsoluteEncoder(CANIDs.frontLeftTurnEncoderCANID, SwerveDriveConstants.frontLeftTurnEncoderOffset);
+                configTurnMotor(CANIDs.CANivore.frontLeftTurnMotor, SwerveDriveConstants.frontLeftTurnInverted);
+                configTurningAbsoluteEncoder(CANIDs.CANivore.frontLeftTurnEncoderCANID, SwerveDriveConstants.frontLeftTurnEncoderOffset);
 
                 break;
             case SwerveDriveConstants.frontRightModuleName:
-                configDriveMotor(CANIDs.frontRightDriveMotor, SwerveDriveConstants.frontRightDriveInverted);
+                configDriveMotor(CANIDs.CANivore.frontRightDriveMotor, SwerveDriveConstants.frontRightDriveInverted);
 
-                configTurnMotor(CANIDs.frontRightTurnMotor, SwerveDriveConstants.frontRightTurnInverted);
-                configTurningAbsoluteEncoder(CANIDs.frontRightTurnEncoderCANID, SwerveDriveConstants.frontRightTurnEncoderOffset);
+                configTurnMotor(CANIDs.CANivore.frontRightTurnMotor, SwerveDriveConstants.frontRightTurnInverted);
+                configTurningAbsoluteEncoder(CANIDs.CANivore.frontRightTurnEncoderCANID, SwerveDriveConstants.frontRightTurnEncoderOffset);
 
                 break;
             case SwerveDriveConstants.backLeftModuleName:
-                configDriveMotor(CANIDs.backLeftDriveMotor, SwerveDriveConstants.backLeftDriveInverted);
+                configDriveMotor(CANIDs.CANivore.backLeftDriveMotor, SwerveDriveConstants.backLeftDriveInverted);
 
-                configTurnMotor(CANIDs.backLeftTurnMotor, SwerveDriveConstants.backLeftTurnInverted);
-                configTurningAbsoluteEncoder(CANIDs.backLeftTurnEncoderCANID, SwerveDriveConstants.backLeftTurnEncoderOffset);
+                configTurnMotor(CANIDs.CANivore.backLeftTurnMotor, SwerveDriveConstants.backLeftTurnInverted);
+                configTurningAbsoluteEncoder(CANIDs.CANivore.backLeftTurnEncoderCANID, SwerveDriveConstants.backLeftTurnEncoderOffset);
 
                 break;
             case SwerveDriveConstants.backRightModuleName:
-                configDriveMotor(CANIDs.backRightDriveMotor, SwerveDriveConstants.backRightTurnInverted);
+                configDriveMotor(CANIDs.CANivore.backRightDriveMotor, SwerveDriveConstants.backRightTurnInverted);
 
-                configTurnMotor(CANIDs.backRightTurnMotor, SwerveDriveConstants.backRightTurnInverted);
-                configTurningAbsoluteEncoder(CANIDs.backRightTurnEncoderCANID, SwerveDriveConstants.backRightTurnEncoderOffset);
+                configTurnMotor(CANIDs.CANivore.backRightTurnMotor, SwerveDriveConstants.backRightTurnInverted);
+                configTurningAbsoluteEncoder(CANIDs.CANivore.backRightTurnEncoderCANID, SwerveDriveConstants.backRightTurnEncoderOffset);
 
                 break;
             default:
