@@ -21,7 +21,7 @@ import com.ctre.phoenix6.swerve.SwerveModuleConstants;
 import binarycrows.robot.CrowMotion.UserSide.CMConfig;
 import binarycrows.robot.CrowMotion.UserSide.CMStateRequest;
 import binarycrows.robot.Enums.StateRequestPriority;
-import binarycrows.robot.SeasonCode.Autons.Test.CMTest1;
+import binarycrows.robot.SeasonCode.Autons.Test.MainAuton;
 import binarycrows.robot.SeasonCode.Autons.Test.CMTest2;
 import binarycrows.robot.SeasonCode.Constants.ControlConstants;
 import binarycrows.robot.SeasonCode.Constants.CrowMotionConstants;
@@ -35,12 +35,13 @@ import binarycrows.robot.StateRequestGroup.SequentialGroup;
 import binarycrows.robot.StateRequestGroup.StateRequestGroup;
 import binarycrows.robot.Utils.LogIOInputs;
 import binarycrows.robot.Utils.Auton.Auton;
-import binarycrows.robot.Utils.Auton.AutonPoint;
 import edu.wpi.first.apriltag.AprilTagFieldLayout.OriginPosition;
 import edu.wpi.first.math.Pair;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 
@@ -144,7 +145,7 @@ public class Robot extends LoggedRobot {
 
 
     // Initialize autonomous chooser
-    chooser.addDefaultOption("CMTest1", new Auton(CMTest1.startingPoint, CMTest1::getAutonomous));
+    chooser.addDefaultOption("MainAuton", new Auton(MainAuton.startingPoint, MainAuton::getAutonomous));
     chooser.addOption("CMTest2", new Auton(CMTest2.startingPoint, CMTest2::getAutonomous));
 
     onAutonSelect(chooser.get()); // Initialize first autonomous that is selected
@@ -158,6 +159,7 @@ public class Robot extends LoggedRobot {
 
   }
 
+
   @Override
   public void robotPeriodic() {
     updateAlliance();
@@ -167,11 +169,11 @@ public class Robot extends LoggedRobot {
 
         LogIOInputs.logToStateTable(subStateManager.activeStateRequest.getStateRequestType().name(), subStateManager.toString() + "/ActiveStateRequest/Name");
     });
-    
+
   }
 
   public void onAutonSelect(Auton auton) {
-    auton.buildAuton();
+    if (auton != null) auton.buildAuton();
   }
 
   @Override

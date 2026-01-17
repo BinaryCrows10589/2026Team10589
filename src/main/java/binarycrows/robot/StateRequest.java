@@ -25,10 +25,11 @@ public class StateRequest<TYPE extends Enum<TYPE>> {
      * @param priority A priority level of this state request to determine what it can and cannot override.
      * @param childTimeoutBehavior A behavior for the parent state request group (if any) to adopt if this request were to time out.
      */
-    public StateRequest(TYPE stateRequestType, StateRequestPriority priority, StateRequestGroupChildTimeoutBehavior childTimeoutBehavior) {
+    public StateRequest(TYPE stateRequestType, StateRequestPriority priority, long timeout, StateRequestGroupChildTimeoutBehavior childTimeoutBehavior) {
         this.stateRequestType = stateRequestType;
         this.priority = priority;
         this.status = StateRequestStatus.FRESH;
+        this.requestTimeout = timeout;
         this.childTimeoutBehavior = childTimeoutBehavior;
     }
 
@@ -39,7 +40,7 @@ public class StateRequest<TYPE extends Enum<TYPE>> {
      * @param priority A priority level of this state request to determine what it can and cannot override.
      */
     public StateRequest(TYPE stateRequestType, StateRequestPriority priority) {
-        this(stateRequestType, priority, StateRequestGroupChildTimeoutBehavior.KILL);
+        this(stateRequestType, priority, (2*60 + 40)*1000, StateRequestGroupChildTimeoutBehavior.KILL);
     }
 
     /**

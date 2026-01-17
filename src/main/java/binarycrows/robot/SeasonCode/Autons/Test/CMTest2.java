@@ -13,15 +13,15 @@ import binarycrows.robot.Enums.StateRequestPriority;
 import binarycrows.robot.SeasonCode.Constants.CrowMotionConstants;
 import binarycrows.robot.SeasonCode.SubStateManagers.SwerveDrive.DriveStateRequest;
 import binarycrows.robot.SeasonCode.SubStateManagers.SwerveDrive.DriveSubStateManager;
-import binarycrows.robot.Utils.Auton.AutonPoint;
 import edu.wpi.first.math.Pair;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 
 public class CMTest2 {
-    public static Pair<AutonPoint,StateRequest[]> getPair() {
+    public static Pair<Pose2d,StateRequest[]> getPair() {
         return new Pair<>(startingPoint, getAutonomous());
     }
-    public static AutonPoint startingPoint = new AutonPoint(0, 0, 0);
+    public static Pose2d startingPoint = new Pose2d(0, 0, Rotation2d.kZero);
 
     public static StateRequest[] getAutonomous() {
         return new StateRequest[] {

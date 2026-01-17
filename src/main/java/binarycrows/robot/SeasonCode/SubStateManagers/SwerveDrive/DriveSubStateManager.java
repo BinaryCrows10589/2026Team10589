@@ -28,7 +28,6 @@ import binarycrows.robot.SeasonCode.Constants.PoseEstimatorConstants;
 import binarycrows.robot.SeasonCode.SubStateManagers.SwerveDrive.GyroIO.GyroOutputs;
 import binarycrows.robot.SeasonCode.SubStateManagers.SwerveDrive.SwerveModuleIO.SwerveModuleOutputs;
 import binarycrows.robot.Utils.LogIOInputs;
-import binarycrows.robot.Utils.Auton.AutonPoint;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFieldLayout.OriginPosition;
 import edu.wpi.first.math.MathUtil;
@@ -121,16 +120,12 @@ public class DriveSubStateManager extends SubStateManager<DriveStateRequest> {
         return SwerveDriveConstants.driveKinematics.toChassisSpeeds(this.swerveModuleStates);
     }
 
-    private void setRobotPose(Pose2d newRobotPose) {
+    public void setRobotPose(Pose2d newRobotPose) {
         this.poseEstimator.setRobotPose(newRobotPose);
     }
 
-    public void setRobotPose(AutonPoint newRobotPose) {
-        setRobotPose(newRobotPose.getAutonPoint());
-    }
-
-    public void setRobotStartingPose(AutonPoint newRobotPose) {
-        setRobotPose(newRobotPose.getAutonPoint(false));
+    public void setRobotStartingPose(Pose2d newRobotPose) {
+        setRobotPose(newRobotPose);
     }
 
     public void enableSlowMode() {

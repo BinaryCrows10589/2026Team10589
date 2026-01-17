@@ -6,15 +6,16 @@ import binarycrows.robot.StateRequest;
 import binarycrows.robot.CrowMotion.Library.CMPathGenResult;
 import binarycrows.robot.Enums.StateRequestPriority;
 import binarycrows.robot.StateRequestGroup.SequentialGroup;
+import edu.wpi.first.math.geometry.Pose2d;
 
 public class Auton extends SequentialGroup {
 
-    public AutonPoint startingPoint;
+    public Pose2d startingPoint;
 
     public Supplier<StateRequest[]> stateRequestSupplier;
 
 
-    public Auton(AutonPoint startingPoint, Supplier<StateRequest[]> stateRequests) {
+    public Auton(Pose2d startingPoint, Supplier<StateRequest[]> stateRequests) {
         super(StateRequestPriority.NORMAL, 30*1000, new StateRequest[]{});
         this.startingPoint = startingPoint;
         this.stateRequestSupplier = stateRequests;

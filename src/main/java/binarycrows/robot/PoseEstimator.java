@@ -18,7 +18,6 @@ import binarycrows.robot.SeasonCode.Constants.PoseEstimatorConstants;
 import binarycrows.robot.SeasonCode.SubStateManagers.SwerveDrive.DriveSubStateManager;
 import binarycrows.robot.Utils.ConversionUtils;
 import binarycrows.robot.Utils.LogIOInputs;
-import binarycrows.robot.Utils.Auton.AutonPoint;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -102,10 +101,6 @@ public class PoseEstimator {
         return swerveDrivePoseEstimator.getEstimatedPosition();
     }
 
-    public void setRobotPose(AutonPoint newRobotPose) {
-        setRobotPose(newRobotPose.getAutonPoint());
-    }
-
     public void setRobotPose(Pose2d newRobotPose) {
         DriveSubStateManager.getInstance().resetGyro(newRobotPose.getRotation());
         this.swerveDrivePoseEstimator.resetPosition(DriveSubStateManager.getInstance().getGyroAngleRotation2d(),
@@ -127,7 +122,7 @@ public class PoseEstimator {
 
     public void updateAlliance() {
         
-        setRobotPose(new AutonPoint(getRobotPose()).getAutonPoint());
+        setRobotPose(getRobotPose());
         for(PhotonPoseEstimator photonPoseEstimator : this.photonPoseEstimators) {
             photonPoseEstimator.getFieldTags().setOrigin(PoseEstimatorConstants.originPosition);
         }
