@@ -36,7 +36,7 @@ public class CANdleSubStateManager extends SubStateManager<CANdleStateRequest> {
      * This configures the CANdle
      */
     public void init() {
-        this.candle = new CANdle(CANIDs.CANivore.CANdle);
+        this.candle = new CANdle(CANIDs.RIO.CANdle);
         this.candleConfiguration = new CANdleConfiguration();
         this.candleConfiguration.CANdleFeatures.StatusLedWhenActive = StatusLedWhenActiveValue.Enabled;
         this.candleConfiguration.LED.LossOfSignalBehavior = LossOfSignalBehaviorValue.KeepRunning;

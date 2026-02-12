@@ -264,14 +264,8 @@ public class SwerveModuleTalonFX implements SwerveModuleIO {
 
 
         if (MetaConstants.inProduction) return; // Don't run at competitions!
-        double[] currentTurnPIDValues = this.turnMotorPIDConstantTuner.getUpdatedPIDConstants();
         if(this.turnMotorPIDConstantTuner.hasAnyPIDValueChanged()) {
-            Slot0Configs newTurnPIDConfigs = new Slot0Configs();
-            newTurnPIDConfigs.kP = currentTurnPIDValues[0];
-            newTurnPIDConfigs.kI = currentTurnPIDValues[1];
-            newTurnPIDConfigs.kD = currentTurnPIDValues[2];
-            newTurnPIDConfigs.kS = currentTurnPIDValues[3];
-            this.turnMotor.getConfigurator().apply(newTurnPIDConfigs);
+            this.turnMotor.getConfigurator().apply(turnMotorPIDConstantTuner.generatePIDFFConfigs());
         }
 
         LogIOInputs.logToStateTable(this.turnControlRequest.Position, swerveModuleName + "/DesiredRotation");

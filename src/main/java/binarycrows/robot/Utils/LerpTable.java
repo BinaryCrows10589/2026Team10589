@@ -6,7 +6,7 @@ public class LerpTable {
 
     public LerpTable(double[] lerpKey, double[] lerpValue) {
         this.lerpKey = lerpKey;
-        this.lerpValue = lerpValue;;
+        this.lerpValue = lerpValue;
     }
 
     public double get(double value) {

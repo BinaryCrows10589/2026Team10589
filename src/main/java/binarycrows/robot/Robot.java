@@ -55,6 +55,10 @@ public class Robot extends LoggedRobot {
   @SuppressWarnings("rawtypes")
   private ArrayList<SubStateManager> subStateManagers;
 
+  private static double frameStartTime = -1;
+
+  public static double averageFrameTime = 0.02;
+
 
   private final LoggedDashboardChooser<Auton> chooser = new LoggedDashboardChooser<>("AutonPath");
 
@@ -159,6 +163,8 @@ public class Robot extends LoggedRobot {
 
   }
 
+  
+
 
   @Override
   public void robotPeriodic() {
@@ -169,6 +175,14 @@ public class Robot extends LoggedRobot {
 
         LogIOInputs.logToStateTable(subStateManager.activeStateRequest.getStateRequestType().name(), subStateManager.toString() + "/ActiveStateRequest/Name");
     });
+
+    long currentTime = System.currentTimeMillis();
+    if (frameStartTime != -1) {
+            double frameTime = (currentTime - frameStartTime) / 1000.0;
+            
+            averageFrameTime = (averageFrameTime * .9) + (frameTime * .1);
+        }
+        frameStartTime = currentTime;
 
   }
 

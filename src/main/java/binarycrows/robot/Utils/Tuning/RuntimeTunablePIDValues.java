@@ -113,6 +113,16 @@ public class RuntimeTunablePIDValues {
         return arrayOfPIDValues;
     }
 
+    public Slot0Configs generatePIDFFConfigs() {
+        double[] currentPIDValues = this.getUpdatedPIDConstants();
+        Slot0Configs newPIDConfigs = new Slot0Configs();
+        newPIDConfigs.kP = currentPIDValues[0];
+        newPIDConfigs.kI = currentPIDValues[1];
+        newPIDConfigs.kD = currentPIDValues[2];
+        newPIDConfigs.kS = currentPIDValues[3];
+        return newPIDConfigs;
+    }
+
     public boolean hasAnyPIDValueChanged() {
         boolean valuesChanged =  
         this.changablePValue.hasValueChanged() || 

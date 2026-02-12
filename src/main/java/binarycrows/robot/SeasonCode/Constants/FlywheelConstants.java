@@ -1,0 +1,19 @@
+package binarycrows.robot.SeasonCode.Constants;
+
+import com.ctre.phoenix6.signals.InvertedValue;
+import com.ctre.phoenix6.signals.MotorAlignmentValue;
+import com.ctre.phoenix6.signals.NeutralModeValue;
+
+public final class FlywheelConstants {
+    public static final InvertedValue masterMotorInverted = InvertedValue.Clockwise_Positive;
+
+    public static final NeutralModeValue motorNeutralMode = NeutralModeValue.Coast;
+
+    public static final double maxMotorVoltage = 12.0;
+
+    public static final double idleMotorVoltage = 4.0;
+
+    public static final MotorAlignmentValue isSlaveReversed = MotorAlignmentValue.Opposed;
+
+    public static final double gearRatio = 2;
+}
