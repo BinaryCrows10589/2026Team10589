@@ -8,11 +8,11 @@ import binarycrows.robot.Enums.StateRequestStatus;
 
 public class StateRequest<TYPE extends Enum<TYPE>> {
 
-    public record LoggableStateRequest(StateRequestStatus status, StateRequestPriority priority) {}
+    public record LoggableStateRequest(StateRequestStatus status, int priority) {}
 
     protected StateRequestStatus status = StateRequestStatus.FRESH;
     private TYPE stateRequestType;
-    private StateRequestPriority priority;
+    private int priority;
 
     protected long requestTimeout;
     private long timeOfDeployment;
@@ -25,7 +25,7 @@ public class StateRequest<TYPE extends Enum<TYPE>> {
      * @param priority A priority level of this state request to determine what it can and cannot override.
      * @param childTimeoutBehavior A behavior for the parent state request group (if any) to adopt if this request were to time out.
      */
-    public StateRequest(TYPE stateRequestType, StateRequestPriority priority, long timeout, StateRequestGroupChildTimeoutBehavior childTimeoutBehavior) {
+    public StateRequest(TYPE stateRequestType, int priority, long timeout, StateRequestGroupChildTimeoutBehavior childTimeoutBehavior) {
         this.stateRequestType = stateRequestType;
         this.priority = priority;
         this.status = StateRequestStatus.FRESH;
@@ -39,7 +39,7 @@ public class StateRequest<TYPE extends Enum<TYPE>> {
      * @param stateRequestType The type of state request that this is, which is derived from an enum provided by the targeted substate manager
      * @param priority A priority level of this state request to determine what it can and cannot override.
      */
-    public StateRequest(TYPE stateRequestType, StateRequestPriority priority) {
+    public StateRequest(TYPE stateRequestType, int priority) {
         this(stateRequestType, priority, (2*60 + 40)*1000, StateRequestGroupChildTimeoutBehavior.KILL);
     }
 
@@ -71,7 +71,7 @@ public class StateRequest<TYPE extends Enum<TYPE>> {
         return this.status;
     }
 
-    public StateRequestPriority getPriority() {
+    public int getPriority() {
         return this.priority;
     }
 

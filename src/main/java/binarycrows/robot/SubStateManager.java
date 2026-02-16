@@ -5,9 +5,6 @@ import binarycrows.robot.Utils.StateRequestUtils;
 
 public class SubStateManager<TYPE extends Enum<TYPE>> {
 
-    @SuppressWarnings("rawtypes")
-    public static SubStateManager instance = null;
-
     /**
      * The active state request for the sub-state manager. 
      * Note that this should be initialized to a default state by any extending classes.
@@ -17,9 +14,7 @@ public class SubStateManager<TYPE extends Enum<TYPE>> {
 
     protected SubStateManager()
     {
-        assert instance == null;
         this.activeStateRequest = defaultState;
-        instance = this;
     }
 
 
@@ -55,13 +50,6 @@ public class SubStateManager<TYPE extends Enum<TYPE>> {
 
     public Class<TYPE> getStateRequestType() {
         return null;
-    }
-
-    @SuppressWarnings("rawtypes")
-    public static synchronized SubStateManager getInstance()
-    {
-        if (instance == null) instance = new SubStateManager();
-        return instance;
     }
 
     @Override

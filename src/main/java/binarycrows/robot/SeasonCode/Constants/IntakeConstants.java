@@ -35,5 +35,11 @@ public final class IntakeConstants {
         public static final double pivotPIDValueI = 0;
         public static final double pivotPIDValueD = 0;
         public static final double pivotPIDValueFF = 0;
+
+
+        public static final Rotation2d pivotDownPosition = Rotation2d.fromDegrees(0);
+        public static final Rotation2d pivotRaisedPosition = Rotation2d.fromDegrees(20);
+        public static final Rotation2d pivotUpPosition = Rotation2d.fromDegrees(90);
+
 }
 }

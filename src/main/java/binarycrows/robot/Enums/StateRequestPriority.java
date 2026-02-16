@@ -1,14 +1,14 @@
 package binarycrows.robot.Enums;
 
-public enum StateRequestPriority {
+public final class StateRequestPriority {
     /**
      * Mostly for debugging or duct-tape fixes at competitions.
      */
-    DO_NOT_IGNORE,
+    public static final int DO_NOT_IGNORE = 4;
     
-    HIGH,
-    NORMAL,
-    LOW,
+    public static final int HIGH = 3;
+    public static final int NORMAL = 2;
+    public static final int LOW = 1;
 
-    ALWAYS_IGNORE
+    public static final int ALWAYS_IGNORE = 0;
 }

@@ -41,7 +41,6 @@ public class PivotTalonFX implements PivotIO {
 
     private RuntimeTunablePIDValues pivotPIDConstantTuner;
 
-
     public PivotTalonFX(PivotOutputs outputs) {
         this.outputs = outputs;
 

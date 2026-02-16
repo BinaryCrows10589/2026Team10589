@@ -9,7 +9,7 @@ public class SequentialGroup extends StateRequestGroup {
 
     public int currentStateRequestIndex = 0;
 
-    public SequentialGroup(StateRequestPriority priority, long timeout, StateRequest... children) {
+    public SequentialGroup(int priority, long timeout, StateRequest... children) {
         super(priority, timeout, children);
     }
 

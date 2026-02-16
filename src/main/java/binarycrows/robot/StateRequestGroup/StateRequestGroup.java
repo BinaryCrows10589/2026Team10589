@@ -11,7 +11,7 @@ public abstract class StateRequestGroup extends StateRequest<NullStateRequestTyp
     @SuppressWarnings("unused")
     private StateRequest faultyStateRequest; // Records which state request caused this group to fail if it ever fails.
 
-    public StateRequestGroup(StateRequestPriority priority, long requestTimeout, StateRequest... children) {
+    public StateRequestGroup(int priority, long requestTimeout, StateRequest... children) {
         super(null, priority);
         this.children = children;
         this.requestTimeout = requestTimeout;

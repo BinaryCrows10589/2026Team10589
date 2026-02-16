@@ -3,18 +3,23 @@ package binarycrows.robot.Utils;
 public class LerpTable {
     private double[] lerpKey;
     private double[] lerpValue;
+    private boolean translateNegatives;
 
-    public LerpTable(double[] lerpKey, double[] lerpValue) {
+    public LerpTable(double[] lerpKey, double[] lerpValue, boolean translateNegatives) {
         this.lerpKey = lerpKey;
         this.lerpValue = lerpValue;
+        this.translateNegatives = translateNegatives;
     }
 
     public double get(double value) {
+        double sign = Math.signum(value);
+        if (translateNegatives) value = Math.abs(value);
         int[] indices = findClosestIndices(value);
-        return findLerpValue(indices[0], indices[1], value);
+        return findLerpValue(indices[0], indices[1], value) * (translateNegatives ? sign : 1);
     }
 
     private double findLerpValue(int lowerIndex, int higherIndex, double value) {
+        if (lowerIndex == higherIndex) return lerpValue[higherIndex];
         double x1 = lerpKey[lowerIndex];
         double y1 = lerpValue[lowerIndex];
         double x2 = lerpKey[higherIndex];

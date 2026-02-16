@@ -1,6 +1,9 @@
 package binarycrows.robot.SeasonCode.SubStateManagers.Flywheel;
 
 public interface FlywheelIO {
+
+    //TODO: run at RPM and at idle RPM at other times
+    // Maybe add compensation factor like with turret that adjusts the voltage based on RPM error
     
     public class FlywheelOutputs {
         public double leftMotorVelocityRPS = 0;

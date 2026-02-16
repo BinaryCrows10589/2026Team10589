@@ -2,31 +2,21 @@ package binarycrows.robot.SeasonCode.SubStateManagers.Hood;
 
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.configs.MagnetSensorConfigs;
-import com.ctre.phoenix6.configs.Slot0Configs;
-import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.configs.TalonFXSConfiguration;
-import com.ctre.phoenix6.controls.PositionDutyCycle;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.CANcoder;
-import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.hardware.TalonFXS;
 import com.ctre.phoenix6.signals.SensorDirectionValue;
 
 import binarycrows.robot.SeasonCode.Constants.CANIDs;
+import binarycrows.robot.SeasonCode.Constants.HoodConstants;
 import binarycrows.robot.SeasonCode.Constants.MetaConstants;
 import binarycrows.robot.SeasonCode.Constants.SwerveDriveConstants;
-import binarycrows.robot.SeasonCode.Constants.HoodConstants;
-import binarycrows.robot.Utils.ConversionUtils;
-import binarycrows.robot.Utils.LogIOInputs;
 import binarycrows.robot.Utils.Tuning.RuntimeTunablePIDValues;
-import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.system.plant.DCMotor;
-import edu.wpi.first.math.system.plant.LinearSystemId;
-import edu.wpi.first.wpilibj.simulation.DCMotorSim;
 
-public class HoodIOTalonFXS implements HoodIO {
+public class HoodIOTalonFXSWPILibPID implements HoodIO {
     public HoodOutputs outputs;
 
     private Rotation2d targetPosition = Rotation2d.kZero;
@@ -38,11 +28,11 @@ public class HoodIOTalonFXS implements HoodIO {
 
     private VoltageOut hoodVoltageRequest = new VoltageOut(0);
 
-    private PositionDutyCycle hoodControlRequest = new PositionDutyCycle(0);
+    private PIDController hoodController;
 
     private RuntimeTunablePIDValues hoodPIDConstantTuner;
     
-    public HoodIOTalonFXS(HoodOutputs outputs) {
+    public HoodIOTalonFXSWPILibPID(HoodOutputs outputs) {
         this.outputs = outputs;
         hoodMotor = new TalonFXS(CANIDs.RIO.hoodMotor);
 
@@ -85,6 +75,7 @@ public class HoodIOTalonFXS implements HoodIO {
     @Override
     public void update() {
 
+
         outputs.motorVelocityRPS = hoodMotor.getVelocity().getValueAsDouble();
         outputs.motorAppliedVoltage = hoodMotor.getMotorVoltage().getValueAsDouble();;
         outputs.motorSupplyAmps = hoodMotor.getSupplyCurrent().getValueAsDouble();
@@ -98,6 +89,8 @@ public class HoodIOTalonFXS implements HoodIO {
         outputs.distanceFromSetpoint = outputs.targetPosition.minus(outputs.hoodRotation);
 
         updatePIDValuesFromNetworkTables();
+
+        this.setRotorVoltage(hoodController.calculate(outputs.encoderRotation.getRadians()) + HoodConstants.hoodPIDValueFF + getGravityFF());
     }
 
     public void updatePIDValuesFromNetworkTables() {
@@ -105,20 +98,19 @@ public class HoodIOTalonFXS implements HoodIO {
 
         if (MetaConstants.inProduction) return; // Don't run at competitions!
         if(this.hoodPIDConstantTuner.hasAnyPIDValueChanged()) {
-            this.hoodMotor.getConfigurator().apply(hoodPIDConstantTuner.generatePIDFFConfigs());
+            double[] newValues = hoodPIDConstantTuner.getUpdatedPIDConstants();
+            this.hoodController.setPID(newValues[0], newValues[1], newValues[2]);
         }
 
     }
 
+    private double getGravityFF() {
+        return this.outputs.encoderRotation.getSin() * HoodConstants.hoodGravityFF;
+    }
+
     private void configurePID() {
-        Slot0Configs turretPIDConfig = new Slot0Configs();
 
-        turretPIDConfig.kP = HoodConstants.hoodPIDValueP;
-        turretPIDConfig.kI = HoodConstants.hoodPIDValueI;
-        turretPIDConfig.kD = HoodConstants.hoodPIDValueD;
-        turretPIDConfig.kS = HoodConstants.hoodPIDValueFF;
-
-        this.hoodMotor.getConfigurator().apply(turretPIDConfig);
+        hoodController = new PIDController(HoodConstants.hoodPIDValueP, HoodConstants.hoodPIDValueI, HoodConstants.hoodPIDValueD);
 
         hoodPIDConstantTuner = new RuntimeTunablePIDValues("Hood/PIDValues",
         HoodConstants.hoodPIDValueP, HoodConstants.hoodPIDValueI, HoodConstants.hoodPIDValueD, HoodConstants.hoodPIDValueFF);
@@ -134,8 +126,7 @@ public class HoodIOTalonFXS implements HoodIO {
     @Override
     public void setTargetPosition(Rotation2d position) {
         targetPosition = position;
-        hoodControlRequest = new PositionDutyCycle(targetPosition.getRotations());
-        hoodMotor.setControl(hoodControlRequest);
+        hoodController.setSetpoint(targetPosition.getRadians());
     }
 
     @Override

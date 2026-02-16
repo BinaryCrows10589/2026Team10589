@@ -45,14 +45,14 @@ public class TurretIOSim implements TurretIO {
                 -TurretConstants.maximumVoltage, TurretConstants.maximumVoltage);
         }
 
-        outputs.motorVelocityRPS = turretMotor.getAngularVelocityRPM() / 60.0;
+        outputs.motorVelocityRPS = turretMotor.getAngularVelocityRPM() * TurretConstants.motorToTurretGearRatio / 60.0;
         outputs.motorAppliedVoltage = motorVoltage;
         outputs.motorSupplyAmps = turretMotor.getCurrentDrawAmps();
         outputs.motorTorqueAmps = outputs.motorSupplyAmps;
 
-        outputs.motorRotation = Rotation2d.fromRotations(turretMotor.getAngularPositionRotations());
-        outputs.encoderRotation = Rotation2d.fromRotations(turretMotor.getAngularPositionRotations() / TurretConstants.motorToTurretGearRatio);
-        outputs.turretRotation = Rotation2d.fromRotations(turretMotor.getAngularPositionRotations() / TurretConstants.motorToTurretGearRatio);
+        outputs.motorRotation = Rotation2d.fromRotations(turretMotor.getAngularPositionRotations() * TurretConstants.motorToTurretGearRatio);
+        outputs.encoderRotation = Rotation2d.fromRotations(turretMotor.getAngularPositionRotations());
+        outputs.turretRotation = Rotation2d.fromRotations(turretMotor.getAngularPositionRotations());
         outputs.turretRotationalVelocityRadPerSec = turretMotor.getAngularVelocityRadPerSec();
         outputs.targetPosition = targetPosition;
         outputs.distanceFromSetpoint = outputs.targetPosition.minus(outputs.turretRotation);

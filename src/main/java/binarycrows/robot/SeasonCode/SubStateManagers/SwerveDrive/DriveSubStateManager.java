@@ -1,7 +1,5 @@
 package binarycrows.robot.SeasonCode.SubStateManagers.SwerveDrive;
 
-import static binarycrows.robot.SubStateManager.instance;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -10,6 +8,7 @@ import org.photonvision.PhotonPoseEstimator;
 import com.ctre.phoenix6.swerve.SwerveModuleConstants;
 
 import binarycrows.robot.Keybinds;
+import binarycrows.robot.MainStateManager;
 import binarycrows.robot.PoseEstimator;
 import binarycrows.robot.StateRequest;
 import binarycrows.robot.StateTable;
@@ -27,6 +26,7 @@ import binarycrows.robot.SeasonCode.Constants.SwerveDriveConstants;
 import binarycrows.robot.SeasonCode.Constants.PoseEstimatorConstants;
 import binarycrows.robot.SeasonCode.SubStateManagers.SwerveDrive.GyroIO.GyroOutputs;
 import binarycrows.robot.SeasonCode.SubStateManagers.SwerveDrive.SwerveModuleIO.SwerveModuleOutputs;
+import binarycrows.robot.SeasonCode.SubStateManagers.Turret.TurretSubStateManager;
 import binarycrows.robot.Utils.LogIOInputs;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFieldLayout.OriginPosition;
@@ -551,11 +551,6 @@ public class DriveSubStateManager extends SubStateManager<DriveStateRequest> {
         gyroIO.resetAngle(rotation);
     }
 
-    public static DriveSubStateManager getInstance() {
-        assert instance != null;
-        return (DriveSubStateManager) instance;
-    }
-
     public Rotation2d getGyroAngleRotation2d() {
         return gyroOutputs.yawAngle;
     }
@@ -565,6 +560,8 @@ public class DriveSubStateManager extends SubStateManager<DriveStateRequest> {
         return "Drive SubState Manager";
     }
 
-    
+    public static DriveSubStateManager getInstance() {
+        return (DriveSubStateManager) MainStateManager.getInstance().resolveSubStateManager(DriveStateRequest.class);
+    } 
     
 }

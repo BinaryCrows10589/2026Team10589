@@ -31,6 +31,7 @@ import binarycrows.robot.SeasonCode.Constants.PoseEstimatorConstants;
 import binarycrows.robot.SeasonCode.Constants.SwerveDriveConstants;
 import binarycrows.robot.SeasonCode.SubStateManagers.SwerveDrive.DriveStateRequest;
 import binarycrows.robot.SeasonCode.SubStateManagers.SwerveDrive.DriveSubStateManager;
+import binarycrows.robot.SeasonCode.SubStateManagers.Turret.TurretSubStateManager;
 import binarycrows.robot.StateRequestGroup.SequentialGroup;
 import binarycrows.robot.StateRequestGroup.StateRequestGroup;
 import binarycrows.robot.Utils.LogIOInputs;
@@ -97,9 +98,11 @@ public class Robot extends LoggedRobot {
 
       // Place your robot's substate managers in this call!
       MainStateManager.getInstance().registerSubStateManagers(
-        new DriveSubStateManager()
+        new DriveSubStateManager(),
+        new TurretSubStateManager()
       );
 
+    
       MainStateManager.getInstance().start();
 
 
@@ -166,10 +169,18 @@ public class Robot extends LoggedRobot {
   
 
 
+  @SuppressWarnings("unchecked")
   @Override
   public void robotPeriodic() {
     updateAlliance();
     subStateManagers.forEach(subStateManager -> {
+        if (subStateManager.activeStateRequest == null) {
+          if (subStateManager.defaultState != null) {
+            subStateManager.activeStateRequest = subStateManager.defaultState;
+          } else {
+            return;
+          }
+        }
         subStateManager.periodic();
         LogIOInputs.logToStateTable(subStateManager.activeStateRequest, subStateManager.toString() + "/ActiveStateRequest");
 

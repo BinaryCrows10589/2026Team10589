@@ -14,61 +14,48 @@ public class IntakeRollersTalonFXS implements IntakeRollersIO {
 
     public IntakeRollersOutputs outputs;
     
-    private TalonFXS leftMotor;
-    private TalonFXS rightMotor;
+    private TalonFXS motor;
 
-    private VoltageOut masterMotorVoltageRequest = new VoltageOut(0);
+    private VoltageOut motorVoltageRequest = new VoltageOut(0);
 
     public IntakeRollersTalonFXS(IntakeRollersOutputs outputs) {
         this.outputs = outputs;
 
         // Left Motor
-        leftMotor = new TalonFXS(CANIDs.RIO.leftIntakeRoller);
+        motor = new TalonFXS(CANIDs.RIO.leftIntakeRoller);
 
-        TalonFXSConfiguration masterMotorConfig = new TalonFXSConfiguration();
-        masterMotorConfig.MotorOutput.Inverted = IntakeConstants.Rollers.masterMotorInverted;
-        masterMotorConfig.MotorOutput.NeutralMode = IntakeConstants.Rollers.motorNeutralMode;
+        TalonFXSConfiguration motorConfig = new TalonFXSConfiguration();
+        motorConfig.MotorOutput.Inverted = IntakeConstants.Rollers.masterMotorInverted;
+        motorConfig.MotorOutput.NeutralMode = IntakeConstants.Rollers.motorNeutralMode;
 
-        this.leftMotor.getVelocity().setUpdateFrequency(20);
-        this.leftMotor.getAcceleration().setUpdateFrequency(20);
-        this.leftMotor.getPosition().setUpdateFrequency(20);
-        this.leftMotor.getTorqueCurrent().setUpdateFrequency(50);
+        this.motor.getVelocity().setUpdateFrequency(20);
+        this.motor.getAcceleration().setUpdateFrequency(20);
+        this.motor.getPosition().setUpdateFrequency(20);
+        this.motor.getTorqueCurrent().setUpdateFrequency(50);
 
-        masterMotorConfig.Voltage.PeakForwardVoltage = IntakeConstants.Rollers.maxMotorVoltage;
-        masterMotorConfig.Voltage.PeakReverseVoltage = -IntakeConstants.Rollers.maxMotorVoltage;
+        motorConfig.Voltage.PeakForwardVoltage = IntakeConstants.Rollers.maxMotorVoltage;
+        motorConfig.Voltage.PeakReverseVoltage = -IntakeConstants.Rollers.maxMotorVoltage;
 
-        this.leftMotor.getConfigurator().apply(masterMotorConfig);
-        
-        // Right Motor
-        rightMotor = new TalonFXS(CANIDs.RIO.rightIntakeRoller);
-
-        this.rightMotor.getVelocity().setUpdateFrequency(20);
-        this.rightMotor.getAcceleration().setUpdateFrequency(20);
-        this.rightMotor.getPosition().setUpdateFrequency(20);
-        this.rightMotor.getTorqueCurrent().setUpdateFrequency(50);
-
-        this.rightMotor.getConfigurator().apply(masterMotorConfig);
-
-        rightMotor.setControl(new Follower(leftMotor.getDeviceID(), IntakeConstants.Rollers.isSlaveReversed));
+        this.motor.getConfigurator().apply(motorConfig);
     }
 
     @Override
     public void setRotorVoltage(double rotorVoltage) {
-        masterMotorVoltageRequest = new VoltageOut(rotorVoltage);
-        leftMotor.setControl(masterMotorVoltageRequest);
+        motorVoltageRequest = new VoltageOut(rotorVoltage);
+        motor.setControl(motorVoltageRequest);
     }
 
     @Override
     public void update() {
-        outputs.leftMotorVelocityRPS = leftMotor.getVelocity().getValueAsDouble();
-        outputs.leftMotorAppliedVoltage = leftMotor.getMotorVoltage().getValueAsDouble();
-        outputs.leftMotorSupplyAmps = leftMotor.getSupplyCurrent().getValueAsDouble();
-        outputs.leftMotorTorqueAmps = leftMotor.getTorqueCurrent().getValueAsDouble();
+        outputs.leftMotorVelocityRPS = motor.getVelocity().getValueAsDouble();
+        outputs.leftMotorAppliedVoltage = motor.getMotorVoltage().getValueAsDouble();
+        outputs.leftMotorSupplyAmps = motor.getSupplyCurrent().getValueAsDouble();
+        outputs.leftMotorTorqueAmps = motor.getTorqueCurrent().getValueAsDouble();
 
-        outputs.rightMotorVelocityRPS = rightMotor.getVelocity().getValueAsDouble();
-        outputs.rightMotorAppliedVoltage = rightMotor.getMotorVoltage().getValueAsDouble();
-        outputs.rightMotorSupplyAmps = rightMotor.getSupplyCurrent().getValueAsDouble();
-        outputs.rightMotorTorqueAmps = rightMotor.getTorqueCurrent().getValueAsDouble();
+        outputs.rightMotorVelocityRPS = 0;
+        outputs.rightMotorAppliedVoltage = 0;
+        outputs.rightMotorSupplyAmps = 0;
+        outputs.rightMotorTorqueAmps = 0;
 
     }
 }

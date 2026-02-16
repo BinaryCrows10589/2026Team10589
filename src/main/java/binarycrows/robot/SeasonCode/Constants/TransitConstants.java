@@ -19,16 +19,15 @@ public final class TransitConstants {
     public static final MotorAlignmentValue isLatitudinalSlaveReversed = MotorAlignmentValue.Opposed;
 
     public final class Sensors {
-        public static final RangingMode binEmptyRangingMode = RangingMode.Short;
         public static final RangingMode binFullRangingMode = RangingMode.Short;
         public static final RangingMode outgoingFuelRangingMode = RangingMode.Short;
 
-        public static final double binEmptySampleTime = 24;
         public static final double binFullSampleTime = 24;
         public static final double outgoingFuelSampleTime = 24;
 
-        public static final double binEmptyTrippingDistance = 5;
         public static final double binFullTrippingDistance = 5;
         public static final double outgoingFuelTrippingDistance = 5;
+
+        public static final int debounceFrames = 10;
     }
 }
