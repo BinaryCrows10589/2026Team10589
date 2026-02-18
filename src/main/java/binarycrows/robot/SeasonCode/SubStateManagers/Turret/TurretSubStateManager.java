@@ -9,6 +9,7 @@ import binarycrows.robot.Enums.StateRequestStatus;
 import binarycrows.robot.SeasonCode.Constants.MetaConstants;
 import binarycrows.robot.SeasonCode.SubStateManagers.Turret.TurretIO.TurretOutputs;
 import binarycrows.robot.Utils.Tuning.RuntimeTunableValue;
+import edu.wpi.first.math.geometry.Rotation2d;
 
 public class TurretSubStateManager extends SubStateManager<TurretStateRequest> {
 
@@ -16,6 +17,7 @@ public class TurretSubStateManager extends SubStateManager<TurretStateRequest> {
     private TurretOutputs outputs;
 
     private RuntimeTunableValue turretTargetPosition;
+    private RuntimeTunableValue isShooting;
 
     
 
@@ -28,6 +30,7 @@ public class TurretSubStateManager extends SubStateManager<TurretStateRequest> {
         turret = new Turret(MetaConstants.isReal ? new TurretIOTalonFX(outputs) : new TurretIOSim(outputs));
 
         turretTargetPosition = new RuntimeTunableValue("Tuning/Turret/TargetPosition", 0.0);
+        isShooting = new RuntimeTunableValue("Tuning/Turret/IsShooting", false);
 
         super.defaultState = new StateRequest<TurretStateRequest>(TurretStateRequest.SHOOT_ON_THE_MOVE, StateRequestPriority.NORMAL);
     }
@@ -41,8 +44,10 @@ public class TurretSubStateManager extends SubStateManager<TurretStateRequest> {
     public void periodic() {
         
         StateTable.logObject("Turret/Outputs", outputs);
-        turret.setTargetTurretPosition((double)turretTargetPosition.getValue());
         turret.update();
+        // Must be ran after turret update so we get new encoder values
+        turret.setTargetAngle(Rotation2d.fromDegrees((double)turretTargetPosition.getValue()), (boolean)isShooting.getValue());
+
     }
 
     public static TurretSubStateManager getInstance() {

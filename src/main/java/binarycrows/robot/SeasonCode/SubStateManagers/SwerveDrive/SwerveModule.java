@@ -59,10 +59,6 @@ public class SwerveModule {
     }
 
     public void setDesiredModuleDriveVoltage(double driveVoltage) {
-        /*voltageColumn.add(swerveModuleIO.getAppliedDriveMotorVolts());
-        velocityColumn.add(getDriveMotorSpeedInMetersPerSecond());
-        LogIOInputs.logToStateTable(voltageColumn, "VoltageToVelocityTeleop/" + swerveModuleName + "/Voltage");
-        LogIOInputs.logToStateTable(velocityColumn, "VoltageToVelocityTeleop/" + swerveModuleName + "/Velocity");*/
         this.swerveModuleIO.setDesiredModuleDriveVoltage(driveVoltage);
     }
 

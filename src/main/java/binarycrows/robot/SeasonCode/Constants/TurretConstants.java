@@ -21,21 +21,20 @@ public final class TurretConstants {
     public static final InvertedValue motorInverted = InvertedValue.Clockwise_Positive;
     public static final NeutralModeValue motorNeutralMode = NeutralModeValue.Brake;
 
+    public static double correctionVelocityRadPerSec = MetaConstants.isReal ? 0 : 0.75;
+    public static Rotation2d correctionZone = MetaConstants.isReal ? Rotation2d.fromDegrees(0) : Rotation2d.fromDegrees(20);
 
-    public static double correctionVelocityRadPerSec = 0;//0.75;
-    public static Rotation2d correctionZone = Rotation2d.fromDegrees(0);//20);
+    public static double decelerationBufferRad = MetaConstants.isReal ? 0 : 0.025;
 
-    public static double decelerationBufferRad = 0;//0.025;
+    public static double startingVelocityRadPerSec = MetaConstants.isReal ? 0 : 0.1;
 
-    public static double startingVelocityRadPerSec = 0;//0.1;
+    public static double correctionFactorTuningDeltaThresholdRad = MetaConstants.isReal ? 0 : 0.05;
 
-    public static double correctionFactorTuningDeltaThresholdRad = 0;//0.05;
+    public static double maxTurretVelocityRadPerSec = MetaConstants.isReal ? 0 : 12;
+    public static double minTurretVelocityRadPerSec = correctionVelocityRadPerSec;
 
-    public static double maxTurretVelocityRadPerSec = 0;//12;
-    public static double minTurretVelocityRadPerSec = 0;//correctionVelocityRadPerSec;
-
-    public static double maxAccelerationPerFrameRadPerSecPerSec = 0;//40;
-    public static double maxDecelerationPerFrameRadPerSecPerSec = 0;//200; // Will need to be significantly higher than max
+    public static double maxAccelerationPerFrameRadPerSecPerSec = MetaConstants.isReal ? 0 : 40;
+    public static double maxDecelerationPerFrameRadPerSecPerSec = MetaConstants.isReal ? 0 : 200; // Will need to be significantly higher than max
 
     public static final double minimumRotationRad = -5f * Math.PI / 4f; // 5pi/4 = 225 degrees, or 45 more than 180
     public static final double maximumRotationRad = 5f * Math.PI / 4f;

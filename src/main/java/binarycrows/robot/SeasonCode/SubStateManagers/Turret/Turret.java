@@ -93,10 +93,11 @@ public class Turret {
         double encoderAngleRad = turretIO.getOutputs().encoderRotation.getRadians(); // Encoder angle from min to max
         double turretAngleRad = MathUtil.angleModulus(encoderAngleRad); // Turret angle from -pi to pi
 
+
         double deltaRad = targetAngleRad - turretAngleRad; // Radians between us (absolute) and the goal
         
         // If we are going the long way around, subtract 1 rotation from the delta's magnitude to get the shortest path
-        if (deltaRad > Math.PI) {
+        if (Math.abs(deltaRad) > Math.PI) {
             // If delta is positive, subtract 1 rotation. Otherwise, add one rotation.
             deltaRad += -Math.signum(deltaRad) * (2*Math.PI);
         }
@@ -125,6 +126,7 @@ public class Turret {
 
     public void updateTurretControl() {
         double desiredVelocityRadPerSec;
+
 
         TurretOutputs outputs = turretIO.getOutputs();
 
@@ -194,7 +196,7 @@ public class Turret {
                 desiredVelocityRadPerSec = Math.signum(delta) * TurretConstants.startingVelocityRadPerSec;
             }
             
-            desiredVelocityRadPerSec *= correctionFactor;
+            //desiredVelocityRadPerSec *= correctionFactor;
         }
 
         desiredVelocityRadPerSec = Math.signum(desiredVelocityRadPerSec) * Math.min(Math.abs(desiredVelocityRadPerSec), TurretConstants.maxTurretVelocityRadPerSec);

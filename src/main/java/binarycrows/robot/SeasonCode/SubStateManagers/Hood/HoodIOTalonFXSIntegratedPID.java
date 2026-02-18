@@ -17,7 +17,6 @@ import binarycrows.robot.SeasonCode.Constants.MetaConstants;
 import binarycrows.robot.SeasonCode.Constants.SwerveDriveConstants;
 import binarycrows.robot.SeasonCode.Constants.HoodConstants;
 import binarycrows.robot.Utils.ConversionUtils;
-import binarycrows.robot.Utils.LogIOInputs;
 import binarycrows.robot.Utils.Tuning.RuntimeTunablePIDValues;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
