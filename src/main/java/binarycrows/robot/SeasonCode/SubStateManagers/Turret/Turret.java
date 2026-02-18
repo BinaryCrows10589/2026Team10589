@@ -10,12 +10,9 @@ import binarycrows.robot.Robot;
 import binarycrows.robot.SeasonCode.Constants.MetaConstants;
 import binarycrows.robot.SeasonCode.Constants.TurretConstants;
 import binarycrows.robot.SeasonCode.SubStateManagers.Turret.TurretIO.TurretOutputs;
-import binarycrows.robot.Utils.ConversionUtils;
 import binarycrows.robot.Utils.Tuning.RuntimeTunableValue;
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
-import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Turret {
 
@@ -91,7 +88,40 @@ public class Turret {
 
     private Rotation2d turretPositionLastFrame = Rotation2d.kZero;
 
-    // Now add wire management and stuff given 0-360 range target
+    public void setTargetAngle(Rotation2d angle, boolean isActivelyShooting) {
+        double targetAngleRad = MathUtil.angleModulus(angle.getRadians()); // Target angle from -pi to pi
+        double encoderAngleRad = turretIO.getOutputs().encoderRotation.getRadians(); // Encoder angle from min to max
+        double turretAngleRad = MathUtil.angleModulus(encoderAngleRad); // Turret angle from -pi to pi
+
+        double deltaRad = targetAngleRad - turretAngleRad; // Radians between us (absolute) and the goal
+        
+        // If we are going the long way around, subtract 1 rotation from the delta's magnitude to get the shortest path
+        if (deltaRad > Math.PI) {
+            // If delta is positive, subtract 1 rotation. Otherwise, add one rotation.
+            deltaRad += -Math.signum(deltaRad) * (2*Math.PI);
+        }
+
+        double targetPositionNoWrap = encoderAngleRad + deltaRad; // Position we target ignoring absolute max and min
+
+        if ( // If we would overextend by going to this position directly...
+            targetPositionNoWrap > TurretConstants.maximumRotationRad || 
+            targetPositionNoWrap < TurretConstants.minimumRotationRad) 
+            {
+                targetTurretPosition = Rotation2d.fromRadians(targetAngleRad); // Just go to it within the normal range
+        } else if ( // If we would exit our ideal range by going to this position directly...
+            targetPositionNoWrap > TurretConstants.idealMaximumRotationRad || 
+            targetPositionNoWrap < TurretConstants.idealMinimumRotationRad) {
+
+            if (isActivelyShooting) {
+                targetTurretPosition = Rotation2d.fromRadians(targetPositionNoWrap); // Allow extending out of ideal range
+            } else {
+                targetTurretPosition = Rotation2d.fromRadians(targetAngleRad); // Just go to it within the normal range
+            }
+        } else {
+            targetTurretPosition = Rotation2d.fromRadians(targetAngleRad); // No matter what we will be within the ideal range
+        }
+
+    }
 
     public void updateTurretControl() {
         double desiredVelocityRadPerSec;

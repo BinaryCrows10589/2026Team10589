@@ -1,5 +1,6 @@
 package binarycrows.robot;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -14,6 +15,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.wpilibj.Timer;
 
 
 public class StateTable {
@@ -28,7 +30,7 @@ public class StateTable {
      * @param value
      */
     @SuppressWarnings("unchecked")
-    public static synchronized void putValue(String path, Object value) {
+    private static synchronized void putValue(String path, Object value) {
         // Fix common types to be correct
         if (value instanceof ArrayList) {
             if (((ArrayList)value).size() != 0) {
@@ -45,6 +47,40 @@ public class StateTable {
 
         stateTableObjects.put(path, value);
         updateAdvantageKit();
+    }
+
+    public static void logObject(String path, Object outputs) {
+        if (!path.endsWith("/")) path += "/";
+        
+        for (Field field : outputs.getClass().getFields()) {
+            try {
+
+                Object fieldValue = field.get(outputs);
+                if (fieldValue == null) continue;
+
+                String absolutePath = path + field.getName();
+                
+                
+                log(absolutePath, fieldValue);
+
+            } catch (IllegalArgumentException e) {
+                e.printStackTrace();
+                StateTable.recordNonFatalException(e);
+                
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+                StateTable.recordNonFatalException(e);
+            }
+        }
+    }
+
+    public static void log(String absolutePath, Object fieldValue) {
+        if (!absolutePath.endsWith("/")) absolutePath += "/";
+        StateTable.putValue(absolutePath, fieldValue);
+    }
+
+    public static void logStateRequestRejection(StateRequest request, String reason) {
+        StateTable.putValue("StateRequests/Rejections/" + ((int)(Timer.getFPGATimestamp())) / 60.0, request.getStateRequestType().toString() + ": " + reason);
     }
 
     public static synchronized void recordNonFatalException(Exception e) {

@@ -1,29 +1,23 @@
 package binarycrows.robot.SeasonCode.SubStateManagers.SwerveDrive;
 
-import java.util.HashMap;
-
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.configs.MagnetSensorConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.PositionDutyCycle;
-import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
-import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.signals.SensorDirectionValue;
-import com.ctre.phoenix6.swerve.SwerveModuleConstants;
 
+import binarycrows.robot.StateTable;
 import binarycrows.robot.SeasonCode.Constants.CANIDs;
 import binarycrows.robot.SeasonCode.Constants.MetaConstants;
 import binarycrows.robot.SeasonCode.Constants.SwerveDriveConstants;
-import binarycrows.robot.Utils.LogIOInputs;
 import binarycrows.robot.Utils.Tuning.RuntimeTunablePIDValues;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.wpilibj.Timer;
 
 public class SwerveModuleTalonFX implements SwerveModuleIO {
 
@@ -268,8 +262,8 @@ public class SwerveModuleTalonFX implements SwerveModuleIO {
             this.turnMotor.getConfigurator().apply(turnMotorPIDConstantTuner.generatePIDFFConfigs());
         }
 
-        LogIOInputs.logToStateTable(this.turnControlRequest.Position, swerveModuleName + "/DesiredRotation");
-        LogIOInputs.logToStateTable(this.turnMotor.getPosition().getValueAsDouble(), swerveModuleName + "/ActualRotation");
+        StateTable.log(swerveModuleName + "/DesiredRotation", this.turnControlRequest.Position);
+        StateTable.log(swerveModuleName + "/ActualRotation", this.turnMotor.getPosition().getValueAsDouble());
 
     }
 

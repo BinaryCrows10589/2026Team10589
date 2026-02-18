@@ -2,11 +2,11 @@ package binarycrows.robot.SeasonCode.SubStateManagers.Intake.Pivot;
 
 import binarycrows.robot.MainStateManager;
 import binarycrows.robot.StateRequest;
+import binarycrows.robot.StateTable;
 import binarycrows.robot.SubStateManager;
 import binarycrows.robot.Enums.StateRequestPriority;
 import binarycrows.robot.SeasonCode.Constants.IntakeConstants;
 import binarycrows.robot.SeasonCode.SubStateManagers.Intake.Pivot.PivotIO.PivotOutputs;
-import binarycrows.robot.Utils.LogIOInputs;
 
 public class PivotSubStateManager extends SubStateManager<PivotStateRequest>  {
     
@@ -35,7 +35,7 @@ public class PivotSubStateManager extends SubStateManager<PivotStateRequest>  {
     @Override
     public void periodic() {
         
-        LogIOInputs.logObjectToStateTable(outputs, "Pivot/Outputs");
+        StateTable.logObject("Pivot/Outputs", outputs);
         // Yes, this is probably the best way to control the pivot...
         double voltage = 0;
         boolean runRaisedPID = false;

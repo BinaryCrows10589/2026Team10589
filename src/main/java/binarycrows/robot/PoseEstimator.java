@@ -17,7 +17,6 @@ import binarycrows.robot.SeasonCode.Constants.SwerveDriveConstants;
 import binarycrows.robot.SeasonCode.Constants.PoseEstimatorConstants;
 import binarycrows.robot.SeasonCode.SubStateManagers.SwerveDrive.DriveSubStateManager;
 import binarycrows.robot.Utils.ConversionUtils;
-import binarycrows.robot.Utils.LogIOInputs;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -90,7 +89,7 @@ public class PoseEstimator {
                 double timestamp = Timer.getFPGATimestamp();
                swerveDrivePoseEstimator.addVisionMeasurement(new Pose2d(xPose, yPose, this.swerveDrivePoseEstimator.getEstimatedPosition().getRotation()), timestamp, PoseEstimatorConstants.visionPoseEstimateTrust);
             }*/
-            LogIOInputs.logToStateTable(this.swerveDrivePoseEstimator.getEstimatedPosition(), "PoseEstimator/EstimatedPosition");
+            StateTable.log("PoseEstimator/EstimatedPosition", this.swerveDrivePoseEstimator.getEstimatedPosition());
 
         } catch(Exception E) {
            System.out.println("FAILED TO UPDATE POSE ESTIMATOR: " + E.getMessage());
@@ -126,7 +125,7 @@ public class PoseEstimator {
         for(PhotonPoseEstimator photonPoseEstimator : this.photonPoseEstimators) {
             photonPoseEstimator.getFieldTags().setOrigin(PoseEstimatorConstants.originPosition);
         }
-        LogIOInputs.logToStateTable(photonPoseEstimators[0].getFieldTags().getOrigin(), "Vision/OrginPosition");
+        StateTable.log("Vision/OrginPosition", photonPoseEstimators[0].getFieldTags().getOrigin());
     }
 
     private void configPhotonPoseEstimators() {
@@ -196,13 +195,13 @@ public class PoseEstimator {
             // Get the latest pose data frames from the Quest
             try {
             PoseFrame[] questFrames = questNav.getAllUnreadPoseFrames();
-            LogIOInputs.logToStateTable(questFrames.length > 0, "QuestNav/HasFrames");
-            LogIOInputs.logToStateTable(questNav.getBatteryPercent(), "QuestNav/Battery");
+            StateTable.log("QuestNav/HasFrames", questFrames.length > 0);
+            StateTable.log("QuestNav/Battery", questNav.getBatteryPercent());
 
 
             // Loop over the pose data frames and send them to the pose estimator
             for (PoseFrame questFrame : questFrames) {
-                LogIOInputs.logToStateTable(questFrames.length > 0, "QuestNav/HasFrames");
+                StateTable.log("QuestNav/HasFrames", questFrames.length > 0);
 
                     Pose3d questPose = questFrame.questPose3d();
 
@@ -214,8 +213,8 @@ public class PoseEstimator {
                     Pose3d robotPose = questPose.transformBy(PoseEstimatorConstants.robotToQuestOffset.inverse()).transformBy(PoseEstimatorConstants.questToWorldTransform);
 
                     // Add the measurement to our estimator
-                    LogIOInputs.logToStateTable(robotPose, "QuestNav/RobotPose");
-                    LogIOInputs.logToStateTable(timestamp, "QuestNav/LastUpdateTimestamp");
+                    StateTable.log("QuestNav/RobotPose", robotPose);
+                    StateTable.log("QuestNav/LastUpdateTimestamp", timestamp);
                     
             if (Double.isNaN(swerveDrivePoseEstimator.getEstimatedPosition().getX())) { // TODO: This is a band-aid fix, figure out why NaN is occurring if possible
                 swerveDrivePoseEstimator.resetPosition(DriveSubStateManager.getInstance().getGyroAngleRotation2d(),
@@ -223,13 +222,13 @@ public class PoseEstimator {
             }
                     swerveDrivePoseEstimator.addVisionMeasurement(robotPose.toPose2d(), timestamp, PoseEstimatorConstants.questNavPoseEstimateTrust);
                 }
-                LogIOInputs.logToStateTable(true, "QuestNav/Updating");
+                StateTable.log("QuestNav/Updating", true);
             } catch (Exception e) {
                 System.out.println(e.getMessage());
             }
         } else {
-            LogIOInputs.logToStateTable(false, "QuestNav/HasFrames");
-            LogIOInputs.logToStateTable(false, "QuestNav/Updating");
+            StateTable.log("QuestNav/HasFrames", false);
+            StateTable.log("QuestNav/Updating", false);
         }
         
     

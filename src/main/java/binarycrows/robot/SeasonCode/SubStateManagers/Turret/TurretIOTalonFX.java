@@ -14,15 +14,8 @@ import binarycrows.robot.SeasonCode.Constants.CANIDs;
 import binarycrows.robot.SeasonCode.Constants.MetaConstants;
 import binarycrows.robot.SeasonCode.Constants.SwerveDriveConstants;
 import binarycrows.robot.SeasonCode.Constants.TurretConstants;
-import binarycrows.robot.Utils.ConversionUtils;
-import binarycrows.robot.Utils.LogIOInputs;
 import binarycrows.robot.Utils.Tuning.RuntimeTunablePIDValues;
-import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.system.plant.DCMotor;
-import edu.wpi.first.math.system.plant.LinearSystemId;
-import edu.wpi.first.wpilibj.simulation.DCMotorSim;
 
 public class TurretIOTalonFX implements TurretIO {
     public TurretOutputs outputs;
@@ -90,13 +83,30 @@ public class TurretIOTalonFX implements TurretIO {
         outputs.motorTorqueAmps = turretMotor.getTorqueCurrent().getValueAsDouble();
 
         outputs.motorRotation = Rotation2d.fromRotations(turretMotor.getRotorPosition().getValueAsDouble());
-        outputs.encoderRotation = Rotation2d.fromRotations(turretEncoder.getAbsolutePosition().getValueAsDouble());
+        outputs.encoderValue = turretEncoder.getAbsolutePosition().getValueAsDouble();
+        outputs.encoderRotation = getEncoderRotation();
         outputs.turretRotation = Rotation2d.fromRotations(turretEncoder.getAbsolutePosition().getValueAsDouble()).minus(turretEncoderOffset);
         outputs.turretRotationalVelocityRadPerSec = turretEncoder.getVelocity().getValueAsDouble() * 2 * Math.PI;
         outputs.targetPosition = targetPosition;
         outputs.distanceFromSetpoint = outputs.targetPosition.minus(outputs.turretRotation);
 
         updatePIDValuesFromNetworkTables();
+    }
+
+    private Rotation2d getEncoderRotation() {
+        double encoderValue = outputs.encoderValue;
+
+        // Proportion (zero to one) that the encoder is at between min and max rotation
+        double encoderProportion = 
+        (encoderValue - TurretConstants.encoderReadingAtMinRotation) / 
+        (TurretConstants.encoderReadingAtMaxRotation - TurretConstants.encoderReadingAtMinRotation);
+        
+        // Value of encoder proportion within 
+        double scaledValue =
+        ((encoderProportion * TurretConstants.minimumRotationRad) - TurretConstants.maximumRotationRad) /
+        (encoderProportion + TurretConstants.minimumRotationRad);
+
+        return Rotation2d.fromRadians(scaledValue);
     }
 
     public void updatePIDValuesFromNetworkTables() {

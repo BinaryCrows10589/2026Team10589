@@ -27,7 +27,6 @@ import binarycrows.robot.SeasonCode.Constants.PoseEstimatorConstants;
 import binarycrows.robot.SeasonCode.SubStateManagers.SwerveDrive.GyroIO.GyroOutputs;
 import binarycrows.robot.SeasonCode.SubStateManagers.SwerveDrive.SwerveModuleIO.SwerveModuleOutputs;
 import binarycrows.robot.SeasonCode.SubStateManagers.Turret.TurretSubStateManager;
-import binarycrows.robot.Utils.LogIOInputs;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFieldLayout.OriginPosition;
 import edu.wpi.first.math.MathUtil;
@@ -129,17 +128,17 @@ public class DriveSubStateManager extends SubStateManager<DriveStateRequest> {
     }
 
     public void enableSlowMode() {
-        StateTable.putValue("SlowMode", true);
+        StateTable.log("SlowMode", true);
     }
     public void disableSlowMode() {
-        StateTable.putValue("SlowMode", false);
+        StateTable.log("SlowMode", false);
     }
 
     public void enableForceRobotRelative() {
-        StateTable.putValue("ForceRobotRelative", true);
+        StateTable.log("ForceRobotRelative", true);
     }
     public void disableForceRobotRelative() {
-        StateTable.putValue("ForceRobotRelative", false);
+        StateTable.log("ForceRobotRelative", false);
     }
 
     @Override
@@ -154,23 +153,23 @@ public class DriveSubStateManager extends SubStateManager<DriveStateRequest> {
         }
 
         if (request.getStateRequestType() == DriveStateRequest.DRIVE_CROWMOTION) {
-            StateTable.putValue("IsDriverControlled", false);
+            StateTable.log("IsDriverControlled", false);
 
             if (CrowMotionConstants.currentTrajectory == null || CrowMotionConstants.currentTrajectory.isCompleted()) {
                 request.updateStatus(StateRequestStatus.REJECTED);
-                LogIOInputs.logStateRequestRejection(request, "currentTrajectory is null or already completed");
+                StateTable.logStateRequestRejection(request, "currentTrajectory is null or already completed");
                 return;
             }
         } else if (request.getStateRequestType() == DriveStateRequest.DRIVE_CROWMOTION_ARRAY) {
-            StateTable.putValue("IsDriverControlled", false);
+            StateTable.log("IsDriverControlled", false);
 
             if (CrowMotionConstants.currentTrajectoryArray == null) {
                 request.updateStatus(StateRequestStatus.REJECTED);
-                LogIOInputs.logStateRequestRejection(request, "currentTrajectoryArray is null");
+                StateTable.logStateRequestRejection(request, "currentTrajectoryArray is null");
                 return;
             }
         } else if (request.getStateRequestType() == DriveStateRequest.DRIVE_CROWMOTION_AUTOPOSITIONING) {
-            StateTable.putValue("IsDriverControlled", false);
+            StateTable.log("IsDriverControlled", false);
             Pose2d currentRobotPose = poseEstimator.getRobotPose();
 
             CrowMotionConstants.currentTrajectory = new CMTrajectory(
@@ -197,7 +196,7 @@ public class DriveSubStateManager extends SubStateManager<DriveStateRequest> {
             request = new StateRequest<DriveStateRequest>(DriveStateRequest.DRIVE_CROWMOTION, request.getPriority());
         }
         else if (request.getStateRequestType() == DriveStateRequest.TELEOP_DRIVE) {
-            StateTable.putValue("IsDriverControlled", true);
+            StateTable.log("IsDriverControlled", true);
 
         }
         super.recieveStateRequest(request);
@@ -220,15 +219,15 @@ public class DriveSubStateManager extends SubStateManager<DriveStateRequest> {
         backLeftSwerveModule.update();
         backRightSwerveModule.update();
 
-        LogIOInputs.logObjectToStateTable(frontLeftOutputs, "SwerveModule/FrontLeft");
-        LogIOInputs.logObjectToStateTable(frontRightOutputs, "SwerveModule/FrontRight");
-        LogIOInputs.logObjectToStateTable(backLeftOutputs, "SwerveModule/BackLeft");
-        LogIOInputs.logObjectToStateTable(backRightOutputs, "SwerveModule/BackRight");
+        StateTable.logObject("SwerveModule/FrontLeft", frontLeftOutputs);
+        StateTable.logObject("SwerveModule/FrontRight", frontRightOutputs);
+        StateTable.logObject("SwerveModule/BackLeft", backLeftOutputs);
+        StateTable.logObject("SwerveModule/BackRight", backRightOutputs);
 
 
         
         if (swerveModuleStates != null)
-            LogIOInputs.logToStateTable(swerveModuleStates, "DriveSubsystem/ModuleStates");
+            StateTable.log("DriveSubsystem/ModuleStates", swerveModuleStates);
 
         // Resolve pending state request
         if (this.activeStateRequest.getStatus() == StateRequestStatus.PENDING) {
@@ -273,8 +272,8 @@ public class DriveSubStateManager extends SubStateManager<DriveStateRequest> {
 
                 
 
-                    LogIOInputs.logToStateTable(currentVoltageTableTargetValue, "DriveSubsystem/VoltageTableTargetValue");
-                    LogIOInputs.logToStateTable(voltageRecordingTimer.get(), "DriveSubsystem/VoltageRecordingTimeElapsed");
+                    StateTable.log("DriveSubsystem/VoltageTableTargetValue", currentVoltageTableTargetValue);
+                    StateTable.log("DriveSubsystem/VoltageRecordingTimeElapsed", voltageRecordingTimer.get());
 
                     if (consecutiveMovement > maxConsecutiveMovement) {
                         if (currentVoltageTableTargetValue <= 0) {
@@ -282,7 +281,7 @@ public class DriveSubStateManager extends SubStateManager<DriveStateRequest> {
                             this.activeStateRequest.updateStatus(StateRequestStatus.FULFILLED);
                             this.returnToDefaultState();
                             recordVoltageTableValue();
-                            LogIOInputs.logToStateTable(voltage, "DriveSubsystem/Voltage");
+                            StateTable.log("DriveSubsystem/Voltage", voltage);
                         }
                         else {
                                 recordVoltageTableValue();
@@ -322,15 +321,15 @@ public class DriveSubStateManager extends SubStateManager<DriveStateRequest> {
                         drivePeriodic();
                         ChassisSpeeds speeds = getChassisSpeeds();
                         double speed = Math.sqrt(speeds.vxMetersPerSecond * speeds.vxMetersPerSecond + speeds.vyMetersPerSecond * speeds.vyMetersPerSecond);
-                        LogIOInputs.logToStateTable(speed, "speed");
+                        StateTable.log("speed", speed);
                         if (speed > maxSpeed) maxSpeed = speed;
 
-                        LogIOInputs.logToStateTable(maxSpeed, "maxSpeed");
+                        StateTable.log("maxSpeed", maxSpeed);
                         if (startTimestamp == -1 && speed > 0.05) {
                             startTimestamp = System.currentTimeMillis();
                         }
                         else if (speed > SwerveDriveConstants.maxSpeedMPS - 0.05) {
-                            LogIOInputs.logToStateTable((System.currentTimeMillis() - startTimestamp) /1000.0, "timeToReachMaxSpeedSec");
+                            StateTable.log("timeToReachMaxSpeedSec", (System.currentTimeMillis() - startTimestamp) /1000.0);
                         }
                         break;
                     case DRIVE_DISTANCE_TEST:
@@ -345,7 +344,7 @@ public class DriveSubStateManager extends SubStateManager<DriveStateRequest> {
                         } else {
                             this.drive(0.1, 0, 0, true);
                         }
-                        LogIOInputs.logToStateTable(getDriveDistanceTotal(), "DriveSubsystem/DriveDistance");
+                        StateTable.log("DriveSubsystem/DriveDistance", getDriveDistanceTotal());
 
                         break;
                     case DRIVE_CROWMOTION:
@@ -353,7 +352,7 @@ public class DriveSubStateManager extends SubStateManager<DriveStateRequest> {
                         drivePeriodic();
                         if (CrowMotionConstants.currentTrajectory.isCompleted() && this.activeStateRequest.getStatus() != StateRequestStatus.FULFILLED) {
                             this.activeStateRequest.updateStatus(StateRequestStatus.FULFILLED);
-                            LogIOInputs.logToStateTable((System.currentTimeMillis() - trajectoryStartTime) / 1000.0, "DriveSubsystem/LastTrajectoryTimeSec");
+                            StateTable.log("DriveSubsystem/LastTrajectoryTimeSec", (System.currentTimeMillis() - trajectoryStartTime) / 1000.0);
                         }
                         break;
                     case DRIVE_CROWMOTION_ARRAY:
@@ -428,10 +427,10 @@ public class DriveSubStateManager extends SubStateManager<DriveStateRequest> {
             Keybinds.getRotation() * SwerveDriveConstants.maxRotationAnglePerSecond * SwerveDriveConstants.rotationSlowModeMultipler : 
             Keybinds.getRotation() * SwerveDriveConstants.maxRotationAnglePerSecond;
 
-            LogIOInputs.logToStateTable(translationX, "DriveSubsystem/TranslationX");
-            LogIOInputs.logToStateTable(translationY, "DriveSubsystem/TranslationY");
-            LogIOInputs.logToStateTable(rotation, "DriveSubsystem/rotation");
-            LogIOInputs.logToStateTable(Keybinds.getRotation(), "DriveSubsystem/rotationraw");
+            StateTable.log("DriveSubsystem/TranslationX", translationX);
+            StateTable.log("DriveSubsystem/TranslationY", translationY);
+            StateTable.log("DriveSubsystem/rotation", rotation);
+            StateTable.log("DriveSubsystem/rotationraw", Keybinds.getRotation());
 
             translationMax = SwerveDriveConstants.maxSpeedMPS;
             rotationMax = SwerveDriveConstants.maxRotationAnglePerSecond;
@@ -490,9 +489,9 @@ public class DriveSubStateManager extends SubStateManager<DriveStateRequest> {
     }
 
     public void drive(double desiredXVelocity, double desiredYVelocity, double desiredRotationalVelocity, boolean isFieldRelative) {
-        LogIOInputs.logToStateTable(desiredXVelocity, "Driver/XVelocity");
-        LogIOInputs.logToStateTable(desiredYVelocity, "Driver/YVelocity");
-        LogIOInputs.logToStateTable(desiredRotationalVelocity, "Driver/RotVelocity");
+        StateTable.log("Driver/XVelocity", desiredXVelocity);
+        StateTable.log("Driver/YVelocity", desiredYVelocity);
+        StateTable.log("Driver/RotVelocity", desiredRotationalVelocity);
         this.desiredChassisSpeeds = isFieldRelative ? 
             ChassisSpeeds.fromFieldRelativeSpeeds(desiredXVelocity, desiredYVelocity,
                 desiredRotationalVelocity, this.poseEstimator.getRobotPose().getRotation()) :
@@ -511,7 +510,7 @@ public class DriveSubStateManager extends SubStateManager<DriveStateRequest> {
     }
 
     public void setModuleStates(SwerveModuleState[] desiredStates) {
-        LogIOInputs.logToStateTable(desiredStates, "DriveSubsystem/DesiredModuleStates");
+        StateTable.log("DriveSubsystem/DesiredModuleStates", desiredStates);
         SwerveDriveKinematics.desaturateWheelSpeeds(
         desiredStates, SwerveDriveConstants.maxSpeedMPS);
         this.frontLeftSwerveModule.setDesiredModuleState(desiredStates[0]);

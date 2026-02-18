@@ -11,6 +11,7 @@ public interface TurretIO {
         public double motorTorqueAmps;
 
         public Rotation2d motorRotation;
+        public double encoderValue;
         public Rotation2d encoderRotation;
         public Rotation2d turretRotation;
         public double turretRotationalVelocityRadPerSec;

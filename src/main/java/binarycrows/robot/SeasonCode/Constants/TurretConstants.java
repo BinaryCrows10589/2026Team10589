@@ -37,6 +37,14 @@ public final class TurretConstants {
     public static double maxAccelerationPerFrameRadPerSecPerSec = 0;//40;
     public static double maxDecelerationPerFrameRadPerSecPerSec = 0;//200; // Will need to be significantly higher than max
 
+    public static final double minimumRotationRad = -5f * Math.PI / 4f; // 5pi/4 = 225 degrees, or 45 more than 180
+    public static final double maximumRotationRad = 5f * Math.PI / 4f;
+    public static final double idealMinimumRotationRad = -Math.PI;
+    public static final double idealMaximumRotationRad = Math.PI;
+
+    public static final double encoderReadingAtMaxRotation = 0.9f;
+    public static final double encoderReadingAtMinRotation = 0f;
+
     public static final LerpTable velocityToVoltageLerpTable = MetaConstants.isReal ? 
     // Real
     new LerpTable(new double[] {}, new double[] {}, true) 

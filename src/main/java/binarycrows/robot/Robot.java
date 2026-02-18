@@ -34,7 +34,6 @@ import binarycrows.robot.SeasonCode.SubStateManagers.SwerveDrive.DriveSubStateMa
 import binarycrows.robot.SeasonCode.SubStateManagers.Turret.TurretSubStateManager;
 import binarycrows.robot.StateRequestGroup.SequentialGroup;
 import binarycrows.robot.StateRequestGroup.StateRequestGroup;
-import binarycrows.robot.Utils.LogIOInputs;
 import binarycrows.robot.Utils.Auton.Auton;
 import edu.wpi.first.apriltag.AprilTagFieldLayout.OriginPosition;
 import edu.wpi.first.math.Pair;
@@ -106,13 +105,13 @@ public class Robot extends LoggedRobot {
       MainStateManager.getInstance().start();
 
 
-      StateTable.putValue("SlowMode", false);
+      StateTable.log("SlowMode", false);
 
-      StateTable.putValue("AxisLock", false);
+      StateTable.log("AxisLock", false);
       
-      StateTable.putValue("IsDriverControlled", true);
+      StateTable.log("IsDriverControlled", true);
 
-      StateTable.putValue("ForceRobotRelative", false);
+      StateTable.log("ForceRobotRelative", false);
       
 
       subStateManagers = MainStateManager.getInstance().getSubStateManagers();
@@ -182,9 +181,9 @@ public class Robot extends LoggedRobot {
           }
         }
         subStateManager.periodic();
-        LogIOInputs.logToStateTable(subStateManager.activeStateRequest, subStateManager.toString() + "/ActiveStateRequest");
 
-        LogIOInputs.logToStateTable(subStateManager.activeStateRequest.getStateRequestType().name(), subStateManager.toString() + "/ActiveStateRequest/Name");
+        StateTable.log(subStateManager.toString() + "/ActiveStateRequest", subStateManager.activeStateRequest);
+        StateTable.log(subStateManager.toString() + "/ActiveStateRequest/Name", subStateManager.activeStateRequest.getStateRequestType().name());
     });
 
     long currentTime = System.currentTimeMillis();
@@ -203,7 +202,7 @@ public class Robot extends LoggedRobot {
 
   @Override
   public void autonomousInit() {
-    StateTable.putValue("IsDriverControlled", false);
+    StateTable.log("IsDriverControlled", false);
     MetaConstants.startedAutonomous = false;
   }
 
@@ -220,7 +219,7 @@ public class Robot extends LoggedRobot {
 
   @Override
   public void teleopInit() {
-    StateTable.putValue("IsDriverControlled", true);
+    StateTable.log("IsDriverControlled", true);
   }
 
   @Override
@@ -231,7 +230,7 @@ public class Robot extends LoggedRobot {
 
   @Override
   public void disabledInit() {
-    StateTable.putValue("IsDriverControlled", false);
+    StateTable.log("IsDriverControlled", false);
   }
 
   @Override

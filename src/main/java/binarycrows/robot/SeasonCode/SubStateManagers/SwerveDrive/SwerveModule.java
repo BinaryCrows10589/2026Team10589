@@ -1,10 +1,10 @@
 package binarycrows.robot.SeasonCode.SubStateManagers.SwerveDrive;
 
 
+import binarycrows.robot.StateTable;
 import binarycrows.robot.SeasonCode.Constants.SwerveDriveConstants;
 import binarycrows.robot.SeasonCode.Utils.DesiredMetersPerSecondToVoltageLerpTable;
 import binarycrows.robot.Utils.ConversionUtils;
-import binarycrows.robot.Utils.LogIOInputs;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
@@ -39,9 +39,9 @@ public class SwerveModule {
      * @param desiredState SwerveModuleState: The desired state for the module
      */
     public void setDesiredModuleState(SwerveModuleState desiredState) {
-        LogIOInputs.logToStateTable(desiredState.speedMetersPerSecond, swerveModuleName + "/DesiredSpeedMPS");
+        StateTable.log(swerveModuleName + "/DesiredSpeedMPS", desiredState.speedMetersPerSecond);
 
-        LogIOInputs.logToStateTable(getDriveMotorSpeedInMetersPerSecond(), swerveModuleName + "/SpeedMPS");
+        StateTable.log(swerveModuleName + "/SpeedMPS", getDriveMotorSpeedInMetersPerSecond());
 
 
         SwerveModuleState optimizedState = ConversionUtils.optimizeSwerveModuleState(desiredState, getModuleState().angle); 
