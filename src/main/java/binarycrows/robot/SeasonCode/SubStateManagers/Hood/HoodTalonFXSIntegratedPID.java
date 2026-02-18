@@ -3,29 +3,21 @@ package binarycrows.robot.SeasonCode.SubStateManagers.Hood;
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.configs.MagnetSensorConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
-import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.configs.TalonFXSConfiguration;
 import com.ctre.phoenix6.controls.PositionDutyCycle;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.CANcoder;
-import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.hardware.TalonFXS;
 import com.ctre.phoenix6.signals.SensorDirectionValue;
 
 import binarycrows.robot.SeasonCode.Constants.CANIDs;
+import binarycrows.robot.SeasonCode.Constants.HoodConstants;
 import binarycrows.robot.SeasonCode.Constants.MetaConstants;
 import binarycrows.robot.SeasonCode.Constants.SwerveDriveConstants;
-import binarycrows.robot.SeasonCode.Constants.HoodConstants;
-import binarycrows.robot.Utils.ConversionUtils;
 import binarycrows.robot.Utils.Tuning.RuntimeTunablePIDValues;
-import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.system.plant.DCMotor;
-import edu.wpi.first.math.system.plant.LinearSystemId;
-import edu.wpi.first.wpilibj.simulation.DCMotorSim;
 
-public class HoodIOTalonFXSIntegratedPID implements HoodIO {
+public class HoodTalonFXSIntegratedPID implements HoodIO {
     public HoodOutputs outputs;
 
     private Rotation2d targetPosition = Rotation2d.kZero;
@@ -41,7 +33,7 @@ public class HoodIOTalonFXSIntegratedPID implements HoodIO {
 
     private RuntimeTunablePIDValues hoodPIDConstantTuner;
     
-    public HoodIOTalonFXSIntegratedPID(HoodOutputs outputs) {
+    public HoodTalonFXSIntegratedPID(HoodOutputs outputs) {
         this.outputs = outputs;
         hoodMotor = new TalonFXS(CANIDs.RIO.hoodMotor);
 

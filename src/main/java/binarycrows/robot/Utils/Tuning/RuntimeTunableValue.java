@@ -52,7 +52,7 @@ public class RuntimeTunableValue {
     public Object getValue() {
         boolean hasChanged = false;
         if(this.changableValueType.equals(this.genericInt.getClass())) {
-            this.changableValue =  SmartDashboard.getNumber(networkTablesKey, (int)changableValue);
+            this.changableValue =  (int)SmartDashboard.getNumber(networkTablesKey, (int)changableValue);
            hasChanged =  (int)this.changableValue != (int)this.lastChangableValue;
         } else if (this.changableValueType.equals(this.genericDouble.getClass())) {
             this.changableValue = SmartDashboard.getNumber(networkTablesKey, (double)changableValue);

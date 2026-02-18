@@ -16,7 +16,7 @@ import binarycrows.robot.Utils.Tuning.RuntimeTunablePIDValues;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
 
-public class HoodIOTalonFXSWPILibPID implements HoodIO {
+public class HoodTalonFXSWPILibPID implements HoodIO {
     public HoodOutputs outputs;
 
     private Rotation2d targetPosition = Rotation2d.kZero;
@@ -34,7 +34,7 @@ public class HoodIOTalonFXSWPILibPID implements HoodIO {
     
     private boolean usingPID = false;
         
-    public HoodIOTalonFXSWPILibPID(HoodOutputs outputs) {
+    public HoodTalonFXSWPILibPID(HoodOutputs outputs) {
         this.outputs = outputs;
         hoodMotor = new TalonFXS(CANIDs.RIO.hoodMotor);
 

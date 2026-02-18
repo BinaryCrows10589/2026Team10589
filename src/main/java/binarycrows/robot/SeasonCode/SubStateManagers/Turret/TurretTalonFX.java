@@ -17,7 +17,7 @@ import binarycrows.robot.SeasonCode.Constants.TurretConstants;
 import binarycrows.robot.Utils.Tuning.RuntimeTunablePIDValues;
 import edu.wpi.first.math.geometry.Rotation2d;
 
-public class TurretIOTalonFX implements TurretIO {
+public class TurretTalonFX implements TurretIO {
     public TurretOutputs outputs;
 
     private Rotation2d targetPosition = Rotation2d.kZero;
@@ -33,7 +33,7 @@ public class TurretIOTalonFX implements TurretIO {
 
     private RuntimeTunablePIDValues turretPIDConstantTuner;
     
-    public TurretIOTalonFX(TurretOutputs outputs) {
+    public TurretTalonFX(TurretOutputs outputs) {
         this.outputs = outputs;
         turretMotor = new TalonFX(CANIDs.RIO.turretMotor);
 

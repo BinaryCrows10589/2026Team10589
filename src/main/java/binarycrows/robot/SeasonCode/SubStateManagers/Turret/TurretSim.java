@@ -8,7 +8,7 @@ import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.wpilibj.simulation.DCMotorSim;
 
-public class TurretIOSim implements TurretIO {
+public class TurretSim implements TurretIO {
     public TurretOutputs outputs;
 
     private double motorVoltage = 0;
@@ -26,7 +26,7 @@ public class TurretIOSim implements TurretIO {
             ), 
             DCMotor.getKrakenX60(1));
     
-    public TurretIOSim(TurretOutputs outputs) {
+    public TurretSim(TurretOutputs outputs) {
         this.outputs = outputs;
         turretPIDController = new PIDController(
             TurretConstants.turretPIDValueP,

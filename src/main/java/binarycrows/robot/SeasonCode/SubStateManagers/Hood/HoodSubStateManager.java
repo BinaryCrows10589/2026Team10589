@@ -31,8 +31,8 @@ public class HoodSubStateManager extends SubStateManager<HoodStateRequest> {
         outputs = new HoodOutputs();
 
         hood = new Hood(MetaConstants.isReal ? 
-        HoodConstants.useIntegratedPID ? new HoodIOTalonFXSIntegratedPID(outputs) : new HoodIOTalonFXSWPILibPID(outputs)
-        : new HoodIOSim(outputs));
+        HoodConstants.useIntegratedPID ? new HoodTalonFXSIntegratedPID(outputs) : new HoodTalonFXSWPILibPID(outputs)
+        : new HoodSim(outputs));
 
         hoodTargetPosition = new RuntimeTunableValue("Tuning/Hood/TargetPosition", 0.0);
         mustRetract = new RuntimeTunableValue("Tuning/Hood/MustRetract", false);
@@ -59,7 +59,6 @@ public class HoodSubStateManager extends SubStateManager<HoodStateRequest> {
     private void controlVoltage() {
         double voltage = 0;
         double delta = getTargetPosition() - outputs.hoodRotation.getDegrees();
-        System.out.println("Delta: " + delta);
 
         if (delta > 20) voltage = 0.02;
         else if (delta > 5) voltage = 0.002;

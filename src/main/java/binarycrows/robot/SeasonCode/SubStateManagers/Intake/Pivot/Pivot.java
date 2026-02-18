@@ -5,12 +5,10 @@ import org.littletonrobotics.junction.mechanism.LoggedMechanism2d;
 import org.littletonrobotics.junction.mechanism.LoggedMechanismLigament2d;
 import org.littletonrobotics.junction.mechanism.LoggedMechanismRoot2d;
 
-import binarycrows.robot.StateRequest;
-import binarycrows.robot.Enums.StateRequestPriority;
 import binarycrows.robot.SeasonCode.Constants.MetaConstants;
 import binarycrows.robot.SeasonCode.SubStateManagers.Intake.Pivot.PivotIO.PivotOutputs;
+import binarycrows.robot.Utils.Tuning.RuntimeTunableValue;
 import edu.wpi.first.math.geometry.Rotation2d;
-import binarycrows.robot.SeasonCode.Constants.IntakeConstants;
 
 public class Pivot {
     private PivotIO pivotIO;
@@ -31,6 +29,7 @@ public class Pivot {
         pivotMechRoot = pivotMech2d.getRoot("pivot", 0.5, 0.5);
         pivotMechLigament = new LoggedMechanismLigament2d("pivotLigament", 0.5, 0);
         pivotMechRoot.append(pivotMechLigament);
+
     }
 
     public void setPIDTarget(Rotation2d position) {

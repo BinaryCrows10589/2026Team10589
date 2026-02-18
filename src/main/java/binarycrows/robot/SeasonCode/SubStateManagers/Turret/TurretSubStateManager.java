@@ -27,7 +27,7 @@ public class TurretSubStateManager extends SubStateManager<TurretStateRequest> {
 
         outputs = new TurretOutputs();
 
-        turret = new Turret(MetaConstants.isReal ? new TurretIOTalonFX(outputs) : new TurretIOSim(outputs));
+        turret = new Turret(MetaConstants.isReal ? new TurretTalonFX(outputs) : new TurretSim(outputs));
 
         turretTargetPosition = new RuntimeTunableValue("Tuning/Turret/TargetPosition", 0.0);
         isShooting = new RuntimeTunableValue("Tuning/Turret/IsShooting", false);

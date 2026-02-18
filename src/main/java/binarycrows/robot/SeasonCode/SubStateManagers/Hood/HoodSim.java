@@ -1,7 +1,6 @@
 package binarycrows.robot.SeasonCode.SubStateManagers.Hood;
 
 import binarycrows.robot.SeasonCode.Constants.HoodConstants;
-import binarycrows.robot.SeasonCode.Constants.TurretConstants;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -9,7 +8,7 @@ import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.wpilibj.simulation.DCMotorSim;
 
-public class HoodIOSim implements HoodIO {
+public class HoodSim implements HoodIO {
     public HoodOutputs outputs;
 
     private double motorVoltage = 0;
@@ -27,7 +26,7 @@ public class HoodIOSim implements HoodIO {
             ), 
             DCMotor.getMinion(1));
     
-    public HoodIOSim(HoodOutputs outputs) {
+    public HoodSim(HoodOutputs outputs) {
         this.outputs = outputs;
         hoodPIDController = new PIDController(
             HoodConstants.hoodPIDValueP,
