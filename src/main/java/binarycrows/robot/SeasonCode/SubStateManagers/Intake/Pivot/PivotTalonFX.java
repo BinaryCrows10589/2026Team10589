@@ -77,7 +77,7 @@ public class PivotTalonFX implements PivotIO {
         CANcoderConfiguration pivotEncoderConfig = new CANcoderConfiguration();
         MagnetSensorConfigs magnetConfigs = new MagnetSensorConfigs();
         magnetConfigs.AbsoluteSensorDiscontinuityPoint = 1;
-        magnetConfigs.MagnetOffset = 0.0f;
+        magnetConfigs.MagnetOffset = 0.0;
         magnetConfigs.SensorDirection = SensorDirectionValue.CounterClockwise_Positive;
         pivotEncoderConfig.MagnetSensor = magnetConfigs;
         pivotEncoder.getConfigurator().apply(pivotEncoderConfig);

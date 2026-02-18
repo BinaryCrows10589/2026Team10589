@@ -22,11 +22,17 @@ public interface TransitIO {
         public double rightLongitudinalMotorAppliedVoltage = 0;
         public double rightLongitudinalMotorSupplyAmps = 0;
         public double rightLongitudinalMotorTorqueAmps = 0;
+
+        public double inAndUpMotorVelocityRPS = 0;
+        public double inAndUpMotorAppliedVoltage = 0;
+        public double inAndUpMotorSupplyAmps = 0;
+        public double inAndUpMotorTorqueAmps = 0;
     }
 
     public default void update() {}
 
     public default void setLatitudinalVoltage(double rotorVoltage) {}
     public default void setLongitudinalVoltage(double rotorVoltage) {}
+    public default void setInAndUpVoltage(double rotorVoltage) {}
 
 }

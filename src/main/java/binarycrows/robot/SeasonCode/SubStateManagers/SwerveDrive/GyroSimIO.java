@@ -1,6 +1,5 @@
 package binarycrows.robot.SeasonCode.SubStateManagers.SwerveDrive;
 
-import binarycrows.robot.SeasonCode.Constants.MetaConstants;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Timer;

@@ -55,7 +55,7 @@ public class TurretIOTalonFX implements TurretIO {
         CANcoderConfiguration turretEncoderConfig = new CANcoderConfiguration();
         MagnetSensorConfigs magnetConfigs = new MagnetSensorConfigs();
         magnetConfigs.AbsoluteSensorDiscontinuityPoint = 1;
-        magnetConfigs.MagnetOffset = 0.0f;
+        magnetConfigs.MagnetOffset = 0.0;
         magnetConfigs.SensorDirection = SensorDirectionValue.CounterClockwise_Positive;
         turretEncoderConfig.MagnetSensor = magnetConfigs;
         turretEncoder.getConfigurator().apply(turretEncoderConfig);

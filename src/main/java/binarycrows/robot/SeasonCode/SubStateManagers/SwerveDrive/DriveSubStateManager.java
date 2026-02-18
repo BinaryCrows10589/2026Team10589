@@ -556,7 +556,7 @@ public class DriveSubStateManager extends SubStateManager<DriveStateRequest> {
 
     @Override
     public String toString() {
-        return "Drive SubState Manager";
+        return "DriveSubStateManager";
     }
 
     public static DriveSubStateManager getInstance() {

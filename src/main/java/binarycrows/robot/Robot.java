@@ -29,8 +29,15 @@ import binarycrows.robot.SeasonCode.Constants.FieldConstants;
 import binarycrows.robot.SeasonCode.Constants.MetaConstants;
 import binarycrows.robot.SeasonCode.Constants.PoseEstimatorConstants;
 import binarycrows.robot.SeasonCode.Constants.SwerveDriveConstants;
+import binarycrows.robot.SeasonCode.SubStateManagers.CANdle.CANdleSubStateManager;
+import binarycrows.robot.SeasonCode.SubStateManagers.Climber.ClimberSubStateManager;
+import binarycrows.robot.SeasonCode.SubStateManagers.Flywheel.FlywheelSubStateManager;
+import binarycrows.robot.SeasonCode.SubStateManagers.Hood.HoodSubStateManager;
+import binarycrows.robot.SeasonCode.SubStateManagers.Intake.Pivot.PivotSubStateManager;
+import binarycrows.robot.SeasonCode.SubStateManagers.Intake.Rollers.IntakeRollersSubStateManager;
 import binarycrows.robot.SeasonCode.SubStateManagers.SwerveDrive.DriveStateRequest;
 import binarycrows.robot.SeasonCode.SubStateManagers.SwerveDrive.DriveSubStateManager;
+import binarycrows.robot.SeasonCode.SubStateManagers.Transit.TransitSubStateManager;
 import binarycrows.robot.SeasonCode.SubStateManagers.Turret.TurretSubStateManager;
 import binarycrows.robot.StateRequestGroup.SequentialGroup;
 import binarycrows.robot.StateRequestGroup.StateRequestGroup;
@@ -98,7 +105,14 @@ public class Robot extends LoggedRobot {
       // Place your robot's substate managers in this call!
       MainStateManager.getInstance().registerSubStateManagers(
         new DriveSubStateManager(),
-        new TurretSubStateManager()
+        new TurretSubStateManager(),
+        new TransitSubStateManager(),
+        new IntakeRollersSubStateManager(),
+        new PivotSubStateManager(),
+        new HoodSubStateManager(),
+        new FlywheelSubStateManager(),
+        new ClimberSubStateManager(),
+        new CANdleSubStateManager()
       );
 
     

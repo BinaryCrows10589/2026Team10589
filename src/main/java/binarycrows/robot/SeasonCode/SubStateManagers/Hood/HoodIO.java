@@ -4,12 +4,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 
 public interface HoodIO {
 
-    //TODO: when making hood class, add: 
-    // standard pids; 
-    // voltage if statements w/ integrated pid catch; 
-    // and evil turret control mode
-
-    //TODO: All need gravity feedforward, which is tuned value * sin of angle of hood relative to the horizontal or whatever it is
+    
 
     public class HoodOutputs {
         public double motorVelocityRPS;
@@ -32,4 +27,6 @@ public interface HoodIO {
     public default void setTargetPosition(Rotation2d position) {} // Angle of the hood itself based on absolute encoder, NOT the rotation value of the rotor
 
     public default void resetMotorToAbsolute() {};
+
+    public default HoodOutputs getOutputs() {return null;};
 }

@@ -63,7 +63,7 @@ public class HoodIOTalonFXSIntegratedPID implements HoodIO {
         CANcoderConfiguration hoodEncoderConfig = new CANcoderConfiguration();
         MagnetSensorConfigs magnetConfigs = new MagnetSensorConfigs();
         magnetConfigs.AbsoluteSensorDiscontinuityPoint = 1;
-        magnetConfigs.MagnetOffset = 0.0f;
+        magnetConfigs.MagnetOffset = 0.0;
         magnetConfigs.SensorDirection = SensorDirectionValue.CounterClockwise_Positive;
         hoodEncoderConfig.MagnetSensor = magnetConfigs;
         hoodEncoder.getConfigurator().apply(hoodEncoderConfig);
@@ -138,6 +138,7 @@ public class HoodIOTalonFXSIntegratedPID implements HoodIO {
     public void setTargetPosition(Rotation2d position) {
         targetPosition = position;
         hoodControlRequest = new PositionDutyCycle(targetPosition.getRotations());
+        hoodControlRequest.FeedForward = getGravityFF();
         hoodMotor.setControl(hoodControlRequest);
     }
 
@@ -146,5 +147,10 @@ public class HoodIOTalonFXSIntegratedPID implements HoodIO {
         this.hoodMotor.setPosition((
             this.hoodEncoder.getAbsolutePosition().getValueAsDouble() 
             - this.hoodEncoderOffset.getRotations()) * SwerveDriveConstants.turnGearRatio);
+    }
+
+    @Override
+    public HoodOutputs getOutputs() {
+        return this.outputs;
     }
 }

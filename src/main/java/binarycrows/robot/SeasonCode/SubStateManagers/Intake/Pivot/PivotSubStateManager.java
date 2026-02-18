@@ -19,6 +19,8 @@ public class PivotSubStateManager extends SubStateManager<PivotStateRequest>  {
     public PivotSubStateManager() {
         super();
 
+        outputs = new PivotOutputs();
+
         pivot = new Pivot(outputs);
 
         //pivotTargetPosition = new RuntimeTunableValue("Tuning/Pivot/TargetPosition", 0.0);
@@ -34,7 +36,9 @@ public class PivotSubStateManager extends SubStateManager<PivotStateRequest>  {
 
     @Override
     public void periodic() {
-        
+
+        pivot.update();
+
         StateTable.logObject("Pivot/Outputs", outputs);
         // Yes, this is probably the best way to control the pivot...
         double voltage = 0;
@@ -60,9 +64,9 @@ public class PivotSubStateManager extends SubStateManager<PivotStateRequest>  {
                 break;
             case DOWN:
                 delta = IntakeConstants.Pivot.pivotUpPosition.minus(outputs.encoderRotation).getDegrees();
-                if (delta > -80) voltage = -7;
-                else if (delta > -45) voltage = -3;
-                else if (delta > -25) voltage = -2;
+                if (delta < -80) voltage = -7;
+                else if (delta < -45) voltage = -3;
+                else if (delta < -25) voltage = -2;
                 else voltage = -0.25;
                 break;
         }
@@ -71,7 +75,6 @@ public class PivotSubStateManager extends SubStateManager<PivotStateRequest>  {
         else pivot.setVoltage(voltage);
 
         
-        pivot.update();
     }
 
     public static PivotSubStateManager getInstance() {

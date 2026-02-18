@@ -63,6 +63,7 @@ public class HoodIOSim implements HoodIO {
 
     @Override
     public void setRotorVoltage(double voltage) {
+        inVoltageControlMode = true;
         motorVoltage = voltage;
     }
 
@@ -70,5 +71,10 @@ public class HoodIOSim implements HoodIO {
     public void setTargetPosition(Rotation2d position) {
         inVoltageControlMode = false;
         targetPosition = position;
+    }
+
+    @Override
+    public HoodOutputs getOutputs() {
+        return this.outputs;
     }
 }

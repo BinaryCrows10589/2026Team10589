@@ -1,7 +1,5 @@
 package binarycrows.robot.SeasonCode.SubStateManagers.SwerveDrive;
 
-import com.ctre.phoenix6.swerve.SwerveModuleConstants;
-
 import binarycrows.robot.SeasonCode.Constants.SwerveDriveConstants;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
@@ -31,6 +29,7 @@ public class SwerveModuleSim implements SwerveModuleIO {
 
     private SwerveModuleOutputs outputs;
 
+    @SuppressWarnings("unused")
     private String swerveModuleName;
 
     public SwerveModuleSim(String swerveModuleName, SwerveModuleOutputs outputs) {

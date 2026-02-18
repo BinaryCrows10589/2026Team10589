@@ -55,6 +55,6 @@ public class TurretSubStateManager extends SubStateManager<TurretStateRequest> {
     } 
     
     public String toString() {
-        return "Turret SubStateManager";
+        return "TurretSubStateManager";
     }
 }

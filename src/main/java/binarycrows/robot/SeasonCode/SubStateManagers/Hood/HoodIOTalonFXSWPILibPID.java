@@ -32,6 +32,8 @@ public class HoodIOTalonFXSWPILibPID implements HoodIO {
 
     private RuntimeTunablePIDValues hoodPIDConstantTuner;
     
+    private boolean usingPID = false;
+        
     public HoodIOTalonFXSWPILibPID(HoodOutputs outputs) {
         this.outputs = outputs;
         hoodMotor = new TalonFXS(CANIDs.RIO.hoodMotor);
@@ -54,7 +56,7 @@ public class HoodIOTalonFXSWPILibPID implements HoodIO {
         CANcoderConfiguration hoodEncoderConfig = new CANcoderConfiguration();
         MagnetSensorConfigs magnetConfigs = new MagnetSensorConfigs();
         magnetConfigs.AbsoluteSensorDiscontinuityPoint = 1;
-        magnetConfigs.MagnetOffset = 0.0f;
+        magnetConfigs.MagnetOffset = 0.0;
         magnetConfigs.SensorDirection = SensorDirectionValue.CounterClockwise_Positive;
         hoodEncoderConfig.MagnetSensor = magnetConfigs;
         hoodEncoder.getConfigurator().apply(hoodEncoderConfig);
@@ -77,7 +79,7 @@ public class HoodIOTalonFXSWPILibPID implements HoodIO {
 
 
         outputs.motorVelocityRPS = hoodMotor.getVelocity().getValueAsDouble();
-        outputs.motorAppliedVoltage = hoodMotor.getMotorVoltage().getValueAsDouble();;
+        outputs.motorAppliedVoltage = hoodMotor.getMotorVoltage().getValueAsDouble();
         outputs.motorSupplyAmps = hoodMotor.getSupplyCurrent().getValueAsDouble();
         outputs.motorTorqueAmps = hoodMotor.getTorqueCurrent().getValueAsDouble();
 
@@ -90,7 +92,7 @@ public class HoodIOTalonFXSWPILibPID implements HoodIO {
 
         updatePIDValuesFromNetworkTables();
 
-        this.setRotorVoltage(hoodController.calculate(outputs.encoderRotation.getRadians()) + HoodConstants.hoodPIDValueFF + getGravityFF());
+        if (usingPID) this.setRotorVoltage(hoodController.calculate(outputs.encoderRotation.getRadians()) + HoodConstants.hoodPIDValueFF + getGravityFF());
     }
 
     public void updatePIDValuesFromNetworkTables() {
@@ -121,12 +123,14 @@ public class HoodIOTalonFXSWPILibPID implements HoodIO {
     public void setRotorVoltage(double voltage) {
         hoodVoltageRequest = new VoltageOut(voltage);
         hoodMotor.setControl(hoodVoltageRequest);
+        usingPID = false;
     }
 
     @Override
     public void setTargetPosition(Rotation2d position) {
         targetPosition = position;
         hoodController.setSetpoint(targetPosition.getRadians());
+        usingPID = true;
     }
 
     @Override
@@ -134,5 +138,10 @@ public class HoodIOTalonFXSWPILibPID implements HoodIO {
         this.hoodMotor.setPosition((
             this.hoodEncoder.getAbsolutePosition().getValueAsDouble() 
             - this.hoodEncoderOffset.getRotations()) * SwerveDriveConstants.turnGearRatio);
+    }
+
+    @Override
+    public HoodOutputs getOutputs() {
+        return this.outputs;
     }
 }

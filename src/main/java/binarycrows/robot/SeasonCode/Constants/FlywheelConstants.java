@@ -11,7 +11,8 @@ public final class FlywheelConstants {
 
     public static final double maxMotorVoltage = 12.0;
 
-    public static final double idleMotorVoltage = 4.0;
+    public static final double idleRecoveryVoltage = 4.0;
+    public static final double idleMinVelocityRPS = 25;
 
     public static final MotorAlignmentValue isSlaveReversed = MotorAlignmentValue.Opposed;
 

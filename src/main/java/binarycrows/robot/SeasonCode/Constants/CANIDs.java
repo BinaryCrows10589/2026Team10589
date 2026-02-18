@@ -41,9 +41,12 @@ public final class CANIDs {
         public static final int rightLongitudinalMotor = 12;
         public static final int leftLatitudinalMotor = 13;
         public static final int rightLatitudinalMotor = 14;
+        public static final int inAndUpMotor = 15;
 
         public static final int binFullTOFSensor = 16;
         public static final int outgoingFuelTOFSensor = 17;
+
+        public static final int climberMotor = 18;
 
         public static final int CANdle = 37;
 

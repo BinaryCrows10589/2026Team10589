@@ -240,7 +240,7 @@ public class SwerveModuleTalonFX implements SwerveModuleIO {
         CANcoderConfiguration turningAbsoluteEncoderConfig = new CANcoderConfiguration();
         MagnetSensorConfigs magnetConfigs = new MagnetSensorConfigs();
         magnetConfigs.AbsoluteSensorDiscontinuityPoint = 1;
-        magnetConfigs.MagnetOffset = 0.0f;
+        magnetConfigs.MagnetOffset = 0.0;
         magnetConfigs.SensorDirection = SensorDirectionValue.CounterClockwise_Positive;
         turningAbsoluteEncoderConfig.MagnetSensor = magnetConfigs;
         this.turnAbsoluteEncoder.getConfigurator().apply(turningAbsoluteEncoderConfig);

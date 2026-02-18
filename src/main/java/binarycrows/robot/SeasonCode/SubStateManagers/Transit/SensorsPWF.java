@@ -1,11 +1,9 @@
 package binarycrows.robot.SeasonCode.SubStateManagers.Transit;
 
 import com.playingwithfusion.TimeOfFlight;
-import com.playingwithfusion.TimeOfFlight.RangingMode;
 
 import binarycrows.robot.SeasonCode.Constants.CANIDs;
 import binarycrows.robot.SeasonCode.Constants.TransitConstants;
-import binarycrows.robot.SeasonCode.SubStateManagers.Transit.SensorsIO.SensorsOutputs;
 
 public class SensorsPWF implements SensorsIO {
 

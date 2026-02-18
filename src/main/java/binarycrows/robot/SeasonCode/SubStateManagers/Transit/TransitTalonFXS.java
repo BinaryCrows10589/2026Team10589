@@ -4,11 +4,8 @@ import com.ctre.phoenix6.configs.TalonFXSConfiguration;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFXS;
-import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import binarycrows.robot.SeasonCode.Constants.CANIDs;
-import binarycrows.robot.SeasonCode.Constants.FlywheelConstants;
-import binarycrows.robot.SeasonCode.Constants.IntakeConstants;
 import binarycrows.robot.SeasonCode.Constants.TransitConstants;
 
 public class TransitTalonFXS implements TransitIO {
@@ -19,9 +16,11 @@ public class TransitTalonFXS implements TransitIO {
     private TalonFXS rightLongitudinalMotor;
     private TalonFXS leftLatitudinalMotor;
     private TalonFXS rightLatitudinalMotor;
+    private TalonFXS inAndUpMotor;
 
     private VoltageOut longitudinalMasterMotorVoltageRequest = new VoltageOut(0);
     private VoltageOut latitudinalMasterMotorVoltageRequest = new VoltageOut(0);
+    private VoltageOut inAndUpMotorVoltageRequest = new VoltageOut(0);
 
     public TransitTalonFXS(TransitOutputs outputs) {
         this.outputs = outputs;
@@ -82,6 +81,23 @@ public class TransitTalonFXS implements TransitIO {
         this.rightLatitudinalMotor.getConfigurator().apply(latitudinalMasterMotorConfig);
 
         rightLatitudinalMotor.setControl(new Follower(leftLatitudinalMotor.getDeviceID(), TransitConstants.isLatitudinalSlaveReversed));
+
+        // In & Up Motor
+        inAndUpMotor = new TalonFXS(CANIDs.RIO.inAndUpMotor);
+
+        TalonFXSConfiguration inAndUpMotorConfig = new TalonFXSConfiguration();
+        inAndUpMotorConfig.MotorOutput.Inverted = TransitConstants.inAndUpMotorInverted;
+        inAndUpMotorConfig.MotorOutput.NeutralMode = TransitConstants.inAndUpMotorNeutralMode;
+
+        this.inAndUpMotor.getVelocity().setUpdateFrequency(20);
+        this.inAndUpMotor.getAcceleration().setUpdateFrequency(20);
+        this.inAndUpMotor.getPosition().setUpdateFrequency(20);
+        this.inAndUpMotor.getTorqueCurrent().setUpdateFrequency(50);
+
+        inAndUpMotorConfig.Voltage.PeakForwardVoltage = TransitConstants.maxInAndUpMotorVoltage;
+        inAndUpMotorConfig.Voltage.PeakReverseVoltage = -TransitConstants.maxInAndUpMotorVoltage;
+
+        this.inAndUpMotor.getConfigurator().apply(inAndUpMotorConfig);
     }
 
     @Override
@@ -94,6 +110,12 @@ public class TransitTalonFXS implements TransitIO {
     public void setLongitudinalVoltage(double rotorVoltage) {
         longitudinalMasterMotorVoltageRequest = new VoltageOut(rotorVoltage);
         leftLongitudinalMotor.setControl(longitudinalMasterMotorVoltageRequest);
+    }
+    
+    @Override
+    public void setInAndUpVoltage(double rotorVoltage) {
+        inAndUpMotorVoltageRequest = new VoltageOut(rotorVoltage);
+        inAndUpMotor.setControl(inAndUpMotorVoltageRequest);
     }
 
     @Override
@@ -117,6 +139,11 @@ public class TransitTalonFXS implements TransitIO {
         outputs.rightLatitudinalMotorAppliedVoltage = rightLatitudinalMotor.getMotorVoltage().getValueAsDouble();
         outputs.rightLatitudinalMotorSupplyAmps = rightLatitudinalMotor.getSupplyCurrent().getValueAsDouble();
         outputs.rightLatitudinalMotorTorqueAmps = rightLatitudinalMotor.getTorqueCurrent().getValueAsDouble();
+
+        outputs.inAndUpMotorVelocityRPS = inAndUpMotor.getVelocity().getValueAsDouble();
+        outputs.inAndUpMotorAppliedVoltage = inAndUpMotor.getMotorVoltage().getValueAsDouble();
+        outputs.inAndUpMotorSupplyAmps =  inAndUpMotor.getSupplyCurrent().getValueAsDouble();
+        outputs.inAndUpMotorTorqueAmps =  inAndUpMotor.getTorqueCurrent().getValueAsDouble();
 
     }
 }

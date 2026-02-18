@@ -43,15 +43,15 @@ public class Turret {
         turretMechLigament = new LoggedMechanismLigament2d("turretLigament", 0.5, 0);
         turretMechRoot.append(turretMechLigament);
 
-        correctionVelocityTunerRadPerSec = new RuntimeTunableValue("correctionVelocityTunerRadPerSec", TurretConstants.correctionVelocityRadPerSec);
-        correctionZoneTunerRad = new RuntimeTunableValue("correctionZoneTunerRad", TurretConstants.correctionZone.getRadians());
-        decelerationBufferTunerRad = new RuntimeTunableValue("decelerationBufferTunerRad", TurretConstants.decelerationBufferRad);
-        startingVelocityTunerRadPerSec = new RuntimeTunableValue("startingVelocityTunerRadPerSec", TurretConstants.startingVelocityRadPerSec);
-        correctionFactorTuningDeltaThresholdTunerRad = new RuntimeTunableValue("correctionFactorTuningDeltaThresholdTunerRad", TurretConstants.correctionFactorTuningDeltaThresholdRad);
-        maxTurretVelocityTunerRadPerSec = new RuntimeTunableValue("maxTurretVelocityTunerRadPerSec", TurretConstants.maxTurretVelocityRadPerSec);
-        minTurretVelocityTunerRadPerSec = new RuntimeTunableValue("minTurretVelocityTunerRadPerSec", TurretConstants.minTurretVelocityRadPerSec);
-        maxAccelerationPerFrameTunerRadPerSecPerSec = new RuntimeTunableValue("maxAccelerationPerFrameTunerRadPerSecPerSec", TurretConstants.maxAccelerationPerFrameRadPerSecPerSec);
-        maxDecelerationPerFrameTunerRadPerSecPerSec = new RuntimeTunableValue("maxDecelerationPerFrameTunerRadPerSecPerSec", TurretConstants.maxDecelerationPerFrameRadPerSecPerSec);
+        correctionVelocityTunerRadPerSec = new RuntimeTunableValue("TurretTuning/correctionVelocityTunerRadPerSec", TurretConstants.correctionVelocityRadPerSec);
+        correctionZoneTunerRad = new RuntimeTunableValue("TurretTuning/correctionZoneTunerRad", TurretConstants.correctionZone.getRadians());
+        decelerationBufferTunerRad = new RuntimeTunableValue("TurretTuning/decelerationBufferTunerRad", TurretConstants.decelerationBufferRad);
+        startingVelocityTunerRadPerSec = new RuntimeTunableValue("TurretTuning/startingVelocityTunerRadPerSec", TurretConstants.startingVelocityRadPerSec);
+        correctionFactorTuningDeltaThresholdTunerRad = new RuntimeTunableValue("TurretTuning/correctionFactorTuningDeltaThresholdTunerRad", TurretConstants.correctionFactorTuningDeltaThresholdRad);
+        maxTurretVelocityTunerRadPerSec = new RuntimeTunableValue("TurretTuning/maxTurretVelocityTunerRadPerSec", TurretConstants.maxTurretVelocityRadPerSec);
+        minTurretVelocityTunerRadPerSec = new RuntimeTunableValue("TurretTuning/minTurretVelocityTunerRadPerSec", TurretConstants.minTurretVelocityRadPerSec);
+        maxAccelerationPerFrameTunerRadPerSecPerSec = new RuntimeTunableValue("TurretTuning/maxAccelerationPerFrameTunerRadPerSecPerSec", TurretConstants.maxAccelerationPerFrameRadPerSecPerSec);
+        maxDecelerationPerFrameTunerRadPerSecPerSec = new RuntimeTunableValue("TurretTuning/maxDecelerationPerFrameTunerRadPerSecPerSec", TurretConstants.maxDecelerationPerFrameRadPerSecPerSec);
 
     }
 
