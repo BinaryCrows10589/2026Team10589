@@ -9,6 +9,7 @@ import binarycrows.robot.Enums.StateRequestStatus;
 import binarycrows.robot.SeasonCode.Constants.MetaConstants;
 import binarycrows.robot.SeasonCode.Constants.TurretConstants;
 import binarycrows.robot.SeasonCode.SubStateManagers.Turret.TurretIO.TurretOutputs;
+import binarycrows.robot.SeasonCode.Utils.Shooting;
 import binarycrows.robot.Utils.Tuning.RuntimeTunableValue;
 import edu.wpi.first.math.geometry.Rotation2d;
 
@@ -57,7 +58,7 @@ public class TurretSubStateManager extends SubStateManager<TurretStateRequest> {
                 break;
             case SHOOT_ON_THE_MOVE:
                 //TODO: make isShooting be an actual thing somewhere else
-                turret.setTargetAngle(shootOnTheMoveTargetPosition, isShooting.getValue());;
+                turret.setTargetAngle(shootOnTheMoveTargetPosition, Shooting.getShooting());
                 break;
         }
          

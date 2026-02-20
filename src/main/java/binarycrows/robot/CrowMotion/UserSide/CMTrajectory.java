@@ -8,6 +8,7 @@ import org.littletonrobotics.junction.Logger;
 import binarycrows.robot.CrowMotion.Library.CMPathGenResult;
 import binarycrows.robot.CrowMotion.Library.CMPathGenerator;
 import binarycrows.robot.CrowMotion.Library.CMPathPoint;
+import binarycrows.robot.SeasonCode.Constants.MetaConstants;
 
 public class CMTrajectory {
     private String pathName;
@@ -40,7 +41,7 @@ public class CMTrajectory {
     private boolean isComplete = false;
     private boolean preventTranslation = false;
 
-    private double averageFrameTime = 0.02;
+    private double averageFrameTime = MetaConstants.loopPeriodSeconds;
 
     private int currentMinPointIndex = 1;
     private int goalPointIndex = 0;
@@ -877,7 +878,7 @@ public class CMTrajectory {
         isComplete = false;
         preventTranslation = false;
 
-        averageFrameTime = 0.02;
+        averageFrameTime = MetaConstants.loopPeriodSeconds;
 
         currentMinPointIndex = 1;
         goalPointIndex = 0;

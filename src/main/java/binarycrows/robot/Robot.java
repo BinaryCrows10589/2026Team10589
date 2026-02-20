@@ -64,7 +64,7 @@ public class Robot extends LoggedRobot {
 
   private static double frameStartTime = -1;
 
-  public static double averageFrameTime = 0.02;
+  public static double averageFrameTime = MetaConstants.loopPeriodSeconds;
 
 
   private final LoggedDashboardChooser<Auton> chooser = new LoggedDashboardChooser<>("AutonPath");

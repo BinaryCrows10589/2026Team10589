@@ -66,8 +66,8 @@ public class PivotSim implements PivotIO {
 
     @Override
     public void update() {
-        leftMotor.update(0.02);
-        rightMotor.update(0.02);
+        leftMotor.update(MetaConstants.loopPeriodSeconds);
+        rightMotor.update(MetaConstants.loopPeriodSeconds);
 
         outputs.leftMotorVelocityRPS = leftMotor.getAngularVelocityRPM() / 60.0;
         outputs.leftMotorAppliedVoltage = motorVoltage;

@@ -1,6 +1,7 @@
 package binarycrows.robot.SeasonCode.SubStateManagers.Hood;
 
 import binarycrows.robot.SeasonCode.Constants.HoodConstants;
+import binarycrows.robot.SeasonCode.Constants.MetaConstants;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -32,12 +33,12 @@ public class HoodSim implements HoodIO {
             HoodConstants.hoodPIDValueP,
             HoodConstants.hoodPIDValueI,
             HoodConstants.hoodPIDValueD,
-            0.02);
+            MetaConstants.loopPeriodSeconds);
     }
 
     @Override
     public void update() {
-        hoodMotor.update(0.02);
+        hoodMotor.update(MetaConstants.loopPeriodSeconds);
 
         if (!inVoltageControlMode) {
             motorVoltage = MathUtil.clamp(this.hoodPIDController.calculate(

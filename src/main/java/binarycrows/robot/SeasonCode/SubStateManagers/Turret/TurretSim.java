@@ -1,5 +1,6 @@
 package binarycrows.robot.SeasonCode.SubStateManagers.Turret;
 
+import binarycrows.robot.SeasonCode.Constants.MetaConstants;
 import binarycrows.robot.SeasonCode.Constants.TurretConstants;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
@@ -32,12 +33,12 @@ public class TurretSim implements TurretIO {
             TurretConstants.turretPIDValueP,
             TurretConstants.turretPIDValueI,
             TurretConstants.turretPIDValueD,
-            0.02);
+            MetaConstants.loopPeriodSeconds);
     }
 
     @Override
     public void update() {
-        turretMotor.update(0.02);
+        turretMotor.update(MetaConstants.loopPeriodSeconds);
 
         if (!inVoltageControlMode) {
             motorVoltage = MathUtil.clamp(this.turretPIDController.calculate(

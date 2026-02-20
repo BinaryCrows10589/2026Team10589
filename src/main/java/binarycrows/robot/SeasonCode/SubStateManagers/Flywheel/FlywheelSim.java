@@ -11,6 +11,7 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import binarycrows.robot.SeasonCode.Constants.CANIDs;
 import binarycrows.robot.SeasonCode.Constants.FlywheelConstants;
+import binarycrows.robot.SeasonCode.Constants.MetaConstants;
 import binarycrows.robot.SeasonCode.Constants.TurretConstants;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -50,8 +51,8 @@ public class FlywheelSim implements FlywheelIO {
 
     @Override
     public void update() {
-        leftMotor.update(0.02);
-        rightMotor.update(0.02);
+        leftMotor.update(MetaConstants.loopPeriodSeconds);
+        rightMotor.update(MetaConstants.loopPeriodSeconds);
 
         outputs.leftMotorVelocityRPS = leftMotor.getAngularVelocityRPM() / 60.0;
         outputs.leftMotorAppliedVoltage = motorVoltage;

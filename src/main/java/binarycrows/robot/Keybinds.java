@@ -18,6 +18,7 @@ import binarycrows.robot.SeasonCode.SubStateManagers.Turret.TurretSubStateManage
 import binarycrows.robot.SeasonCode.Utils.ButtonBoard;
 import binarycrows.robot.SeasonCode.Utils.Climbing;
 import binarycrows.robot.SeasonCode.Utils.ManualOverrides;
+import binarycrows.robot.SeasonCode.Utils.Shooting;
 import binarycrows.robot.SeasonCode.Utils.ButtonBoard.ButtonBoardButtons;
 import binarycrows.robot.Utils.ConversionUtils;
 import binarycrows.robot.Utils.StateRequestUtils;
@@ -142,8 +143,12 @@ public class Keybinds {
         StateRequestUtils.createStateRequestRunnable(HoodStateRequest.RETRACTED));
 
         // Shooting
-        buttonBoard1.onPress(ButtonBoardButtons.shoot, null); // This and forceShoot require logic that is not yet implemented
-        buttonBoard1.onPress(ButtonBoardButtons.forceShoot, null);
+        buttonBoard1.onPress(ButtonBoardButtons.shoot, 
+            () -> {Shooting.isShooting = true;},
+            () -> {Shooting.isShooting = false;});
+        buttonBoard1.onPress(ButtonBoardButtons.forceShoot,  
+            () -> {Shooting.isForceShooting = true;},
+            () -> {Shooting.isForceShooting = false;});
         buttonBoard1.onPress(ButtonBoardButtons.increaseShooterFF, FlywheelSubStateManager.getInstance()::increaseShooterFF);
         buttonBoard1.onPress(ButtonBoardButtons.decreaseShooterFF, FlywheelSubStateManager.getInstance()::decreaseShooterFF);
 

@@ -1,5 +1,6 @@
 package binarycrows.robot.SeasonCode.SubStateManagers.SwerveDrive;
 
+import binarycrows.robot.SeasonCode.Constants.MetaConstants;
 import binarycrows.robot.SeasonCode.Constants.SwerveDriveConstants;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
@@ -12,7 +13,6 @@ import edu.wpi.first.wpilibj.simulation.DCMotorSim;
 
 public class SwerveModuleSim implements SwerveModuleIO {
 
-    private static final double LOOP_PERIOD_SECS = 0.02; // TODO: make this in a constants file
 
     LinearSystem<N2, N1, N2> driveMotorLinearSystem = edu.wpi.first.math.system.plant.LinearSystemId.createDCMotorSystem(DCMotor.getKrakenX60(1), 0.00148, 1);
     LinearSystem<N2, N1, N2> turnMotorLinearSystem = edu.wpi.first.math.system.plant.LinearSystemId.createDCMotorSystem(DCMotor.getKrakenX60(1), 0.00148, 1);
@@ -41,13 +41,13 @@ public class SwerveModuleSim implements SwerveModuleIO {
     private void configTurnPID() {
         this.turnPIDController = new PIDController(SwerveDriveConstants.turnPIDValueP,
             SwerveDriveConstants.turnPIDValueI,
-            SwerveDriveConstants.turnPIDValueD, SwerveModuleSim.LOOP_PERIOD_SECS);
+            SwerveDriveConstants.turnPIDValueD, MetaConstants.loopPeriodSeconds);
     }
 
     @Override
     public void update() {
-        driveMotor.update(LOOP_PERIOD_SECS);
-        turnMotor.update(LOOP_PERIOD_SECS);
+        driveMotor.update(MetaConstants.loopPeriodSeconds);
+        turnMotor.update(MetaConstants.loopPeriodSeconds);
         
 
         double turnVolts = MathUtil.clamp(this.turnPIDController.calculate(this.turnMotor.getAngularPositionRotations(), this.desiredPositionRotations), -12, 12);
