@@ -5,6 +5,7 @@ import binarycrows.robot.StateRequest;
 import binarycrows.robot.StateTable;
 import binarycrows.robot.SubStateManager;
 import binarycrows.robot.Enums.StateRequestPriority;
+import binarycrows.robot.Enums.StateRequestStatus;
 import binarycrows.robot.SeasonCode.Constants.ClimberConstants;
 import binarycrows.robot.SeasonCode.Constants.FlywheelConstants;
 import binarycrows.robot.SeasonCode.Constants.MetaConstants;
@@ -50,9 +51,13 @@ public class ClimberSubStateManager extends SubStateManager<ClimberStateRequest>
         switch (activeStateRequest.getStateRequestType()) {
             case UP:
                 controlVoltage(ClimberConstants.climberUpPosition.getRadians(), outputs.motorRotation.getRadians());
+                if (Math.abs(ClimberConstants.climberUpPosition.getRadians()-outputs.motorRotation.getRadians()) < ClimberConstants.positionTolerance.getRadians())
+                    activeStateRequest.updateStatus(StateRequestStatus.FULFILLED);
                 break;
             case DOWN:
                 controlVoltage(ClimberConstants.climberDownPosition.getRadians(), outputs.motorRotation.getRadians());
+                if (Math.abs(ClimberConstants.climberDownPosition.getRadians()-outputs.motorRotation.getRadians()) < ClimberConstants.positionTolerance.getRadians())
+                    activeStateRequest.updateStatus(StateRequestStatus.FULFILLED);
                 break;
             case MANUAL_OVERRIDE:
                 climberIO.setRotorVoltage(ClimberConstants.manualControlVoltage * manualOverrideDirection);
