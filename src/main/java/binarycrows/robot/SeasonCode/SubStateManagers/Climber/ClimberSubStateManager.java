@@ -19,6 +19,8 @@ public class ClimberSubStateManager extends SubStateManager<ClimberStateRequest>
     private ClimberIO climberIO;
     private ClimberOutputs outputs;
 
+    private int manualOverrideDirection = 0; // 1=up, 0=none, -1=down
+
     public ClimberSubStateManager() {
         super();
         outputs = new ClimberOutputs();
@@ -30,6 +32,14 @@ public class ClimberSubStateManager extends SubStateManager<ClimberStateRequest>
 
     @Override
     public void recieveStateRequest(StateRequest<ClimberStateRequest> stateRequest) {
+        if (stateRequest.getStateRequestType() == ClimberStateRequest.RESTORE_CLOSEST) {
+            double distanceToUpPositionRad = Math.abs(ClimberConstants.climberUpPosition.getRadians()-outputs.motorRotation.getRadians());
+            double distanceToDownPositionRad = Math.abs(ClimberConstants.climberDownPosition.getRadians()-outputs.motorRotation.getRadians());
+
+            stateRequest = new StateRequest<ClimberStateRequest>(
+                (distanceToUpPositionRad < distanceToDownPositionRad) ? ClimberStateRequest.UP : ClimberStateRequest.DOWN, 
+            stateRequest.getPriority());
+        }
         super.recieveStateRequest(stateRequest);
     }
 
@@ -43,6 +53,10 @@ public class ClimberSubStateManager extends SubStateManager<ClimberStateRequest>
                 break;
             case DOWN:
                 controlVoltage(ClimberConstants.climberDownPosition.getRadians(), outputs.motorRotation.getRadians());
+                break;
+            case MANUAL_OVERRIDE:
+                climberIO.setRotorVoltage(ClimberConstants.manualControlVoltage * manualOverrideDirection);
+            default:
                 break;
         }
     }
@@ -70,12 +84,12 @@ public class ClimberSubStateManager extends SubStateManager<ClimberStateRequest>
     }
 
     public void manualUp() {
-
+        manualOverrideDirection = 1;
     }
     public void manualDown() {
-
+        manualOverrideDirection = -1;
     }
     public void manualStop() {
-
+        manualOverrideDirection = 0;
     }
 }

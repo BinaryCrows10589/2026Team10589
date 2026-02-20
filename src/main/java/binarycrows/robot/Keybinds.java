@@ -144,8 +144,8 @@ public class Keybinds {
         // Shooting
         buttonBoard1.onPress(ButtonBoardButtons.shoot, null); // This and forceShoot require logic that is not yet implemented
         buttonBoard1.onPress(ButtonBoardButtons.forceShoot, null);
-        buttonBoard1.onPress(ButtonBoardButtons.increaseShooterFF, FlywheelSubStateManager.getInstance().increaseShooterFF()); // these need extra logic inside of the flywheel substate manager to function
-        buttonBoard1.onPress(ButtonBoardButtons.decreaseShooterFF, FlywheelSubStateManager.getInstance().decreaseShooterFF());
+        buttonBoard1.onPress(ButtonBoardButtons.increaseShooterFF, FlywheelSubStateManager.getInstance()::increaseShooterFF);
+        buttonBoard1.onPress(ButtonBoardButtons.decreaseShooterFF, FlywheelSubStateManager.getInstance()::decreaseShooterFF);
 
         // Climber
         buttonBoard1.onPress(ButtonBoardButtons.climbLeft, Climbing::climbLeft, Climbing::cancelClimb);

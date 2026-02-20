@@ -201,10 +201,6 @@ public class Turret {
 
         desiredVelocityRadPerSec = Math.signum(desiredVelocityRadPerSec) * Math.min(Math.abs(desiredVelocityRadPerSec), TurretConstants.maxTurretVelocityRadPerSec);
         
-
-        
-
-        //TODO: The lerp table might be broke unless I am very smart
         turretIO.setRotorVoltage(TurretConstants.velocityToVoltageLerpTable.get(desiredVelocityRadPerSec));
 
     }

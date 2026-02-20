@@ -40,6 +40,10 @@ public class HoodConstants {
     public static double maxAccelerationPerFrameRadPerSecPerSec = MetaConstants.isReal ? 0 : 40;
     public static double maxDecelerationPerFrameRadPerSecPerSec = MetaConstants.isReal ? 0 : 200; // Will need to be significantly higher than max
 
+    public static final Rotation2d hoodStartingPosition = Rotation2d.kZero;
+
+    public static final Rotation2d manualAngleIncrement = Rotation2d.fromDegrees(0.25);
+
     public static final LerpTable velocityToVoltageLerpTable = MetaConstants.isReal ? 
     // Real
     new LerpTable(new double[] {}, new double[] {}, true) 

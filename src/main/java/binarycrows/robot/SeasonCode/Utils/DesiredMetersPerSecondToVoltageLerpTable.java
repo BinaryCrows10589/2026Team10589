@@ -1,9 +1,8 @@
 package binarycrows.robot.SeasonCode.Utils;
 
 public class DesiredMetersPerSecondToVoltageLerpTable {
-    //TODO: Boyne look over this
     private double groundAjustFeedForword = 0.129641;
-    private double minSpeedForFeedforword = .3; //TODO: Calabrate this
+    private double minSpeedForFeedforword = .3; //TODO: Calibrate this?
 
     private double[][] acceleratingTable = {
         new double[] {

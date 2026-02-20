@@ -5,7 +5,9 @@ import binarycrows.robot.StateRequest;
 import binarycrows.robot.StateTable;
 import binarycrows.robot.SubStateManager;
 import binarycrows.robot.Enums.StateRequestPriority;
+import binarycrows.robot.SeasonCode.Constants.ClimberConstants;
 import binarycrows.robot.SeasonCode.Constants.IntakeConstants;
+import binarycrows.robot.SeasonCode.SubStateManagers.Climber.ClimberStateRequest;
 import binarycrows.robot.SeasonCode.SubStateManagers.Intake.Pivot.PivotIO.PivotOutputs;
 import binarycrows.robot.Utils.Tuning.RuntimeTunableValue;
 
@@ -15,6 +17,8 @@ public class PivotSubStateManager extends SubStateManager<PivotStateRequest>  {
     private PivotOutputs outputs;
 
     private RuntimeTunableValue pivotTargetPosition;
+
+    private int manualDirection = 0; // 1=up 0=none 2=down
 
     public PivotSubStateManager() {
         super();
@@ -29,8 +33,16 @@ public class PivotSubStateManager extends SubStateManager<PivotStateRequest>  {
     }
 
     @Override
-    public void recieveStateRequest(StateRequest<PivotStateRequest> request) {
-        super.recieveStateRequest(request);
+    public void recieveStateRequest(StateRequest<PivotStateRequest> stateRequest) {
+        if (stateRequest.getStateRequestType() == PivotStateRequest.RESTORE_CLOSEST) {
+            double distanceToUpPositionRad = Math.abs(IntakeConstants.Pivot.pivotUpPosition.getRadians()-outputs.encoderRotation.getRadians());
+            double distanceToDownPositionRad = Math.abs(IntakeConstants.Pivot.pivotDownPosition.getRadians()-outputs.encoderRotation.getRadians());
+
+            stateRequest = new StateRequest<PivotStateRequest>(
+                (distanceToUpPositionRad < distanceToDownPositionRad) ? PivotStateRequest.UP : PivotStateRequest.DOWN, 
+            stateRequest.getPriority());
+        }
+        super.recieveStateRequest(stateRequest);
     }
 
     @Override
@@ -73,6 +85,9 @@ public class PivotSubStateManager extends SubStateManager<PivotStateRequest>  {
                 else if (delta > 5) voltage = 1;
                 else voltage = 0.25;
                 break;
+            case MANUAL_OVERRIDE:
+                voltage = manualDirection * IntakeConstants.Pivot.manualVoltage + outputs.encoderRotation.getSin() * IntakeConstants.Pivot.manualVoltageFF; //TODO: make sure Sin here is correct
+                break;
         }
 
         System.out.println("Delta: " + delta);
@@ -92,19 +107,15 @@ public class PivotSubStateManager extends SubStateManager<PivotStateRequest>  {
     }
 
 
-    //TODO: Implement
-    public Runnable manualStop() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'manualStop'");
+    public void manualStop() {
+        manualDirection = 0;
     }
 
-    public Runnable manualDown() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'manualDown'");
+    public void manualDown() {
+        manualDirection = -1;
     }
 
-    public Runnable manualUp() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'manualUp'");
+    public void manualUp() {
+        manualDirection = 1;
     }
 }

@@ -15,4 +15,6 @@ public final class MetaConstants {
     public static boolean lastUpdatedVision = false;
 
     public static final boolean isReal = RobotBase.isReal();
+
+    public static final double loopPeriodSeconds = 0.02;
 }

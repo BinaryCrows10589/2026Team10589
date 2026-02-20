@@ -7,6 +7,7 @@ import binarycrows.robot.SubStateManager;
 import binarycrows.robot.Enums.StateRequestPriority;
 import binarycrows.robot.Enums.StateRequestStatus;
 import binarycrows.robot.SeasonCode.Constants.MetaConstants;
+import binarycrows.robot.SeasonCode.Constants.TurretConstants;
 import binarycrows.robot.SeasonCode.SubStateManagers.Turret.TurretIO.TurretOutputs;
 import binarycrows.robot.Utils.Tuning.RuntimeTunableValue;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -16,10 +17,12 @@ public class TurretSubStateManager extends SubStateManager<TurretStateRequest> {
     private Turret turret;
     private TurretOutputs outputs;
 
-    private RuntimeTunableValue turretTargetPosition;
-    private RuntimeTunableValue isShooting;
+    private Rotation2d shootOnTheMoveTargetPosition;
+    private Rotation2d manualTargetPosition;
 
-    
+    private int manualDirection = 0;
+
+    private Rotation2d targetPosition;
 
 
     public TurretSubStateManager() {
@@ -29,14 +32,14 @@ public class TurretSubStateManager extends SubStateManager<TurretStateRequest> {
 
         turret = new Turret(MetaConstants.isReal ? new TurretTalonFX(outputs) : new TurretSim(outputs));
 
-        turretTargetPosition = new RuntimeTunableValue("Tuning/Turret/TargetPosition", 0.0);
-        isShooting = new RuntimeTunableValue("Tuning/Turret/IsShooting", false);
-
         super.defaultState = new StateRequest<TurretStateRequest>(TurretStateRequest.SHOOT_ON_THE_MOVE, StateRequestPriority.NORMAL);
     }
 
     @Override
     public void recieveStateRequest(StateRequest<TurretStateRequest> request) {
+        if (request.getStateRequestType() == TurretStateRequest.MANUAL_OVERRIDE) {
+            manualTargetPosition = outputs.turretRotation;
+        }
         request.updateStatus(StateRequestStatus.REJECTED);
     }
 
@@ -45,33 +48,44 @@ public class TurretSubStateManager extends SubStateManager<TurretStateRequest> {
         
         StateTable.logObject("Turret/Outputs", outputs);
         turret.update();
-        // Must be ran after turret update so we get new encoder values
-        turret.setTargetAngle(Rotation2d.fromDegrees((double)turretTargetPosition.getValue()), (boolean)isShooting.getValue());
+        if (targetPosition == null) targetPosition = outputs.turretRotation;
+
+        switch (activeStateRequest.getStateRequestType()) {
+            case MANUAL_OVERRIDE:
+                manualTargetPosition = manualTargetPosition.plus(TurretConstants.manualPositionIncrement.times(manualDirection));
+                turret.setTargetAngle(manualTargetPosition, true);
+                break;
+            case SHOOT_ON_THE_MOVE:
+                //TODO: make isShooting be an actual thing somewhere else
+                turret.setTargetAngle(shootOnTheMoveTargetPosition, isShooting.getValue());;
+                break;
+        }
+         
 
     }
 
     public static TurretSubStateManager getInstance() {
         return (TurretSubStateManager) MainStateManager.getInstance().resolveSubStateManager(TurretStateRequest.class);
     } 
+
+    public void putShootOnTheMoveTargetPosition(Rotation2d targetPosition) {
+        shootOnTheMoveTargetPosition = targetPosition;
+    }
     
     public String toString() {
         return "TurretSubStateManager";
     }
 
-    //TODO: Implement
 
-    public Runnable manualLeft() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'manualLeft'");
+    public void manualLeft() {
+        manualDirection = 1;
     }
 
-    public Runnable manualRight() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'manualRight'");
+    public void manualRight() {
+        manualDirection = -1;
     }
 
-    public Runnable manualStop() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'manualStop'");
+    public void manualStop() {
+        manualDirection = 0;
     }
 }

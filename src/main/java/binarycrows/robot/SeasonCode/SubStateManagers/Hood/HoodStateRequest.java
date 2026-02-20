@@ -2,8 +2,6 @@ package binarycrows.robot.SeasonCode.SubStateManagers.Hood;
 
 public enum HoodStateRequest {
     SHOOT_ON_THE_MOVE,
-    RETRACTED, 
-    
-    //TODO: Implement
+    RETRACTED,
     MANUAL_OVERRIDE
 }

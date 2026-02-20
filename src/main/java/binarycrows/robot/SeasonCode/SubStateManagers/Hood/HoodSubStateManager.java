@@ -11,22 +11,21 @@ import binarycrows.robot.SeasonCode.SubStateManagers.Hood.HoodIO.HoodOutputs;
 import binarycrows.robot.SeasonCode.SubStateManagers.Turret.TurretStateRequest;
 import binarycrows.robot.SeasonCode.SubStateManagers.Turret.TurretSubStateManager;
 import binarycrows.robot.Utils.Tuning.RuntimeTunableValue;
+import edu.wpi.first.hal.FRCNetComm.tResourceType;
 import edu.wpi.first.math.geometry.Rotation2d;
 
 public class HoodSubStateManager extends SubStateManager<HoodStateRequest> {
-
-    //TODO: when making hood class, add: 
-    // standard pids; 
-    // voltage if statements w/ integrated pid catch; 
-    // and evil turret control mode
-
-    //TODO: All need gravity feedforward, which is tuned value * sin of angle of hood relative to the horizontal or whatever it is
     
     private Hood hood;
     private HoodOutputs outputs;
 
-    private RuntimeTunableValue hoodTargetPosition;
-    private RuntimeTunableValue mustRetract;
+
+    private Rotation2d manualOverrideTargetRotation = HoodConstants.hoodStartingPosition;
+    private Rotation2d shootOnTheMoveTargetRotation = HoodConstants.hoodStartingPosition;
+
+    private Rotation2d targetPosition = HoodConstants.hoodStartingPosition;
+
+    private int manualDirection = 0; // 1=up, 0=none, -1=down
 
     public HoodSubStateManager() {
         super();
@@ -37,31 +36,43 @@ public class HoodSubStateManager extends SubStateManager<HoodStateRequest> {
         HoodConstants.useIntegratedPID ? new HoodTalonFXSIntegratedPID(outputs) : new HoodTalonFXSWPILibPID(outputs)
         : new HoodSim(outputs));
 
-        hoodTargetPosition = new RuntimeTunableValue("Tuning/Hood/TargetPosition", 0.0);
-        mustRetract = new RuntimeTunableValue("Tuning/Hood/MustRetract", false);
-
         super.defaultState = new StateRequest<HoodStateRequest>(HoodStateRequest.RETRACTED, StateRequestPriority.NORMAL);
     }
 
     @Override
     public void recieveStateRequest(StateRequest<HoodStateRequest> request) {
         super.recieveStateRequest(request);
+        if (activeStateRequest.getStateRequestType() == HoodStateRequest.MANUAL_OVERRIDE) {
+            manualOverrideTargetRotation = outputs.hoodRotation;
+        }
     }
 
     @Override
     public void periodic() {
         StateTable.logObject("Hood/Outputs", outputs);
+        switch (activeStateRequest.getStateRequestType()) {
+            case MANUAL_OVERRIDE:
+                manualOverrideTargetRotation = manualOverrideTargetRotation.plus(HoodConstants.manualAngleIncrement.times(manualDirection));
+                targetPosition = manualOverrideTargetRotation;
+                break;
+            case SHOOT_ON_THE_MOVE:
+                targetPosition = shootOnTheMoveTargetRotation;
+                break;
+            case RETRACTED:
+                targetPosition = Rotation2d.kZero;
+                break;
+        }
         hood.update();
         controlVoltage();
         
     }
 
     private void controlPID() {
-        hood.setPIDTarget(Rotation2d.fromDegrees(getTargetPosition()));
+        hood.setPIDTarget(targetPosition);
     }
     private void controlVoltage() {
         double voltage = 0;
-        double delta = getTargetPosition() - outputs.hoodRotation.getDegrees();
+        double delta = targetPosition.getDegrees() - outputs.hoodRotation.getDegrees();
 
         if (delta > 20) voltage = 0.02;
         else if (delta > 5) voltage = 0.002;
@@ -72,34 +83,27 @@ public class HoodSubStateManager extends SubStateManager<HoodStateRequest> {
         if (voltage != 0) hood.setVoltage(voltage);
     }
     private void controlLikeTurret() {
-        hood.setTargetLikeTurret(Rotation2d.fromDegrees(getTargetPosition()));
+        hood.setTargetLikeTurret(targetPosition);
     }
 
-    private double getTargetPosition() {
-        if ((boolean)mustRetract.getValue()) {
-            return 0.0;
-        }
-        return (double)hoodTargetPosition.getValue();
+    public void putShootOnTheMoveTargetPosition(Rotation2d target) {
+        shootOnTheMoveTargetRotation = target;
     }
 
     public static HoodSubStateManager getInstance() {
         return (HoodSubStateManager) MainStateManager.getInstance().resolveSubStateManager(HoodStateRequest.class);
     }
 
-    //TODO: Implement
 
-    public Runnable manualStop() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'manualStop'");
+    public void manualStop() {
+        manualDirection = 0;
     }
 
-    public Runnable manualUp() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'manualUp'");
+    public void manualUp() {
+        manualDirection = 1;
     }
 
-    public Runnable manualDown() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'manualDown'");
+    public void manualDown() {
+        manualDirection = -1;
     } 
 }

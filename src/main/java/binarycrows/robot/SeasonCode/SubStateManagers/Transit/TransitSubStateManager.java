@@ -15,6 +15,9 @@ public class TransitSubStateManager  extends SubStateManager<TransitStateRequest
     private TransitIO transitIO;
     private TransitOutputs outputs;
 
+    private int manualDirection = 0; // 1=forward, 0=off, -1=reverse
+    private int shooterDirection = 0;
+
     public TransitSubStateManager() {
         super();
 
@@ -27,7 +30,6 @@ public class TransitSubStateManager  extends SubStateManager<TransitStateRequest
 
     @Override
     public void recieveStateRequest(StateRequest<TransitStateRequest> request) {
-        //TODO: Add logic here for manual override and automatic based on shooting
         super.recieveStateRequest(request);
     }
 
@@ -52,6 +54,14 @@ public class TransitSubStateManager  extends SubStateManager<TransitStateRequest
                 transitIO.setLongitudinalVoltage(-TransitConstants.maxLongitudinalMotorVoltage);
                 transitIO.setInAndUpVoltage(-TransitConstants.maxInAndUpMotorVoltage);
                 break;
+            case MANUAL_OVERRIDE:
+                transitIO.setLatitudinalVoltage(TransitConstants.maxLatitudinalMotorVoltage * manualDirection);
+                transitIO.setLongitudinalVoltage(TransitConstants.maxLongitudinalMotorVoltage * manualDirection);
+                transitIO.setInAndUpVoltage(TransitConstants.maxInAndUpMotorVoltage * manualDirection);
+            case SHOOTER:
+                transitIO.setLatitudinalVoltage(TransitConstants.maxLatitudinalMotorVoltage * shooterDirection);
+                transitIO.setLongitudinalVoltage(TransitConstants.maxLongitudinalMotorVoltage * shooterDirection);
+                transitIO.setInAndUpVoltage(TransitConstants.maxInAndUpMotorVoltage * shooterDirection);
         }
         
     }
@@ -65,12 +75,16 @@ public class TransitSubStateManager  extends SubStateManager<TransitStateRequest
     }
 
     public void manualForward() {
-
+        manualDirection = 1;
     }
     public void manualReverse() {
-        
+        manualDirection = -1;
     }
     public void manualOff() {
-        
+        manualDirection = 0;
+    }
+
+    public void putShooterDirection(int direction) {
+        shooterDirection = direction;
     }
 }

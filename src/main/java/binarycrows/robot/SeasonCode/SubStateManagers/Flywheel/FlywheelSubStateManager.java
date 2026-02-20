@@ -19,6 +19,8 @@ public class FlywheelSubStateManager extends SubStateManager<FlywheelStateReques
 
     private double flywheelVoltage = 0;
 
+    private double flywheelVoltageFF = FlywheelConstants.baseShooterFF;
+
     public FlywheelSubStateManager() {
         super();
 
@@ -41,7 +43,7 @@ public class FlywheelSubStateManager extends SubStateManager<FlywheelStateReques
 
         switch (activeStateRequest.getStateRequestType()) {
             case SHOOT_ON_THE_MOVE:
-                flywheelIO.setRotorVoltage(MathUtil.clamp(flywheelVoltage, 0, FlywheelConstants.maxMotorVoltage));
+                flywheelIO.setRotorVoltage(MathUtil.clamp(flywheelVoltage + flywheelVoltageFF, 0, FlywheelConstants.maxMotorVoltage));
                 break;
             case IDLE:
                 if (outputs.leftMotorVelocityRPS < FlywheelConstants.idleMinVelocityRPS) {
@@ -64,15 +66,12 @@ public class FlywheelSubStateManager extends SubStateManager<FlywheelStateReques
         return (FlywheelSubStateManager) MainStateManager.getInstance().resolveSubStateManager(FlywheelStateRequest.class);
     }
 
-    //TODO: Implement
 
-    public Runnable increaseShooterFF() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'increaseShooterFF'");
+    public void increaseShooterFF() {
+        flywheelVoltageFF += FlywheelConstants.shooterFFIncrement;
     }
 
-    public Runnable decreaseShooterFF() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'decreaseShooterFF'");
+    public void decreaseShooterFF() {
+        flywheelVoltageFF -= FlywheelConstants.shooterFFIncrement;
     }
 }

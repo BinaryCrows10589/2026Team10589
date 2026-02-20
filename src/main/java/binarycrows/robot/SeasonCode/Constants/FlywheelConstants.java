@@ -17,4 +17,8 @@ public final class FlywheelConstants {
     public static final MotorAlignmentValue isSlaveReversed = MotorAlignmentValue.Opposed;
 
     public static final double gearRatio = 2;
+
+    public static final double baseShooterFF = 0;
+
+    public static final double shooterFFIncrement = 0.1;
 }

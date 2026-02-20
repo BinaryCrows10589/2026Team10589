@@ -21,4 +21,6 @@ public final class ClimberConstants {
 
         public static final Rotation2d climberDownPosition = Rotation2d.fromDegrees(0);
         public static final Rotation2d climberUpPosition = Rotation2d.fromDegrees(90);
-}
+
+        public static final double manualControlVoltage = 4.0;
+    }

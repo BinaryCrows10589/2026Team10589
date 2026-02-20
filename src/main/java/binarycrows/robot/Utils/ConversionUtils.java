@@ -30,53 +30,53 @@ public class ConversionUtils {
         return new SwerveModuleState(targetSpeed, Rotation2d.fromDegrees(targetAngle));
       }
  
-      public static double placeInAppropriate0To360Scope(double scopeReference, double newAngle) {
-        double lowerBound;
-        double upperBound;
-        double lowerOffset = scopeReference % 360;
-        
-        if (lowerOffset >= 0) {
-            lowerBound = scopeReference - lowerOffset;
-            upperBound = scopeReference + (360 - lowerOffset);
-        } else {
-            upperBound = scopeReference - lowerOffset;
-            lowerBound = scopeReference - (360 + lowerOffset);
-        }
+    public static double placeInAppropriate0To360Scope(double scopeReference, double newAngle) {
+    double lowerBound;
+    double upperBound;
+    double lowerOffset = scopeReference % 360;
+    
+    if (lowerOffset >= 0) {
+        lowerBound = scopeReference - lowerOffset;
+        upperBound = scopeReference + (360 - lowerOffset);
+    } else {
+        upperBound = scopeReference - lowerOffset;
+        lowerBound = scopeReference - (360 + lowerOffset);
+    }
 
-         newAngle += (newAngle < lowerBound) ? Math.ceil((lowerBound - newAngle) / 360) * 360 :
-                    (newAngle > upperBound) ? Math.ceil((newAngle - upperBound) / 360) * -360 : 0;
+        newAngle += (newAngle < lowerBound) ? Math.ceil((lowerBound - newAngle) / 360) * 360 :
+                (newAngle > upperBound) ? Math.ceil((newAngle - upperBound) / 360) * -360 : 0;
 
-        if (newAngle - scopeReference > 180) {
-            newAngle -= 360;
-        } else if (newAngle - scopeReference < -180) {
-            newAngle += 360;
-        }
-        return newAngle;
-      }
-    //TODO:(ELIJAH) Indentiaon is wrong compared to the rest of the file
-        @SuppressWarnings("unchecked")
-        public static <E> HashMap<String, E> fieldsToMap(Field[] fields, Object obj) {
-            HashMap<String, E> map = new HashMap<String, E>();
-            for (int i = 0; i < fields.length; i++) {
-                try {
-                    map.put(fields[i].getName(), (E) fields[i].get(obj));
-                } catch (IllegalArgumentException e) {
-                    e.printStackTrace();
-                } catch (IllegalAccessException e) {
-                    e.printStackTrace();
-                }
+    if (newAngle - scopeReference > 180) {
+        newAngle -= 360;
+    } else if (newAngle - scopeReference < -180) {
+        newAngle += 360;
+    }
+    return newAngle;
+    }
+    
+    @SuppressWarnings("unchecked")
+    public static <E> HashMap<String, E> fieldsToMap(Field[] fields, Object obj) {
+        HashMap<String, E> map = new HashMap<String, E>();
+        for (int i = 0; i < fields.length; i++) {
+            try {
+                map.put(fields[i].getName(), (E) fields[i].get(obj));
+            } catch (IllegalArgumentException e) {
+                e.printStackTrace();
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
             }
-            return map;
         }
+        return map;
+    }
 
-        public static <T, E> T getKeyByValue(HashMap<T, E> map, E value) {
-            for (Entry<T, E> entry : map.entrySet()) {
-                if (Objects.equals(value, entry.getValue())) {
-                    return entry.getKey();
-                }
+    public static <T, E> T getKeyByValue(HashMap<T, E> map, E value) {
+        for (Entry<T, E> entry : map.entrySet()) {
+            if (Objects.equals(value, entry.getValue())) {
+                return entry.getKey();
             }
-            return null;
         }
+        return null;
+    }
 
     public static boolean getIsInTolerance(double currentValue, double desiredValue, double tolerance) {
         return Math.abs(currentValue - desiredValue) <= tolerance;
