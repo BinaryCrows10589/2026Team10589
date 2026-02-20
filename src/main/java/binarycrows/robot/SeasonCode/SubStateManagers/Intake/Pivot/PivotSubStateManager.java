@@ -90,4 +90,21 @@ public class PivotSubStateManager extends SubStateManager<PivotStateRequest>  {
     public String toString() {
         return "Pivot SubStateManager";
     }
+
+
+    //TODO: Implement
+    public Runnable manualStop() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'manualStop'");
+    }
+
+    public Runnable manualDown() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'manualDown'");
+    }
+
+    public Runnable manualUp() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'manualUp'");
+    }
 }

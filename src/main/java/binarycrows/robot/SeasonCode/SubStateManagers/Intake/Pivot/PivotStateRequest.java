@@ -3,5 +3,9 @@ package binarycrows.robot.SeasonCode.SubStateManagers.Intake.Pivot;
 public enum PivotStateRequest {
     DOWN,
     UP,
-    RAISED
+    RAISED, 
+
+    //TODO: Implement:
+    MANUAL_OVERRIDE, 
+    RESTORE_CLOSEST
 }

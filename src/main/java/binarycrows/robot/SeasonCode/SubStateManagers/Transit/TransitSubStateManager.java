@@ -1,10 +1,13 @@
 package binarycrows.robot.SeasonCode.SubStateManagers.Transit;
 
+import binarycrows.robot.MainStateManager;
 import binarycrows.robot.StateRequest;
 import binarycrows.robot.StateTable;
 import binarycrows.robot.SubStateManager;
 import binarycrows.robot.Enums.StateRequestPriority;
 import binarycrows.robot.SeasonCode.Constants.TransitConstants;
+import binarycrows.robot.SeasonCode.SubStateManagers.Hood.HoodStateRequest;
+import binarycrows.robot.SeasonCode.SubStateManagers.Hood.HoodSubStateManager;
 import binarycrows.robot.SeasonCode.SubStateManagers.Transit.TransitIO.TransitOutputs;
 
 public class TransitSubStateManager  extends SubStateManager<TransitStateRequest> {
@@ -24,6 +27,7 @@ public class TransitSubStateManager  extends SubStateManager<TransitStateRequest
 
     @Override
     public void recieveStateRequest(StateRequest<TransitStateRequest> request) {
+        //TODO: Add logic here for manual override and automatic based on shooting
         super.recieveStateRequest(request);
     }
 
@@ -54,5 +58,19 @@ public class TransitSubStateManager  extends SubStateManager<TransitStateRequest
 
     public String toString() {
         return "TransitSubStateManager";
+    }
+
+    public static TransitSubStateManager getInstance() {
+        return (TransitSubStateManager) MainStateManager.getInstance().resolveSubStateManager(TransitStateRequest.class);
+    }
+
+    public void manualForward() {
+
+    }
+    public void manualReverse() {
+        
+    }
+    public void manualOff() {
+        
     }
 }

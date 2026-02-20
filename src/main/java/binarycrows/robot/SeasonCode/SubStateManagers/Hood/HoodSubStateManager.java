@@ -1,5 +1,6 @@
 package binarycrows.robot.SeasonCode.SubStateManagers.Hood;
 
+import binarycrows.robot.MainStateManager;
 import binarycrows.robot.StateRequest;
 import binarycrows.robot.StateTable;
 import binarycrows.robot.SubStateManager;
@@ -7,6 +8,8 @@ import binarycrows.robot.Enums.StateRequestPriority;
 import binarycrows.robot.SeasonCode.Constants.HoodConstants;
 import binarycrows.robot.SeasonCode.Constants.MetaConstants;
 import binarycrows.robot.SeasonCode.SubStateManagers.Hood.HoodIO.HoodOutputs;
+import binarycrows.robot.SeasonCode.SubStateManagers.Turret.TurretStateRequest;
+import binarycrows.robot.SeasonCode.SubStateManagers.Turret.TurretSubStateManager;
 import binarycrows.robot.Utils.Tuning.RuntimeTunableValue;
 import edu.wpi.first.math.geometry.Rotation2d;
 
@@ -78,4 +81,25 @@ public class HoodSubStateManager extends SubStateManager<HoodStateRequest> {
         }
         return (double)hoodTargetPosition.getValue();
     }
+
+    public static HoodSubStateManager getInstance() {
+        return (HoodSubStateManager) MainStateManager.getInstance().resolveSubStateManager(HoodStateRequest.class);
+    }
+
+    //TODO: Implement
+
+    public Runnable manualStop() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'manualStop'");
+    }
+
+    public Runnable manualUp() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'manualUp'");
+    }
+
+    public Runnable manualDown() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'manualDown'");
+    } 
 }

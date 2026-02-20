@@ -1,5 +1,6 @@
 package binarycrows.robot.SeasonCode.SubStateManagers.Climber;
 
+import binarycrows.robot.MainStateManager;
 import binarycrows.robot.StateRequest;
 import binarycrows.robot.StateTable;
 import binarycrows.robot.SubStateManager;
@@ -8,6 +9,8 @@ import binarycrows.robot.SeasonCode.Constants.ClimberConstants;
 import binarycrows.robot.SeasonCode.Constants.FlywheelConstants;
 import binarycrows.robot.SeasonCode.Constants.MetaConstants;
 import binarycrows.robot.SeasonCode.SubStateManagers.Climber.ClimberIO.ClimberOutputs;
+import binarycrows.robot.SeasonCode.SubStateManagers.Hood.HoodStateRequest;
+import binarycrows.robot.SeasonCode.SubStateManagers.Hood.HoodSubStateManager;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Rotation2d;
 
@@ -60,5 +63,19 @@ public class ClimberSubStateManager extends SubStateManager<ClimberStateRequest>
 
     private void controlPID(double targetPosition) {
         climberIO.setTargetPosition(Rotation2d.fromRadians(targetPosition));
+    }
+
+    public static ClimberSubStateManager getInstance() {
+        return (ClimberSubStateManager) MainStateManager.getInstance().resolveSubStateManager(ClimberStateRequest.class);
+    }
+
+    public void manualUp() {
+
+    }
+    public void manualDown() {
+
+    }
+    public void manualStop() {
+
     }
 }

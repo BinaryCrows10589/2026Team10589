@@ -57,4 +57,21 @@ public class TurretSubStateManager extends SubStateManager<TurretStateRequest> {
     public String toString() {
         return "TurretSubStateManager";
     }
+
+    //TODO: Implement
+
+    public Runnable manualLeft() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'manualLeft'");
+    }
+
+    public Runnable manualRight() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'manualRight'");
+    }
+
+    public Runnable manualStop() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'manualStop'");
+    }
 }
