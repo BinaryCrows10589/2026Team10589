@@ -38,6 +38,8 @@ public class TransitSubStateManager  extends SubStateManager<TransitStateRequest
         StateTable.logObject("Transit/Outputs", outputs);
         transitIO.update();
 
+
+        // TODO: Question, I unserstand al lbut the last one. What is shooter in this case?
         switch (activeStateRequest.getStateRequestType()) {
             case POWERED:
                 transitIO.setLatitudinalVoltage(TransitConstants.maxLatitudinalMotorVoltage);

@@ -113,7 +113,9 @@ public class Keybinds {
         buttonBoard1.onPress(ButtonBoardButtons.intakeManualUp, 
         PivotSubStateManager.getInstance()::manualUp,
         PivotSubStateManager.getInstance()::manualStop);
-
+        
+        // TODO: When the intake goes down the wheels should automaticly start intaking. It should not be an extra press
+        // These should only ever be used when manually overriding the pivot
         buttonBoard1.onPress(ButtonBoardButtons.intakeWheelToggle, 
         StateRequestUtils.createStateRequestRunnable(IntakeRollersStateRequest.INTAKING), 
         StateRequestUtils.createStateRequestRunnable(IntakeRollersStateRequest.OFF));
@@ -142,6 +144,7 @@ public class Keybinds {
         buttonBoard1.onPress(ButtonBoardButtons.hoodForceRetract, 
         StateRequestUtils.createStateRequestRunnable(HoodStateRequest.RETRACTED));
 
+        // TODO: Shooting should automaticly turn on transit
         // Shooting
         buttonBoard1.onPress(ButtonBoardButtons.shoot, 
             () -> {Shooting.isShooting = true;},
@@ -151,7 +154,7 @@ public class Keybinds {
             () -> {Shooting.isForceShooting = false;});
         buttonBoard1.onPress(ButtonBoardButtons.increaseShooterFF, FlywheelSubStateManager.getInstance()::increaseShooterFF);
         buttonBoard1.onPress(ButtonBoardButtons.decreaseShooterFF, FlywheelSubStateManager.getInstance()::decreaseShooterFF);
-
+        
         // Climber
         buttonBoard1.onPress(ButtonBoardButtons.climbLeft, Climbing::climbLeft, Climbing::cancelClimb);
         buttonBoard1.onPress(ButtonBoardButtons.climbRight, Climbing::climbRight, Climbing::cancelClimb);

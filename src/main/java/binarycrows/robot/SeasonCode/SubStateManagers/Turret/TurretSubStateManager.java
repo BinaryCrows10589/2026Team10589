@@ -53,7 +53,11 @@ public class TurretSubStateManager extends SubStateManager<TurretStateRequest> {
 
         switch (activeStateRequest.getStateRequestType()) {
             case MANUAL_OVERRIDE:
-                manualTargetPosition = manualTargetPosition.plus(TurretConstants.manualPositionIncrement.times(manualDirection));
+                /* TODO ISSUE: Manual override should be with voltage control. 
+                 * This fails if the encoder is messed up which is the most likely
+                 * situation when you would want to use it.
+                */
+            manualTargetPosition = manualTargetPosition.plus(TurretConstants.manualPositionIncrement.times(manualDirection));
                 turret.setTargetAngle(manualTargetPosition, true);
                 break;
             case SHOOT_ON_THE_MOVE:

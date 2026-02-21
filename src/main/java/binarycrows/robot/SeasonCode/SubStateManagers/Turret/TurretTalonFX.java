@@ -46,11 +46,15 @@ public class TurretTalonFX implements TurretIO {
         this.turretMotor.getPosition().setUpdateFrequency(20);
         this.turretMotor.getTorqueCurrent().setUpdateFrequency(50);
 
-        motorConfig.Voltage.PeakForwardVoltage = TurretConstants.maximumVoltage;
+        // TODO: Lower these to .5v to start with when testing on real bot. 
+        // Increase slowly(1v) as needed if system is working
+        // In additio you can add torque limits. 
+        // This works because torque spikes when a motor is stalling or about to be resultign as would happen if it was about to brake something
+        motorConfig.Voltage.PeakForwardVoltage = TurretConstants.maximumVoltage; 
         motorConfig.Voltage.PeakReverseVoltage = -TurretConstants.maximumVoltage;
-
         this.turretMotor.getConfigurator().apply(motorConfig);
 
+        // TODO: Make sure that the sensor direction is correct. Right now it is inverse of motor
         turretEncoder = new CANcoder(CANIDs.RIO.turretEncoder);
         CANcoderConfiguration turretEncoderConfig = new CANcoderConfiguration();
         MagnetSensorConfigs magnetConfigs = new MagnetSensorConfigs();
@@ -91,7 +95,11 @@ public class TurretTalonFX implements TurretIO {
 
         updatePIDValuesFromNetworkTables();
     }
-
+    
+    /*  TODO ISSUE: This might fail. Unsure as to why but if feels sketchy
+        Why dont you just do offsetPosition = EncoderPosition - offset. This is all the ranging you need.
+    
+    */
     private Rotation2d getEncoderRotation() {
         double encoderValue = outputs.encoderValue;
 

@@ -1,24 +1,16 @@
 package binarycrows.robot.SeasonCode.Autons.Test;
 
-import java.util.function.Supplier;
-
 import binarycrows.robot.StateRequest;
-import binarycrows.robot.CrowMotion.UserSide.CMAutonPoint;
-import binarycrows.robot.CrowMotion.UserSide.CMEvent;
-import binarycrows.robot.CrowMotion.UserSide.CMRotation;
 import binarycrows.robot.CrowMotion.UserSide.CMStateRequest;
-import binarycrows.robot.CrowMotion.UserSide.CMTrajectory;
-import binarycrows.robot.CrowMotion.UserSide.CMTrajectory.TrajectoryPriority;
-import binarycrows.robot.Enums.StateRequestPriority;
 import binarycrows.robot.SeasonCode.Autons.Trajectories.Trajectories;
-import binarycrows.robot.SeasonCode.Constants.CrowMotionConstants;
-import binarycrows.robot.SeasonCode.SubStateManagers.SwerveDrive.DriveStateRequest;
-import binarycrows.robot.SeasonCode.SubStateManagers.SwerveDrive.DriveSubStateManager;
 import edu.wpi.first.math.Pair;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 
 public class MainAuton {
+    // TODO: Acutally add the autos and please make them not inside of the test folder. 
+    // Each main auto should have a folder. Also dont name them Main, secendery ect. 
+    // Name them according to what they do. So ShootPreLoad_ShootCenter_ClimbRight ect
     public static Pair<Pose2d,StateRequest[]> getPair() {
         return new Pair<>(startingPoint, getAutonomous());
     }

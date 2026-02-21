@@ -1,6 +1,7 @@
 package binarycrows.robot.SeasonCode.SubStateManagers.CANdle;
 
 public enum CANdleStateRequest {
+    // TODO: acutally make use of these
     RED,
     GREEN,
     BLUE,

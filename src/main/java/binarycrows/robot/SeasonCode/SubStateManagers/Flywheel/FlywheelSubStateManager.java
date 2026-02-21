@@ -42,6 +42,7 @@ public class FlywheelSubStateManager extends SubStateManager<FlywheelStateReques
         flywheelIO.update();
 
         switch (activeStateRequest.getStateRequestType()) {
+            //TODO: You are going to want a way to mvoe the flywheel backword in case of a jam
             case SHOOT_ON_THE_MOVE:
                 flywheelIO.setRotorVoltage(MathUtil.clamp(flywheelVoltage + flywheelVoltageFF, 0, FlywheelConstants.maxMotorVoltage));
                 break;

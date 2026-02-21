@@ -50,6 +50,7 @@ public class ClimberTalonFX implements ClimberIO {
         this.motor.getPosition().setUpdateFrequency(20);
         this.motor.getTorqueCurrent().setUpdateFrequency(50);
 
+        // TODO: Same note again. Also I thought you were not having a absolute encdoer for the climber?
         motorConfig.Voltage.PeakForwardVoltage = ClimberConstants.maxMotorVoltageUp;
         motorConfig.Voltage.PeakReverseVoltage = ClimberConstants.maxMotorVoltageDown;
 

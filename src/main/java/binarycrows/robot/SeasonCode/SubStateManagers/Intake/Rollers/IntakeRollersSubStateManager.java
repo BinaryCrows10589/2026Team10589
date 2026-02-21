@@ -30,7 +30,11 @@ public class IntakeRollersSubStateManager extends SubStateManager<IntakeRollersS
     public void periodic() {
         StateTable.logObject("Intake/Rollers/Outputs", outputs);
         intakeRollersIO.update();
-
+        // TODO: For voltage to run at you dont necesarry whant it to be the same as max. 
+        // This makes the RPS of the motor less constent due to voltage flucuations
+        // Lets say the supplied voltage flucatiosn by .1v up and down you are now preventign all the upepr 
+        // flucations while allowing all the lower flucations making actually average voltage being 3.95
+        // Just use seperate variables.
         switch (activeStateRequest.getStateRequestType()) {
             case INTAKING:
                 intakeRollersIO.setRotorVoltage(IntakeConstants.Rollers.maxMotorVoltage);

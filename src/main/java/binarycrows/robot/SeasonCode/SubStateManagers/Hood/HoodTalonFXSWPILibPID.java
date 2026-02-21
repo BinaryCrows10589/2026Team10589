@@ -14,6 +14,7 @@ import binarycrows.robot.SeasonCode.Constants.MetaConstants;
 import binarycrows.robot.SeasonCode.Constants.SwerveDriveConstants;
 import binarycrows.robot.Utils.Tuning.RuntimeTunablePIDValues;
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
 
 public class HoodTalonFXSWPILibPID implements HoodIO {
@@ -47,6 +48,8 @@ public class HoodTalonFXSWPILibPID implements HoodIO {
         this.hoodMotor.getPosition().setUpdateFrequency(20);
         this.hoodMotor.getTorqueCurrent().setUpdateFrequency(50);
 
+
+        //TODO: Same note again
         motorConfig.Voltage.PeakForwardVoltage = HoodConstants.maximumVoltage;
         motorConfig.Voltage.PeakReverseVoltage = -HoodConstants.maximumVoltage;
 
@@ -107,11 +110,13 @@ public class HoodTalonFXSWPILibPID implements HoodIO {
     }
 
     private double getGravityFF() {
+        // TODO: Is it sin for cos. SHould be cos right?
         return this.outputs.encoderRotation.getSin() * HoodConstants.hoodGravityFF;
     }
 
     private void configurePID() {
-
+        // Should be a profiled pid controller
+        //new ProfiledPIDController(...) Add acceleration and deceleration constraints. 
         hoodController = new PIDController(HoodConstants.hoodPIDValueP, HoodConstants.hoodPIDValueI, HoodConstants.hoodPIDValueD);
 
         hoodPIDConstantTuner = new RuntimeTunablePIDValues("Hood/PIDValues",

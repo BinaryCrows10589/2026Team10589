@@ -35,6 +35,8 @@ public class FlywheelTalonFX implements FlywheelIO {
         this.leftMotor.getPosition().setUpdateFrequency(20);
         this.leftMotor.getTorqueCurrent().setUpdateFrequency(50);
 
+        // TODO: You will not beleive it but same note again. 
+        // Espeicly with the two motors in case of inversion issues
         masterMotorConfig.Voltage.PeakForwardVoltage = FlywheelConstants.maxMotorVoltage;
         masterMotorConfig.Voltage.PeakReverseVoltage = -FlywheelConstants.maxMotorVoltage;
 
