@@ -3,7 +3,6 @@ package binarycrows.robot.SeasonCode.SubStateManagers.SwerveDrive;
 
 import binarycrows.robot.StateTable;
 import binarycrows.robot.SeasonCode.Constants.SwerveDriveConstants;
-import binarycrows.robot.SeasonCode.Utils.DesiredMetersPerSecondToVoltageLerpTable;
 import binarycrows.robot.Utils.ConversionUtils;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -72,8 +71,6 @@ public class SwerveModule {
     public Rotation2d getRelativeEncoderPosition() {
         return Rotation2d.fromRotations(swerveModuleIO.getOutputs().turnMotorRelativePositionRotations);
     }
-
-    DesiredMetersPerSecondToVoltageLerpTable lerpTable = new DesiredMetersPerSecondToVoltageLerpTable();
    
     public double metersPerSecondToVoltage(double desiredMetersPerSecond) {
 

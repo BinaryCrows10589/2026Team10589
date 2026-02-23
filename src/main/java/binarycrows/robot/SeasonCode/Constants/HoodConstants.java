@@ -14,7 +14,7 @@ public class HoodConstants {
     public static final double hoodPIDValueD = 0;
     public static final double hoodPIDValueFF = 0;
 
-    public static final double hoodGravityFF = MetaConstants.isReal ? 1.0 : 0; //TODO: With real encoder make sure this is being used correctly. It should be such that the more horizontal the turret is, the more of this gets used.
+    public static final double hoodGravityFF = MetaConstants.isReal ? 1.0 : 0;
 
     public static final boolean useIntegratedPID = false;
 
@@ -39,6 +39,11 @@ public class HoodConstants {
 
     public static double maxAccelerationPerFrameRadPerSecPerSec = MetaConstants.isReal ? 0 : 40;
     public static double maxDecelerationPerFrameRadPerSecPerSec = MetaConstants.isReal ? 0 : 200; // Will need to be significantly higher than max
+
+    public static final double statorCurrentLimit = 120;
+
+    public static final double profiledPIDMaxAcceleration = 1;
+    public static final double profiledPIDMaxVelocity = 1;
 
     public static final Rotation2d hoodStartingPosition = Rotation2d.kZero;
 

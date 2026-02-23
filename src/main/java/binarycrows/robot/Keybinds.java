@@ -3,6 +3,7 @@ package binarycrows.robot;
 import binarycrows.robot.SeasonCode.Constants.ControlConstants;
 import binarycrows.robot.SeasonCode.SubStateManagers.Climber.ClimberStateRequest;
 import binarycrows.robot.SeasonCode.SubStateManagers.Climber.ClimberSubStateManager;
+import binarycrows.robot.SeasonCode.SubStateManagers.Flywheel.FlywheelStateRequest;
 import binarycrows.robot.SeasonCode.SubStateManagers.Flywheel.FlywheelSubStateManager;
 import binarycrows.robot.SeasonCode.SubStateManagers.Hood.HoodStateRequest;
 import binarycrows.robot.SeasonCode.SubStateManagers.Hood.HoodSubStateManager;
@@ -96,16 +97,14 @@ public class Keybinds {
         );
 
         // Button Board
-        //TODO: Implement missing state requests
-        //TODO: Make stuff (like transit) have "automatic" state request and then be overridden by switches + buttons
 
         // Intake
         buttonBoard1.onPress(ButtonBoardButtons.intakeDown, 
-        StateRequestUtils.createStateRequestRunnable(PivotStateRequest.DOWN));
+        StateRequestUtils.createDualStateRequestRunnable(PivotStateRequest.DOWN, IntakeRollersStateRequest.INTAKING));
         buttonBoard1.onPress(ButtonBoardButtons.intakeRaised, 
-        StateRequestUtils.createStateRequestRunnable(PivotStateRequest.RAISED));
+        StateRequestUtils.createDualStateRequestRunnable(PivotStateRequest.RAISED, IntakeRollersStateRequest.REVERSE));
         buttonBoard1.onPress(ButtonBoardButtons.intakeUp, 
-        StateRequestUtils.createStateRequestRunnable(PivotStateRequest.UP));
+        StateRequestUtils.createDualStateRequestRunnable(PivotStateRequest.UP, IntakeRollersStateRequest.OFF));
 
         buttonBoard1.onPress(ButtonBoardButtons.intakeManualDown, 
         PivotSubStateManager.getInstance()::manualDown,
@@ -114,11 +113,8 @@ public class Keybinds {
         PivotSubStateManager.getInstance()::manualUp,
         PivotSubStateManager.getInstance()::manualStop);
         
-        // TODO: When the intake goes down the wheels should automaticly start intaking. Then the button toggles them off
-        // These should only ever be used when manually overriding the pivot
         buttonBoard1.onPress(ButtonBoardButtons.intakeWheelToggle, 
-        StateRequestUtils.createStateRequestRunnable(IntakeRollersStateRequest.INTAKING), 
-        StateRequestUtils.createStateRequestRunnable(IntakeRollersStateRequest.OFF));
+        StateRequestUtils.createStateRequestRunnable(IntakeRollersStateRequest.INVERT));
 
         // Transit
         buttonBoard1.onPress(ButtonBoardButtons.transitManualForward, 
@@ -153,6 +149,9 @@ public class Keybinds {
             () -> {Shooting.isForceShooting = false;});
         buttonBoard1.onPress(ButtonBoardButtons.increaseShooterFF, FlywheelSubStateManager.getInstance()::increaseShooterFF);
         buttonBoard1.onPress(ButtonBoardButtons.decreaseShooterFF, FlywheelSubStateManager.getInstance()::decreaseShooterFF);
+        buttonBoard1.onPress(ButtonBoardButtons.flywheelReverse, 
+        StateRequestUtils.createStateRequestRunnable(FlywheelStateRequest.REVERSE), 
+        StateRequestUtils.createStateRequestRunnable(FlywheelStateRequest.SHOOT_ON_THE_MOVE));
         
         // Climber
         buttonBoard1.onPress(ButtonBoardButtons.climbLeft, Climbing::climbLeft, Climbing::cancelClimb);

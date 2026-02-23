@@ -46,15 +46,12 @@ public class TurretTalonFX implements TurretIO {
         this.turretMotor.getPosition().setUpdateFrequency(20);
         this.turretMotor.getTorqueCurrent().setUpdateFrequency(50);
 
-        // TODO: Lower these to .5v to start with when testing on real bot. 
-        // Increase slowly(1v) as needed if system is working
-        // In addition you should add torque limits. 
-        // This works because torque spikes when a motor is stalling or about to be, as would happen if it was about to break something
         motorConfig.Voltage.PeakForwardVoltage = TurretConstants.maximumVoltage; 
         motorConfig.Voltage.PeakReverseVoltage = -TurretConstants.maximumVoltage;
+        motorConfig.CurrentLimits.StatorCurrentLimit = TurretConstants.statorCurrentLimit;
+        motorConfig.CurrentLimits.StatorCurrentLimitEnable = true;
         this.turretMotor.getConfigurator().apply(motorConfig);
 
-        // TODO: Make sure that the sensor direction is correct
         turretEncoder = new CANcoder(CANIDs.RIO.turretEncoder);
         CANcoderConfiguration turretEncoderConfig = new CANcoderConfiguration();
         MagnetSensorConfigs magnetConfigs = new MagnetSensorConfigs();

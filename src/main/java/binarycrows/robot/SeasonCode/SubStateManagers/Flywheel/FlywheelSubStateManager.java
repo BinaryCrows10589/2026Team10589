@@ -8,8 +8,7 @@ import binarycrows.robot.Enums.StateRequestPriority;
 import binarycrows.robot.SeasonCode.Constants.FlywheelConstants;
 import binarycrows.robot.SeasonCode.Constants.MetaConstants;
 import binarycrows.robot.SeasonCode.SubStateManagers.Flywheel.FlywheelIO.FlywheelOutputs;
-import binarycrows.robot.SeasonCode.SubStateManagers.Hood.HoodStateRequest;
-import binarycrows.robot.SeasonCode.SubStateManagers.Hood.HoodSubStateManager;
+import binarycrows.robot.SeasonCode.Utils.Shooting;
 import edu.wpi.first.math.MathUtil;
 
 public class FlywheelSubStateManager extends SubStateManager<FlywheelStateRequest> {
@@ -17,7 +16,6 @@ public class FlywheelSubStateManager extends SubStateManager<FlywheelStateReques
     private FlywheelIO flywheelIO;
     private FlywheelOutputs outputs;
 
-    private double flywheelVoltage = 0;
 
     private double flywheelVoltageFF = FlywheelConstants.baseShooterFF;
 
@@ -42,9 +40,16 @@ public class FlywheelSubStateManager extends SubStateManager<FlywheelStateReques
         flywheelIO.update();
 
         switch (activeStateRequest.getStateRequestType()) {
-            //TODO: You are going to want a way to mvoe the flywheel backword in case of a jam
             case SHOOT_ON_THE_MOVE:
-                flywheelIO.setRotorVoltage(MathUtil.clamp(flywheelVoltage + flywheelVoltageFF, 0, FlywheelConstants.maxMotorVoltage));
+                if (Shooting.isShooting) { // Run at voltage
+                    flywheelIO.setRotorVoltage(MathUtil.clamp(Shooting.flywheelVoltage + flywheelVoltageFF, 0, FlywheelConstants.maxMotorVoltage));
+                } else { // Run idle
+                    if (outputs.leftMotorVelocityRPS < FlywheelConstants.idleMinVelocityRPS) {
+                        flywheelIO.setRotorVoltage(FlywheelConstants.idleRecoveryVoltage);
+                    } else {
+                        flywheelIO.setRotorVoltage(0);
+                    }
+                }
                 break;
             case IDLE:
                 if (outputs.leftMotorVelocityRPS < FlywheelConstants.idleMinVelocityRPS) {
@@ -53,14 +58,13 @@ public class FlywheelSubStateManager extends SubStateManager<FlywheelStateReques
                     flywheelIO.setRotorVoltage(0);
                 }
                 break;
+            case REVERSE:
+                flywheelIO.setRotorVoltage(FlywheelConstants.reverseVoltage);
+                break;
             case OFF:
                 flywheelIO.setRotorVoltage(0);
                 break;
         }
-    }
-
-    public void setFlywheelVoltage(double flywheelVoltage) {
-        this.flywheelVoltage = flywheelVoltage;
     }
 
     public static FlywheelSubStateManager getInstance() {

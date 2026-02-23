@@ -44,7 +44,7 @@ public final class TurretConstants {
     public static final double encoderReadingAtMaxRotation = 0.9;
     public static final double encoderReadingAtMinRotation = 0;
 
-    public static final Rotation2d manualPositionIncrement = Rotation2d.fromDegrees(5);
+    public static final double manualVoltage = .25;
 
     public static final LerpTable velocityToVoltageLerpTable = MetaConstants.isReal ? 
     // Real
@@ -82,6 +82,8 @@ public final class TurretConstants {
         11,
         12
     }, true);
+
+    public static final double statorCurrentLimit = 100;
 
     
 }

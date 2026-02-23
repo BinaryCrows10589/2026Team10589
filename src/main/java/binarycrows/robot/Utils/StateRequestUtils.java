@@ -50,4 +50,17 @@ public class StateRequestUtils {
     public static Runnable createStateRequestRunnable(@SuppressWarnings("rawtypes") Enum type) {
         return createStateRequestRunnable(type, StateRequestPriority.NORMAL);
     }
+
+    public static Runnable createDualStateRequestRunnable(@SuppressWarnings("rawtypes") Enum typeA, @SuppressWarnings("rawtypes") Enum typeB, int priorityA, int priorityB) {
+        return () -> {
+            MainStateManager.getInstance().dispatchStateRequest(
+                new StateRequest<>(typeA, priorityA));
+            MainStateManager.getInstance().dispatchStateRequest(
+                new StateRequest<>(typeB, priorityB));
+        };
+    }
+
+    public static Runnable createDualStateRequestRunnable(@SuppressWarnings("rawtypes") Enum typeA, @SuppressWarnings("rawtypes") Enum typeB) {
+        return createDualStateRequestRunnable(typeA, typeB, StateRequestPriority.NORMAL, StateRequestPriority.NORMAL);
+    }
 }

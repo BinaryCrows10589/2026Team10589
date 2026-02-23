@@ -32,30 +32,32 @@ public class ButtonBoard extends GenericGamepad {
         public static final int forceShoot = 15;
         public static final int increaseShooterFF = 16;
         public static final int decreaseShooterFF = 17;
+        public static final int flywheelReverse = 18; //TODO: Add to CAD
 
         // Climber
-        public static final int climbLeft = 18;
-        public static final int climbRight = 19;
-        public static final int climbCenterLeft = 20;
-        public static final int climbCenterRight = 21; //TODO
-        public static final int climberUp = 21;
-        public static final int climberDown = 22;
-        public static final int manualClimberUp = 23;
-        public static final int manualClimberDown = 24;
+        public static final int climbLeft = 19;
+        public static final int climbRight = 20;
+        public static final int climbCenterLeft = 21;
+        public static final int climbCenterRight = 22; //TODO: Add to CAD
+        public static final int climberUp = 23;
+        public static final int climberDown = 24;
+        public static final int manualClimberUp = 25;
+        public static final int manualClimberDown = 26;
         
         // Extra Buttons
-        public static final int extra1 = 25;
-        public static final int extra2 = 26;
-        public static final int extra3 = 27;
-        public static final int extra4 = 28;
-        public static final int extra5 = 29;
+        public static final int extra1 = 27;
+        public static final int extra2 = 28;
+        public static final int extra3 = 29;
+        public static final int extra4 = 30;
+        public static final int extra5 = 31;
+        public static final int extra6 = 32; //TODO: Add to CAD
 
         // Switches
-        public static final int manualIntakeSwitch = 30;
-        public static final int manualTransitSwitch = 31;
-        public static final int manualTurretSwitch = 32;
-        public static final int manualHoodSwitch = 33;
-        public static final int manualClimberSwitch = 34;
+        public static final int manualIntakeSwitch = 33;
+        public static final int manualTransitSwitch = 34;
+        public static final int manualTurretSwitch = 35;
+        public static final int manualHoodSwitch = 36;
+        public static final int manualClimberSwitch = 37;
     }
 
 

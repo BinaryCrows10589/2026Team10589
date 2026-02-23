@@ -10,7 +10,6 @@ import binarycrows.robot.SeasonCode.Constants.MetaConstants;
 import binarycrows.robot.SeasonCode.Constants.TurretConstants;
 import binarycrows.robot.SeasonCode.SubStateManagers.Turret.TurretIO.TurretOutputs;
 import binarycrows.robot.SeasonCode.Utils.Shooting;
-import binarycrows.robot.Utils.Tuning.RuntimeTunableValue;
 import edu.wpi.first.math.geometry.Rotation2d;
 
 public class TurretSubStateManager extends SubStateManager<TurretStateRequest> {
@@ -18,8 +17,6 @@ public class TurretSubStateManager extends SubStateManager<TurretStateRequest> {
     private Turret turret;
     private TurretOutputs outputs;
 
-    private Rotation2d shootOnTheMoveTargetPosition;
-    private Rotation2d manualTargetPosition;
 
     private int manualDirection = 0;
 
@@ -38,10 +35,7 @@ public class TurretSubStateManager extends SubStateManager<TurretStateRequest> {
 
     @Override
     public void recieveStateRequest(StateRequest<TurretStateRequest> request) {
-        if (request.getStateRequestType() == TurretStateRequest.MANUAL_OVERRIDE) {
-            manualTargetPosition = outputs.turretRotation;
-        }
-        request.updateStatus(StateRequestStatus.REJECTED);
+        super.recieveStateRequest(request);
     }
 
     @Override
@@ -53,16 +47,10 @@ public class TurretSubStateManager extends SubStateManager<TurretStateRequest> {
 
         switch (activeStateRequest.getStateRequestType()) {
             case MANUAL_OVERRIDE:
-                /* TODO ISSUE: Manual override should be with voltage control. 
-                 * This fails if the encoder is messed up which is the most likely
-                 * situation when you would want to use it.
-                */
-            manualTargetPosition = manualTargetPosition.plus(TurretConstants.manualPositionIncrement.times(manualDirection));
-                turret.setTargetAngle(manualTargetPosition, true);
+                turret.setTurretVoltage(TurretConstants.manualVoltage * (manualDirection));
                 break;
             case SHOOT_ON_THE_MOVE:
-                //TODO: make isShooting be an actual thing somewhere else
-                turret.setTargetAngle(shootOnTheMoveTargetPosition, Shooting.getShooting());
+                turret.setTargetAngle(Rotation2d.fromRadians(Shooting.turretAngleRad), Shooting.getShooting());
                 break;
         }
          
@@ -73,12 +61,13 @@ public class TurretSubStateManager extends SubStateManager<TurretStateRequest> {
         return (TurretSubStateManager) MainStateManager.getInstance().resolveSubStateManager(TurretStateRequest.class);
     } 
 
-    public void putShootOnTheMoveTargetPosition(Rotation2d targetPosition) {
-        shootOnTheMoveTargetPosition = targetPosition;
-    }
     
     public String toString() {
         return "TurretSubStateManager";
+    }
+
+    public double getDeltaRad() {
+        return outputs.distanceFromSetpoint.getRadians();
     }
 
 

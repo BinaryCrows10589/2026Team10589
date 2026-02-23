@@ -33,7 +33,6 @@ public class IntakeRollersTalonFXS implements IntakeRollersIO {
         this.motor.getPosition().setUpdateFrequency(20);
         this.motor.getTorqueCurrent().setUpdateFrequency(50);
 
-        // TODO: Same note as with turret and transit
         motorConfig.Voltage.PeakForwardVoltage = IntakeConstants.Rollers.maxMotorVoltage;
         motorConfig.Voltage.PeakReverseVoltage = -IntakeConstants.Rollers.maxMotorVoltage;
 

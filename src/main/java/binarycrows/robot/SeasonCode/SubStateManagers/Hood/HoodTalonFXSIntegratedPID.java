@@ -46,10 +46,11 @@ public class HoodTalonFXSIntegratedPID implements HoodIO {
         this.hoodMotor.getPosition().setUpdateFrequency(20);
         this.hoodMotor.getTorqueCurrent().setUpdateFrequency(50);
         
-        // TODO: Same note as for everything else. Start at .5v and work your way up. Also add torque limits. 
-        // Probably add torque to IO for logging as well(that applies for all just thought of it now)
         motorConfig.Voltage.PeakForwardVoltage = HoodConstants.maximumVoltage;
         motorConfig.Voltage.PeakReverseVoltage = -HoodConstants.maximumVoltage;
+
+        motorConfig.CurrentLimits.StatorCurrentLimit = HoodConstants.statorCurrentLimit;
+        motorConfig.CurrentLimits.StatorCurrentLimitEnable = true;
 
         this.hoodMotor.getConfigurator().apply(motorConfig);
 

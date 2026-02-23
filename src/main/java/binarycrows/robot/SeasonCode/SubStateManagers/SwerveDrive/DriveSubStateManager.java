@@ -417,7 +417,6 @@ public class DriveSubStateManager extends SubStateManager<DriveStateRequest> {
     }
 
 
-    // TODO:(ELIJAH) This should probaby be written better and less jankly then it is now(i know i wrote this)
     private void drivePeriodic() {
         if(StateTable.getValueAsBoolean("IsDriverControlled")) {
             boolean slowMode = StateTable.getValueAsBoolean("SlowMode");

@@ -4,9 +4,7 @@
 
 package binarycrows.robot;
 
-import java.net.ContentHandler;
 import java.util.ArrayList;
-import java.util.function.Supplier;
 
 import org.littletonrobotics.junction.LogFileUtil;
 import org.littletonrobotics.junction.LoggedRobot;
@@ -16,15 +14,9 @@ import org.littletonrobotics.junction.networktables.NT4Publisher;
 import org.littletonrobotics.junction.wpilog.WPILOGReader;
 import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 
-import com.ctre.phoenix6.swerve.SwerveModuleConstants;
-
 import binarycrows.robot.CrowMotion.UserSide.CMConfig;
-import binarycrows.robot.CrowMotion.UserSide.CMStateRequest;
-import binarycrows.robot.Enums.StateRequestPriority;
-import binarycrows.robot.SeasonCode.Autons.Test.MainAuton;
+import binarycrows.robot.SeasonCode.Autons.StartOfRamp_ShootPreload_SweepCenterClose_Return;
 import binarycrows.robot.SeasonCode.Autons.Test.CMTest2;
-import binarycrows.robot.SeasonCode.Constants.ControlConstants;
-import binarycrows.robot.SeasonCode.Constants.CrowMotionConstants;
 import binarycrows.robot.SeasonCode.Constants.FieldConstants;
 import binarycrows.robot.SeasonCode.Constants.MetaConstants;
 import binarycrows.robot.SeasonCode.Constants.PoseEstimatorConstants;
@@ -35,22 +27,17 @@ import binarycrows.robot.SeasonCode.SubStateManagers.Flywheel.FlywheelSubStateMa
 import binarycrows.robot.SeasonCode.SubStateManagers.Hood.HoodSubStateManager;
 import binarycrows.robot.SeasonCode.SubStateManagers.Intake.Pivot.PivotSubStateManager;
 import binarycrows.robot.SeasonCode.SubStateManagers.Intake.Rollers.IntakeRollersSubStateManager;
-import binarycrows.robot.SeasonCode.SubStateManagers.SwerveDrive.DriveStateRequest;
 import binarycrows.robot.SeasonCode.SubStateManagers.SwerveDrive.DriveSubStateManager;
 import binarycrows.robot.SeasonCode.SubStateManagers.Transit.TransitSubStateManager;
 import binarycrows.robot.SeasonCode.SubStateManagers.Turret.TurretSubStateManager;
-import binarycrows.robot.StateRequestGroup.SequentialGroup;
-import binarycrows.robot.StateRequestGroup.StateRequestGroup;
+import binarycrows.robot.SeasonCode.Utils.Shooting;
 import binarycrows.robot.Utils.Auton.Auton;
 import edu.wpi.first.apriltag.AprilTagFieldLayout.OriginPosition;
-import edu.wpi.first.math.Pair;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
-import edu.wpi.first.wpilibj.smartdashboard.Field2d;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.RobotBase;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
 
 /**
  * The methods in this class are called automatically corresponding to each mode, as described in
@@ -162,10 +149,12 @@ public class Robot extends LoggedRobot {
         10
         );
 
+        Shooting.init();
+
 
 
     // Initialize autonomous chooser
-    chooser.addDefaultOption("MainAuton", new Auton(MainAuton.startingPoint, MainAuton::getAutonomous));
+    chooser.addDefaultOption("MainAuton", new Auton(StartOfRamp_ShootPreload_SweepCenterClose_Return.startingPoint, StartOfRamp_ShootPreload_SweepCenterClose_Return::getAutonomous));
     chooser.addOption("CMTest2", new Auton(CMTest2.startingPoint, CMTest2::getAutonomous));
 
     onAutonSelect(chooser.get()); // Initialize first autonomous that is selected
@@ -202,11 +191,13 @@ public class Robot extends LoggedRobot {
 
     long currentTime = System.currentTimeMillis();
     if (frameStartTime != -1) {
-            double frameTime = (currentTime - frameStartTime) / 1000.0;
-            
-            averageFrameTime = (averageFrameTime * .9) + (frameTime * .1);
-        }
-        frameStartTime = currentTime;
+        double frameTime = (currentTime - frameStartTime) / 1000.0;
+        
+        averageFrameTime = (averageFrameTime * .9) + (frameTime * .1);
+    }
+    frameStartTime = currentTime;
+
+    Shooting.periodic();
 
   }
 

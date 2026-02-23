@@ -1,19 +1,20 @@
 package binarycrows.robot.SeasonCode.Utils;
 
-import binarycrows.robot.SeasonCode.SubStateManagers.Flywheel.FlywheelSubStateManager;
+import java.util.function.Supplier;
+
+import binarycrows.robot.SeasonCode.SubStateManagers.CANdle.CANdleStateRequest;
+import binarycrows.robot.SeasonCode.SubStateManagers.CANdle.CANdleSubStateManager;
 import binarycrows.robot.SeasonCode.SubStateManagers.Hood.HoodSubStateManager;
 import binarycrows.robot.SeasonCode.SubStateManagers.SwerveDrive.DriveSubStateManager;
 import binarycrows.robot.SeasonCode.SubStateManagers.Turret.TurretSubStateManager;
 import binarycrows.robot.Utils.ConversionUtils;
-import binarycrows.robot.Utils.LerpTable;
 import binarycrows.robot.Utils.UnkeyedLerpTable;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.units.measure.Time;
 
-public class Shooting { //TODO: WIP
+public class Shooting {
     public static boolean isShooting = false;
     public static boolean isForceShooting = false;
     public static boolean canShoot = false;
@@ -22,11 +23,37 @@ public class Shooting { //TODO: WIP
     public static double hoodAngleRad;
     public static double flywheelVoltage;
 
-    public static boolean getCanShoot() { //TODO: Implement this and make it more better
-        return chassisSpeedsInBounds && 
-        TurretSubStateManager.getInstance().getDelta() < maxTurretDelta &&
-        HoodSubStateManager.getInstance().getDelta() < maxHoodDelta &&
-        FlywheelSubStateManager.getInstance().getDelta() < maxFlywheelDelta;
+    private static Supplier<Double> turretDeltaSupplierRad;
+    private static Supplier<Double> hoodDeltaSupplierRad;
+ 
+
+    public static void init() {
+        turretDeltaSupplierRad = TurretSubStateManager.getInstance()::getDeltaRad;
+        hoodDeltaSupplierRad = HoodSubStateManager.getInstance()::getDeltaRad;
+    }
+
+    public static boolean getCanShoot() {
+        if (!robotOnCorrectSide) {
+            CANdleSubStateManager.setLEDs(CANdleStateRequest.SHOOT_BAD_WRONG_SIDE_OF_FIELD);
+        } else if (!velocityInLargeBounds) {
+            CANdleSubStateManager.setLEDs(CANdleStateRequest.SHOOT_BAD_VELOCITY_WAY_TOO_HIGH);
+        } else if (!velocityInBounds) {
+            CANdleSubStateManager.setLEDs(CANdleStateRequest.SHOOT_BAD_VELOCITY_TOO_HIGH);
+        } else if (!accelerationInBounds) {
+            CANdleSubStateManager.setLEDs(CANdleStateRequest.SHOOT_BAD_ACCELERATION_TOO_HIGH);
+        } else if (!distanceInLargeBounds) {
+            CANdleSubStateManager.setLEDs(CANdleStateRequest.SHOOT_BAD_DISTANCE_WAY_TOO_HIGH);
+        } else if (!distanceInBounds) {
+            CANdleSubStateManager.setLEDs(CANdleStateRequest.SHOOT_BAD_DISTANCE_TOO_HIGH);
+        } else if (Math.abs(turretDeltaSupplierRad.get()) > maxTurretDeltaRad) {
+            CANdleSubStateManager.setLEDs(CANdleStateRequest.SHOOT_BAD_TURRET_DELTA_TOO_HIGH);
+        } else if (Math.abs(hoodDeltaSupplierRad.get()) > maxHoodDeltaRad) {
+            CANdleSubStateManager.setLEDs(CANdleStateRequest.SHOOT_BAD_HOOD_DELTA_TOO_HIGH);
+        } else {
+            CANdleSubStateManager.setLEDs(CANdleStateRequest.SHOOT_GOOD);
+            return true;
+        }
+        return false;
     }
 
     public static void periodic() {
@@ -55,12 +82,15 @@ public class Shooting { //TODO: WIP
     public static final int numberOfAlgorithmIterations = 20; //TODO: This can certainly be much lower...
     public static final double dragCoefficient = 0.2; //TODO: tune... ...a lot
 
-    public static final double maxTurretDelta = 10;
-    public static final double maxHoodDelta = 10;
+    public static final double maxTurretDeltaRad = 10;
+    public static final double maxHoodDeltaRad = 10;
     public static final double maxFlywheelDelta = 10;
     public static final double maxVelocity = 4.4;
     public static final double maxAcceleration = 4.4;
-    public static final double maxJerk = 4.4;
+    public static final double maxVelocityLarge = 4.4;
+    public static final double maxTurretX = ConversionUtils.inchesToMeters(182.11);
+    public static final double maxDistanceFromGoal = 5;
+    public static final double maxDistanceFromGoalLarge = 6;
 
     // Calculation runtime variables
     private static Translation2d[][] derivativesOfVelocity =  new Translation2d[3][2];
@@ -72,7 +102,13 @@ public class Shooting { //TODO: WIP
     private static double nextShotTime = -1;
     private static boolean hasShotInCurrentPhase;
 
-    private static boolean chassisSpeedsInBounds = true;
+    private static boolean velocityInBounds = true;
+    private static boolean velocityInLargeBounds = true;
+    private static boolean accelerationInBounds = true;
+    private static boolean robotOnCorrectSide = true;
+
+    private static boolean distanceInBounds = true;
+    private static boolean distanceInLargeBounds = true;
 
     // Helpers
     public static Translation2d getLinearVelocity() {
@@ -100,6 +136,7 @@ public class Shooting { //TODO: WIP
     public static double[] calculate()
     {
         Translation2d velocity = getLinearVelocity(); 
+        double velocityNorm = velocity.getNorm();
 
         int numFrames = derivativesOfVelocity[0].length;
         int numDerivatives = derivativesOfVelocity.length-1;
@@ -122,7 +159,9 @@ public class Shooting { //TODO: WIP
             derivativesOfVelocity[derivative+1][numFrames-1] = valuesOfDerivatiesOfVelocity[derivative];
         }
 
-        chassisSpeedsInBounds = velocity.getNorm() < maxVelocity && valuesOfDerivatiesOfVelocity[0].getNorm() < maxAcceleration && valuesOfDerivatiesOfVelocity[1].getNorm() < maxJerk;
+        velocityInBounds = velocityNorm < maxVelocity;
+        accelerationInBounds = valuesOfDerivatiesOfVelocity[0].getNorm() < maxAcceleration;
+        velocityInLargeBounds = velocityNorm < maxVelocityLarge;
 
         Translation2d extraVelocity = Translation2d.kZero;
 
@@ -146,6 +185,7 @@ public class Shooting { //TODO: WIP
             hasShotInCurrentPhase = true;
         }
         Pose2d turretPose = getTurretPose();
+        robotOnCorrectSide = turretPose.getX() > maxTurretX;
 
         Translation2d lookaheadDelta = velocity.times(nextShotTime-currentTime);
         turretPose = new Pose2d(turretPose.getTranslation().plus(lookaheadDelta),turretPose.getRotation());
@@ -153,6 +193,10 @@ public class Shooting { //TODO: WIP
         Translation2d targetDifference = targetPosition.minus(turretPose.getTranslation());
         
         double offsetDistance = targetDifference.getNorm();
+
+        distanceInBounds = (offsetDistance < maxDistanceFromGoal);
+        distanceInLargeBounds = (offsetDistance < maxDistanceFromGoalLarge);
+
         Translation2d distanceVector = new Translation2d();
         Rotation2d turretAngle = Rotation2d.kZero;
         double timeOfFlight = getTimeOfFlight(offsetDistance);

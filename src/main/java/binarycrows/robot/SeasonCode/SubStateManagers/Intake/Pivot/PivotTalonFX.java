@@ -56,10 +56,11 @@ public class PivotTalonFX implements PivotIO {
         this.leftMotor.getPosition().setUpdateFrequency(20);
         this.leftMotor.getTorqueCurrent().setUpdateFrequency(50);
 
-        // TODO: Same note as for turret and everything except even more importent. 
-        // Start at .5v and work your up by 1v. ALSOW ADD TORQUE LIMTIS espesialyl for in the pivot
         masterMotorConfig.Voltage.PeakForwardVoltage = IntakeConstants.Pivot.maxMotorVoltageUp;
         masterMotorConfig.Voltage.PeakReverseVoltage = IntakeConstants.Pivot.maxMotorVoltageDown;
+
+        masterMotorConfig.CurrentLimits.StatorCurrentLimit = IntakeConstants.Pivot.statorCurrentLimit;
+        masterMotorConfig.CurrentLimits.StatorCurrentLimitEnable = true;
 
         this.leftMotor.getConfigurator().apply(masterMotorConfig);
         

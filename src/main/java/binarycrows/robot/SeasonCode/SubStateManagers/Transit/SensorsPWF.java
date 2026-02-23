@@ -4,6 +4,8 @@ import com.playingwithfusion.TimeOfFlight;
 
 import binarycrows.robot.SeasonCode.Constants.CANIDs;
 import binarycrows.robot.SeasonCode.Constants.TransitConstants;
+import binarycrows.robot.SeasonCode.SubStateManagers.CANdle.CANdleStateRequest;
+import binarycrows.robot.SeasonCode.SubStateManagers.CANdle.CANdleSubStateManager;
 
 public class SensorsPWF implements SensorsIO {
 
@@ -12,12 +14,14 @@ public class SensorsPWF implements SensorsIO {
     private TimeOfFlight binFullSensor;
     private TimeOfFlight outgoingFuelSensor;
 
-    private int binFullNumFramesTripped;
-    private int outgoingFuelNumFramesTripped;
+    private int binFullNumFramesDifferent;
+    private int outgoingFuelNumFramesDifferent;
 
     public SensorsPWF(SensorsOutputs outputs) {
         // TODO: IF you need help setting the can ids for the TOF ask. Set them on the motor test board first as it is often glitchy. 
         // You should do that next meeting while building happens
+        // Clanker says: connect to http://<roboRIO-IP>:5812
+        // https://www.playingwithfusion.com/include/getfile.php?fileid=7091
         this.outputs = outputs;
         binFullSensor = new TimeOfFlight(CANIDs.RIO.binFullTOFSensor);
         outgoingFuelSensor = new TimeOfFlight(CANIDs.RIO.outgoingFuelTOFSensor);
@@ -33,35 +37,34 @@ public class SensorsPWF implements SensorsIO {
 
         outputs.binFullValid = binFullSensor.isRangeValid();
         outputs.outgoingFuelValid = outgoingFuelSensor.isRangeValid();
-        /* TODO: ISSUE: Currently you bounce back to not sensing anything the frame after the debouce has finished reading true
-            This is incorrect behavior. You want to stay on the last swich. For example if you have been reading positive for 10 frames
-            the value should be positive until you have read negitive for 10 frames. Same for the inverse. 
-        */
         // Debounce
-        if (outputs.binFullReading >= TransitConstants.Sensors.binFullTrippingDistance && !outputs.binFullTripped) {
-            binFullNumFramesTripped++;
-            if (binFullNumFramesTripped > TransitConstants.Sensors.debounceFrames) {
-                outputs.binFullTripped = true;
-                binFullNumFramesTripped = 0;
-            }
-        } else {
-            binFullNumFramesTripped = 0;
-            if (outputs.binFullReading < TransitConstants.Sensors.binFullTrippingDistance)
-                outputs.binFullTripped = false;
+        boolean binFullTrippedThisFrame = outputs.binFullReading >= TransitConstants.Sensors.binFullTrippingDistance;
+
+        if (outputs.binFullTripped != binFullTrippedThisFrame) binFullNumFramesDifferent++;
+        else binFullNumFramesDifferent = 0;
+
+        if (binFullNumFramesDifferent > TransitConstants.Sensors.debounceFrames) {
+            binFullNumFramesDifferent = 0;
+            outputs.binFullTripped = binFullTrippedThisFrame;
         }
 
-        if (outputs.outgoingFuelReading >= TransitConstants.Sensors.outgoingFuelTrippingDistance && !outputs.outgoingFuelTripped) {
-            outgoingFuelNumFramesTripped++;
-            if (outgoingFuelNumFramesTripped > TransitConstants.Sensors.debounceFrames) {
-                outputs.outgoingFuelTripped = true;
-                outgoingFuelNumFramesTripped = 0;
-            }
-        } else {
-            outgoingFuelNumFramesTripped = 0;
-            if (outputs.outgoingFuelReading < TransitConstants.Sensors.outgoingFuelTrippingDistance)
-                outputs.outgoingFuelTripped = false;
+        boolean outgoingFuelTrippedThisFrame = outputs.outgoingFuelReading >= TransitConstants.Sensors.outgoingFuelTrippingDistance;
+
+        if (outputs.outgoingFuelTripped != outgoingFuelTrippedThisFrame) outgoingFuelNumFramesDifferent++;
+        else outgoingFuelNumFramesDifferent = 0;
+
+        if (outgoingFuelNumFramesDifferent > TransitConstants.Sensors.debounceFrames) {
+            outgoingFuelNumFramesDifferent = 0;
+            outputs.outgoingFuelTripped = outgoingFuelTrippedThisFrame;
         }
 
+        if (outputs.binFullTripped) {
+            CANdleSubStateManager.setLEDs(CANdleStateRequest.HOPPER_FULL);
+        } else if (outputs.outgoingFuelTripped) {
+            CANdleSubStateManager.setLEDs(CANdleStateRequest.HOPPER_PARTIAL);
+        } else {
+            CANdleSubStateManager.setLEDs(CANdleStateRequest.HOPPER_EMPTY);
+        }
 
     }
 }

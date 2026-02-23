@@ -58,8 +58,6 @@ public class PivotSubStateManager extends SubStateManager<PivotStateRequest>  {
 
         System.out.println(pivotTargetPosition.getValue());
 
-        // TODO: Make sure to aggresivly limit these voltages. 7 volts is WAY to mutch if the 2024 intake is close
-        // Start with sub 1v and go from there. Poly will shear under the force of a kraken at 7v slamming down or up even with coast time
         switch (this.activeStateRequest.getStateRequestType()) {
             case DOWN:
                 delta = IntakeConstants.Pivot.pivotDownPosition.minus(outputs.encoderRotation).getDegrees();
@@ -81,8 +79,7 @@ public class PivotSubStateManager extends SubStateManager<PivotStateRequest>  {
                 else voltage = 0.1;
                 break;
             case MANUAL_OVERRIDE:
-                // TODO: If you want you can probably just use a raw voltage for up and down. 
-                voltage = manualDirection * IntakeConstants.Pivot.manualVoltage + outputs.encoderRotation.getSin() * IntakeConstants.Pivot.manualVoltageFF; //TODO: make sure Sin here is correct
+                voltage = manualDirection * IntakeConstants.Pivot.manualVoltage + outputs.encoderRotation.getCos() * IntakeConstants.Pivot.manualVoltageFF;
                 break;
         }
 

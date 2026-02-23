@@ -11,6 +11,8 @@ public final class FlywheelConstants {
 
     public static final double maxMotorVoltage = .5;
 
+    public static final double reverseVoltage = 0.25;
+
     public static final double idleRecoveryVoltage = 4.0;
     public static final double idleMinVelocityRPS = 25;
 

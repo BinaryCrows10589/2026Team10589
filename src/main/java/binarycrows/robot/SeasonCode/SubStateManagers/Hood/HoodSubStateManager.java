@@ -8,10 +8,7 @@ import binarycrows.robot.Enums.StateRequestPriority;
 import binarycrows.robot.SeasonCode.Constants.HoodConstants;
 import binarycrows.robot.SeasonCode.Constants.MetaConstants;
 import binarycrows.robot.SeasonCode.SubStateManagers.Hood.HoodIO.HoodOutputs;
-import binarycrows.robot.SeasonCode.SubStateManagers.Turret.TurretStateRequest;
-import binarycrows.robot.SeasonCode.SubStateManagers.Turret.TurretSubStateManager;
-import binarycrows.robot.Utils.Tuning.RuntimeTunableValue;
-import edu.wpi.first.hal.FRCNetComm.tResourceType;
+import binarycrows.robot.SeasonCode.Utils.Shooting;
 import edu.wpi.first.math.geometry.Rotation2d;
 
 public class HoodSubStateManager extends SubStateManager<HoodStateRequest> {
@@ -21,7 +18,6 @@ public class HoodSubStateManager extends SubStateManager<HoodStateRequest> {
 
 
     private Rotation2d manualOverrideTargetRotation = HoodConstants.hoodStartingPosition;
-    private Rotation2d shootOnTheMoveTargetRotation = HoodConstants.hoodStartingPosition;
 
     private Rotation2d targetPosition = HoodConstants.hoodStartingPosition;
 
@@ -56,7 +52,7 @@ public class HoodSubStateManager extends SubStateManager<HoodStateRequest> {
                 targetPosition = manualOverrideTargetRotation;
                 break;
             case SHOOT_ON_THE_MOVE:
-                targetPosition = shootOnTheMoveTargetRotation;
+                targetPosition = Rotation2d.fromRadians(Shooting.hoodAngleRad);
                 break;
             case RETRACTED:
                 targetPosition = Rotation2d.kZero;
@@ -86,12 +82,12 @@ public class HoodSubStateManager extends SubStateManager<HoodStateRequest> {
         hood.setTargetLikeTurret(targetPosition);
     }
 
-    public void putShootOnTheMoveTargetPosition(Rotation2d target) {
-        shootOnTheMoveTargetRotation = target;
-    }
-
     public static HoodSubStateManager getInstance() {
         return (HoodSubStateManager) MainStateManager.getInstance().resolveSubStateManager(HoodStateRequest.class);
+    }
+
+    public double getDeltaRad() {
+        return outputs.distanceFromSetpoint.getRadians();
     }
 
 

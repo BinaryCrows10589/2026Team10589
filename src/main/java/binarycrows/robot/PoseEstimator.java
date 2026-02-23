@@ -191,7 +191,7 @@ public class PoseEstimator {
             }
             
         }
-        if(MetaConstants.updateQuestNav) { // && questNav.isTracking() TODO: THIS WILL CHANGE ON NEXT QUESTNAV UPDATE! isTracking will become per-frame instead of a method on questNav.
+        if(MetaConstants.updateQuestNav) {
             // Get the latest pose data frames from the Quest
             try {
             PoseFrame[] questFrames = questNav.getAllUnreadPoseFrames();
@@ -201,6 +201,7 @@ public class PoseEstimator {
 
             // Loop over the pose data frames and send them to the pose estimator
             for (PoseFrame questFrame : questFrames) {
+                if (!questFrame.isTracking()) continue; // Skip frame if untracked
                 StateTable.log("QuestNav/HasFrames", questFrames.length > 0);
 
                     Pose3d questPose = questFrame.questPose3d();
@@ -216,7 +217,7 @@ public class PoseEstimator {
                     StateTable.log("QuestNav/RobotPose", robotPose);
                     StateTable.log("QuestNav/LastUpdateTimestamp", timestamp);
                     
-            if (Double.isNaN(swerveDrivePoseEstimator.getEstimatedPosition().getX())) { // TODO: This is a band-aid fix, figure out why NaN is occurring if possible
+            if (Double.isNaN(swerveDrivePoseEstimator.getEstimatedPosition().getX())) {
                 swerveDrivePoseEstimator.resetPosition(DriveSubStateManager.getInstance().getGyroAngleRotation2d(),
                 DriveSubStateManager.getInstance().getModulePositions(), robotPose.toPose2d());
             }

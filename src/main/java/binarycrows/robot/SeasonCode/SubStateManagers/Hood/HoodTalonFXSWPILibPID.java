@@ -16,6 +16,7 @@ import binarycrows.robot.Utils.Tuning.RuntimeTunablePIDValues;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 
 public class HoodTalonFXSWPILibPID implements HoodIO {
     public HoodOutputs outputs;
@@ -29,7 +30,7 @@ public class HoodTalonFXSWPILibPID implements HoodIO {
 
     private VoltageOut hoodVoltageRequest = new VoltageOut(0);
 
-    private PIDController hoodController;
+    private ProfiledPIDController hoodController;
 
     private RuntimeTunablePIDValues hoodPIDConstantTuner;
     
@@ -109,14 +110,15 @@ public class HoodTalonFXSWPILibPID implements HoodIO {
     }
 
     private double getGravityFF() {
-        // TODO: Is it sin for cos. SHould be cos right?
-        return this.outputs.encoderRotation.getSin() * HoodConstants.hoodGravityFF;
+        return this.outputs.encoderRotation.getCos() * HoodConstants.hoodGravityFF;
     }
 
     private void configurePID() {
-        // TODO: Should be a profiled pid controller
-        //new ProfiledPIDController(...) Add acceleration and deceleration constraints. (TRAPEZOIDAL)
-        hoodController = new PIDController(HoodConstants.hoodPIDValueP, HoodConstants.hoodPIDValueI, HoodConstants.hoodPIDValueD);
+        hoodController = new ProfiledPIDController(
+            HoodConstants.hoodPIDValueP, 
+            HoodConstants.hoodPIDValueI, 
+            HoodConstants.hoodPIDValueD, 
+            new Constraints(HoodConstants.profiledPIDMaxVelocity, HoodConstants.profiledPIDMaxAcceleration));
 
         hoodPIDConstantTuner = new RuntimeTunablePIDValues("Hood/PIDValues",
         HoodConstants.hoodPIDValueP, HoodConstants.hoodPIDValueI, HoodConstants.hoodPIDValueD, HoodConstants.hoodPIDValueFF);
@@ -133,7 +135,7 @@ public class HoodTalonFXSWPILibPID implements HoodIO {
     @Override
     public void setTargetPosition(Rotation2d position) {
         targetPosition = position;
-        hoodController.setSetpoint(targetPosition.getRadians());
+        hoodController.setGoal(targetPosition.getRadians());
         usingPID = true;
     }
 

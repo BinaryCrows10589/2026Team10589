@@ -15,6 +15,8 @@ public final class IntakeConstants {
         public static final double maxMotorVoltage = .5;
 
         public static final MotorAlignmentValue isSlaveReversed = MotorAlignmentValue.Opposed;
+
+        public static final double intakingMotorVoltage = 0.25;
     }
 
     public final class Pivot {
@@ -43,5 +45,7 @@ public final class IntakeConstants {
 
         public static final double manualVoltage = 4;
         public static final double manualVoltageFF = 1;
+
+        public static final double statorCurrentLimit = 60;
 }
 }

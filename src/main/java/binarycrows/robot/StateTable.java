@@ -42,7 +42,7 @@ public class StateTable {
                 if (firstIndex instanceof Double) {
                     value = ((ArrayList<Double>)value).stream().mapToDouble(Double::doubleValue).toArray();
                 }
-            } else return; // TODO: Don't ignore empty arrays???
+            } else return;
         }
 
         stateTableObjects.put(path, value);
@@ -118,7 +118,7 @@ public class StateTable {
         return stateTableObjects.get(path);
     }
 
-    public static void updateAdvantageKit() { // TODO: This is written to make it possible to function on a separate thread to the updating, but it can be inefficient for the poor Rio due to the hashmap shenanigans
+    public static void updateAdvantageKit() { // Possible inefficiency point
         Set<Entry<String, Object>> entries = new HashSet<Entry<String, Object>>(stateTableObjects.entrySet());
         entries.removeAll(advantageKitStateTable.entrySet());
         if (entries.isEmpty()) return;

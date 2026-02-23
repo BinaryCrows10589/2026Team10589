@@ -1,8 +1,8 @@
 package binarycrows.robot.SeasonCode.Utils;
 
 public class DesiredMetersPerSecondToVoltageLerpTable {
-    private double groundAjustFeedForword = 0.129641;
-    private double minSpeedForFeedforword = .3; //TODO: Calibrate this?
+    private double groundAjustFeedForward = 0.129641;
+    private double minSpeedForFeedforward = .3;
 
     private double[][] acceleratingTable = {
         new double[] {
@@ -26,10 +26,10 @@ public class DesiredMetersPerSecondToVoltageLerpTable {
           double voltage = 0;
      
           if(isAccelerating) {
-             voltage = lerp(acceleratingTable, Math.abs(desiredMetersPerSecond)) + groundAjustFeedForword;
+             voltage = lerp(acceleratingTable, Math.abs(desiredMetersPerSecond)) + groundAjustFeedForward;
           } else {
               double rawVoltage = lerp(deceleratingTable, Math.abs(desiredMetersPerSecond));
-              double feedForword = Math.abs(desiredMetersPerSecond) > minSpeedForFeedforword ? groundAjustFeedForword : 0;
+              double feedForword = Math.abs(desiredMetersPerSecond) > minSpeedForFeedforward ? groundAjustFeedForward : 0;
               voltage = rawVoltage + feedForword;
           }
           voltage *= Math.signum(desiredMetersPerSecond);
