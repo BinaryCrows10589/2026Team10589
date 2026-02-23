@@ -14,29 +14,30 @@ import edu.wpi.first.math.geometry.Rotation2d;
 
 public class Climbing {
 
-    //TODO: Ask Eli if this is how it should work
-    public static final Pose2d climbingStartingPositionBlue = new Pose2d(3.75, 2.0, Rotation2d.fromDegrees(180));
-    public static final Pose2d climbingStartingPositionRed = new Pose2d(FieldConstants.fieldLengthMeters - 3.75, FieldConstants.fieldWidthMeters - 2.0, Rotation2d.fromDegrees(0));
-
-    public static Pose2d getStartingPosition() {
-        return MetaConstants.isBlueAlliance ? climbingStartingPositionBlue : climbingStartingPositionRed;
-    }
+    //TODO: climb autopositoning is one-point
+    // likely make these not be Auton objects but instead just CMStateRequests in a group...
 
     //TODO: Implement auto positioning and stuff in these
     public static void climbLeft() {
-        Auton auton = new Auton(getStartingPosition(), Climbing::buildLeft);
+        Auton auton = new Auton(Pose2d.kZero, Climbing::buildLeft);
         auton.buildAuton();
         auton.dispatchSelf();
     }
 
     public static void climbRight() {
-        Auton auton = new Auton(getStartingPosition(), Climbing::buildRight);
+        Auton auton = new Auton(Pose2d.kZero, Climbing::buildRight);
         auton.buildAuton();
         auton.dispatchSelf();
     }
 
-    public static void climbCenter() {
-        Auton auton = new Auton(getStartingPosition(), Climbing::buildCenter);
+    public static void climbCenterLeft() {
+        Auton auton = new Auton(Pose2d.kZero, Climbing::buildCenterLeft);
+        auton.buildAuton();
+        auton.dispatchSelf();
+    }
+
+    public static void climbCenterRight() {
+        Auton auton = new Auton(Pose2d.kZero, Climbing::buildCenterRight);
         auton.buildAuton();
         auton.dispatchSelf();
     }
@@ -62,10 +63,18 @@ public class Climbing {
         };
     }
 
-    public static StateRequest[] buildCenter() {
+    public static StateRequest[] buildCenterLeft() {
         return new StateRequest[] {
             new CMStateRequest(
-                new CMTrajectory("climbCenter", null, null, null, null, false, null, 0, 0)
+                new CMTrajectory("climbCenterLeft", null, null, null, null, false, null, 0, 0)
+            )
+        };
+    }
+
+    public static StateRequest[] buildCenterRight() {
+        return new StateRequest[] {
+            new CMStateRequest(
+                new CMTrajectory("climbCenterRight", null, null, null, null, false, null, 0, 0)
             )
         };
     }

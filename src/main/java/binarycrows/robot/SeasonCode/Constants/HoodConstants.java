@@ -18,7 +18,7 @@ public class HoodConstants {
 
     public static final boolean useIntegratedPID = false;
 
-    public static final double maximumVoltage = 4;
+    public static final double maximumVoltage = 0.5;
 
     public static final InvertedValue motorInverted = InvertedValue.Clockwise_Positive;
     public static final NeutralModeValue motorNeutralMode = NeutralModeValue.Brake;

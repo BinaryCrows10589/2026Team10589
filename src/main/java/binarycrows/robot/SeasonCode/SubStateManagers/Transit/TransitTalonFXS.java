@@ -36,7 +36,6 @@ public class TransitTalonFXS implements TransitIO {
         this.leftLongitudinalMotor.getPosition().setUpdateFrequency(20);
         this.leftLongitudinalMotor.getTorqueCurrent().setUpdateFrequency(50);
 
-        // TODO: Same note as with turret voltage. Start at .5v max and increase from there. Dont what to brake something if motor is inverted incorectly. 
         longitudinalMasterMotorConfig.Voltage.PeakForwardVoltage = TransitConstants.maxLongitudinalMotorVoltage;
         longitudinalMasterMotorConfig.Voltage.PeakReverseVoltage = -TransitConstants.maxLongitudinalMotorVoltage;
 

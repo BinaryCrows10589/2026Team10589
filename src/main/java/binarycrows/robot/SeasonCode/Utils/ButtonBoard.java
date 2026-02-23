@@ -8,10 +8,10 @@ public class ButtonBoard extends GenericGamepad {
         // Intake
         public static final int intakeDown = 0;
         public static final int intakeRaised = 1;
-        public static final int intakeUp = 2; //TODO: Maybe not possible with current design?
+        public static final int intakeUp = 2;
         public static final int intakeManualDown = 3;
         public static final int intakeManualUp = 4;
-        public static final int intakeWheelToggle = 5; //TODO: Maybe not needed?
+        public static final int intakeWheelToggle = 5;
         public static final int intakeWheelForceReverse = 6;
         
         // Transit
@@ -34,10 +34,10 @@ public class ButtonBoard extends GenericGamepad {
         public static final int decreaseShooterFF = 17;
 
         // Climber
-        //TODO: Confirm climbing positions
         public static final int climbLeft = 18;
         public static final int climbRight = 19;
-        public static final int climbCenter = 20;
+        public static final int climbCenterLeft = 20;
+        public static final int climbCenterRight = 21; //TODO
         public static final int climberUp = 21;
         public static final int climberDown = 22;
         public static final int manualClimberUp = 23;

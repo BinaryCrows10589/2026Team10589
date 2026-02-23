@@ -49,7 +49,6 @@ public class HoodTalonFXSWPILibPID implements HoodIO {
         this.hoodMotor.getTorqueCurrent().setUpdateFrequency(50);
 
 
-        //TODO: Same note again
         motorConfig.Voltage.PeakForwardVoltage = HoodConstants.maximumVoltage;
         motorConfig.Voltage.PeakReverseVoltage = -HoodConstants.maximumVoltage;
 
@@ -115,8 +114,8 @@ public class HoodTalonFXSWPILibPID implements HoodIO {
     }
 
     private void configurePID() {
-        // Should be a profiled pid controller
-        //new ProfiledPIDController(...) Add acceleration and deceleration constraints. 
+        // TODO: Should be a profiled pid controller
+        //new ProfiledPIDController(...) Add acceleration and deceleration constraints. (TRAPEZOIDAL)
         hoodController = new PIDController(HoodConstants.hoodPIDValueP, HoodConstants.hoodPIDValueI, HoodConstants.hoodPIDValueD);
 
         hoodPIDConstantTuner = new RuntimeTunablePIDValues("Hood/PIDValues",

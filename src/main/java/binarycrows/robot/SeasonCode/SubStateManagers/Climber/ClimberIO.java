@@ -20,6 +20,5 @@ public interface ClimberIO {
     public default void setRotorVoltage(double rotorVoltage) {}
 
     public default void setTargetPosition(Rotation2d position) {}
-    public default void resetMotorToAbsolute() {}
 
 }

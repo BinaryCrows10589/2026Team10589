@@ -14,7 +14,7 @@ public final class TurretConstants {
     public static final double turretPIDValueD = 0;
     public static final double turretPIDValueFF = 0;
 
-    public static final double maximumVoltage = 6;
+    public static final double maximumVoltage = .5;
 
     public static final Rotation2d turretEncoderOffset = Rotation2d.fromRotations(0.0);
 

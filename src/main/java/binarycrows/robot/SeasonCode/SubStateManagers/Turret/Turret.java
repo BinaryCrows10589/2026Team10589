@@ -108,7 +108,6 @@ public class Turret {
             targetPositionNoWrap > TurretConstants.maximumRotationRad || 
             targetPositionNoWrap < TurretConstants.minimumRotationRad) 
             {
-                // TODO: I dont see how this forces it to go the long way around if it has to
                 targetTurretPosition = Rotation2d.fromRadians(targetAngleRad); // Just go to it within the normal range
         } else if ( // If we would exit our ideal range by going to this position directly...
             targetPositionNoWrap > TurretConstants.idealMaximumRotationRad || 

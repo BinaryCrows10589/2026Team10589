@@ -9,7 +9,7 @@ public final class FlywheelConstants {
 
     public static final NeutralModeValue motorNeutralMode = NeutralModeValue.Coast;
 
-    public static final double maxMotorVoltage = 12.0;
+    public static final double maxMotorVoltage = .5;
 
     public static final double idleRecoveryVoltage = 4.0;
     public static final double idleMinVelocityRPS = 25;

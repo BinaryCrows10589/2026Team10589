@@ -63,27 +63,22 @@ public class PivotSubStateManager extends SubStateManager<PivotStateRequest>  {
         switch (this.activeStateRequest.getStateRequestType()) {
             case DOWN:
                 delta = IntakeConstants.Pivot.pivotDownPosition.minus(outputs.encoderRotation).getDegrees();
-                if (delta < -80) voltage = -7;
-                else if (delta < -45) voltage = -3;
-                else if (delta < -25) voltage = -2;
-                else if (delta < -5) voltage = -1;
-                else voltage = -0.25;
+                if (delta < -80) voltage = -1;
+                else voltage = -0.1;
                 break;
             case RAISED:
                 delta = IntakeConstants.Pivot.pivotRaisedPosition.minus(outputs.encoderRotation).getDegrees();
-                if (delta > 25) voltage = 4;
-                else if (delta > 10) voltage = 2;
-                else if (delta < -10) voltage = -2;
-                else if (delta < -25) voltage = -4;
+                if (delta > 25) voltage = .1;
+                else if (delta < 25) voltage = -.1;
                 else runRaisedPID = true;
                 break;
             case UP:
                 delta = IntakeConstants.Pivot.pivotUpPosition.minus(outputs.encoderRotation).getDegrees();
-                if (delta > 80) voltage = 7;
-                else if (delta > 45) voltage = 3;
-                else if (delta > 25) voltage = 2;
-                else if (delta > 5) voltage = 1;
-                else voltage = 0.25;
+                if (delta > 80) voltage = 1;
+                else if (delta > 45) voltage = 0.75;
+                else if (delta > 25) voltage = 0.5;
+                else if (delta > 5) voltage = 0.25;
+                else voltage = 0.1;
                 break;
             case MANUAL_OVERRIDE:
                 // TODO: If you want you can probably just use a raw voltage for up and down. 
@@ -91,9 +86,7 @@ public class PivotSubStateManager extends SubStateManager<PivotStateRequest>  {
                 break;
         }
 
-
-        // TODO: Remove printline and replace it with logged value
-        System.out.println("Delta: " + delta);
+        StateTable.log("Intake/Pivot/PositionDelta", delta);
 
         if (runRaisedPID) pivot.setPIDTarget(IntakeConstants.Pivot.pivotRaisedPosition);
         else pivot.setVoltage(voltage);

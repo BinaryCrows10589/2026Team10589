@@ -10,8 +10,8 @@ public final class ClimberConstants {
 
         public static final NeutralModeValue motorNeutralMode = NeutralModeValue.Brake;
 
-        public static final double maxMotorVoltageUp = 6.0;
-        public static final double maxMotorVoltageDown = -4.0;
+        public static final double maxMotorVoltageUp = 0.5;
+        public static final double maxMotorVoltageDown = -0.25;
 
         public static final double climberPIDValueP = 0;
         public static final double climberPIDValueI = 0;

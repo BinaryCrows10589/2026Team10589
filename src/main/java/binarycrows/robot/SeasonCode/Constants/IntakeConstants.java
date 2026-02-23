@@ -12,7 +12,7 @@ public final class IntakeConstants {
 
         public static final NeutralModeValue motorNeutralMode = NeutralModeValue.Brake;
 
-        public static final double maxMotorVoltage = 4.0;
+        public static final double maxMotorVoltage = .5;
 
         public static final MotorAlignmentValue isSlaveReversed = MotorAlignmentValue.Opposed;
     }
@@ -22,8 +22,8 @@ public final class IntakeConstants {
 
         public static final NeutralModeValue motorNeutralMode = NeutralModeValue.Brake;
 
-        public static final double maxMotorVoltageUp = 6.0;
-        public static final double maxMotorVoltageDown = -4.0;
+        public static final double maxMotorVoltageUp = 0.5;
+        public static final double maxMotorVoltageDown = -0.5;
 
         public static final MotorAlignmentValue isSlaveReversed = MotorAlignmentValue.Opposed;
 

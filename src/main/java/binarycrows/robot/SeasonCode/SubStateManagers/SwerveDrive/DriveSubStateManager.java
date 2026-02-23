@@ -32,6 +32,7 @@ import edu.wpi.first.apriltag.AprilTagFieldLayout.OriginPosition;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
@@ -389,6 +390,10 @@ public class DriveSubStateManager extends SubStateManager<DriveStateRequest> {
     public double[] getRobotVelocityCM() {
         ChassisSpeeds speeds = SwerveDriveConstants.driveKinematics.toChassisSpeeds(swerveModuleStates);
         return new double[] {speeds.vxMetersPerSecond, speeds.vyMetersPerSecond, (speeds.omegaRadiansPerSecond * (180 / Math.PI))};
+    }
+    public Translation2d getLinearVelocitySOTM() {
+        ChassisSpeeds speeds = SwerveDriveConstants.driveKinematics.toChassisSpeeds(swerveModuleStates);
+        return new Translation2d(speeds.vxMetersPerSecond, speeds.vyMetersPerSecond);
     }
 
     public void driveCM(double[] speeds) {
