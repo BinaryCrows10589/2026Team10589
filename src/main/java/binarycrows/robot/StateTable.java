@@ -115,6 +115,7 @@ public class StateTable {
         return (Pose3d) getValue(path);
     }
     public static synchronized Object getValue(String path) {
+        if (!path.endsWith("/")) path += "/";
         return stateTableObjects.get(path);
     }
 

@@ -17,10 +17,9 @@ import binarycrows.robot.SeasonCode.SubStateManagers.Transit.TransitSubStateMana
 import binarycrows.robot.SeasonCode.SubStateManagers.Turret.TurretStateRequest;
 import binarycrows.robot.SeasonCode.SubStateManagers.Turret.TurretSubStateManager;
 import binarycrows.robot.SeasonCode.Utils.ButtonBoard;
-import binarycrows.robot.SeasonCode.Utils.Climbing;
-import binarycrows.robot.SeasonCode.Utils.ManualOverrides;
-import binarycrows.robot.SeasonCode.Utils.Shooting;
 import binarycrows.robot.SeasonCode.Utils.ButtonBoard.ButtonBoardButtons;
+import binarycrows.robot.SeasonCode.Utils.Climbing;
+import binarycrows.robot.SeasonCode.Utils.Shooting;
 import binarycrows.robot.Utils.ConversionUtils;
 import binarycrows.robot.Utils.StateRequestUtils;
 import binarycrows.robot.Utils.Gamepad.GenericGamepad;
@@ -139,6 +138,8 @@ public class Keybinds {
         HoodSubStateManager.getInstance()::manualStop);
         buttonBoard1.onPress(ButtonBoardButtons.hoodForceRetract, 
         StateRequestUtils.createStateRequestRunnable(HoodStateRequest.RETRACTED));
+        buttonBoard1.onPress(ButtonBoardButtons.hoodForceUp, 
+        StateRequestUtils.createStateRequestRunnable(HoodStateRequest.SHOOT_ON_THE_MOVE));
 
         // Shooting
         buttonBoard1.onPress(ButtonBoardButtons.shoot, 

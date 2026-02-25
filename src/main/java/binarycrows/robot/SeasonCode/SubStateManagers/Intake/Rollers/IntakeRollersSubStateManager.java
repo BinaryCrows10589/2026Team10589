@@ -13,12 +13,11 @@ public class IntakeRollersSubStateManager extends SubStateManager<IntakeRollersS
     private IntakeRollersOutputs outputs;
 
     public IntakeRollersSubStateManager() {
-        super();
+        super(new StateRequest<IntakeRollersStateRequest>(IntakeRollersStateRequest.OFF, StateRequestPriority.NORMAL));
 
         outputs = new IntakeRollersOutputs();
         intakeRollersIO = new IntakeRollersTalonFXS(outputs);
 
-        super.defaultState = new StateRequest<IntakeRollersStateRequest>(IntakeRollersStateRequest.OFF, StateRequestPriority.NORMAL);
     }
 
     @Override

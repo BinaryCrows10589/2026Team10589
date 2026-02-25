@@ -48,8 +48,8 @@ public class TurretTalonFX implements TurretIO {
 
         motorConfig.Voltage.PeakForwardVoltage = TurretConstants.maximumVoltage; 
         motorConfig.Voltage.PeakReverseVoltage = -TurretConstants.maximumVoltage;
-        motorConfig.CurrentLimits.StatorCurrentLimit = TurretConstants.statorCurrentLimit;
-        motorConfig.CurrentLimits.StatorCurrentLimitEnable = true;
+        motorConfig.TorqueCurrent.PeakForwardTorqueCurrent = TurretConstants.torqueCurrentLimit;
+        motorConfig.TorqueCurrent.PeakReverseTorqueCurrent = -TurretConstants.torqueCurrentLimit;
         this.turretMotor.getConfigurator().apply(motorConfig);
 
         turretEncoder = new CANcoder(CANIDs.RIO.turretEncoder);

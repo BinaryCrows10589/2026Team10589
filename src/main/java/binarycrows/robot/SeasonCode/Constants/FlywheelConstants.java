@@ -4,6 +4,8 @@ import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.MotorAlignmentValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
+import binarycrows.robot.Utils.LerpTable;
+
 public final class FlywheelConstants {
     public static final InvertedValue masterMotorInverted = InvertedValue.Clockwise_Positive;
 
@@ -23,4 +25,13 @@ public final class FlywheelConstants {
     public static final double baseShooterFF = 0;
 
     public static final double shooterFFIncrement = 0.1;
+
+    public static final LerpTable rpmToVoltage = new LerpTable(
+        new double[] {
+            0
+        }, 
+        new double[] {
+            0
+        }, 
+        false);
 }

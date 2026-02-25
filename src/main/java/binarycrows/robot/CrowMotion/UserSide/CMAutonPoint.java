@@ -1,5 +1,7 @@
 package binarycrows.robot.CrowMotion.UserSide;
 
+import edu.wpi.first.math.geometry.Translation2d;
+
 /**
  * Represents an autonomous point for CrowMotion pathing, with optional mirroring 
  * and alliance-specific positional adjustments (fudging).
@@ -91,6 +93,10 @@ public class CMAutonPoint {
     public double getY() {
         return (this.shouldMirror ? (CMConfig.getFieldWidthMeters() - this.y) : this.y) + 
             (CMConfig.isBlueAlliance() ? blueYFudge : redYFudge);
+    }
+
+    public Translation2d geTranslation2d() {
+        return new Translation2d(getX(), getY());
     }
 
     @Override

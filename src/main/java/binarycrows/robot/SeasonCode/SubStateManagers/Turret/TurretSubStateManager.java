@@ -24,13 +24,12 @@ public class TurretSubStateManager extends SubStateManager<TurretStateRequest> {
 
 
     public TurretSubStateManager() {
-        super();
+        super(new StateRequest<TurretStateRequest>(TurretStateRequest.SHOOT_ON_THE_MOVE, StateRequestPriority.NORMAL));
 
         outputs = new TurretOutputs();
 
         turret = new Turret(MetaConstants.isReal ? new TurretTalonFX(outputs) : new TurretSim(outputs));
 
-        super.defaultState = new StateRequest<TurretStateRequest>(TurretStateRequest.SHOOT_ON_THE_MOVE, StateRequestPriority.NORMAL);
     }
 
     @Override

@@ -12,9 +12,10 @@ public class SubStateManager<TYPE extends Enum<TYPE>> {
     protected StateRequest<TYPE> activeStateRequest;
     protected StateRequest<TYPE> defaultState;
 
-    protected SubStateManager()
+    protected SubStateManager(StateRequest<TYPE> defaultState)
     {
         this.activeStateRequest = defaultState;
+        this.defaultState = defaultState;
     }
 
 
@@ -48,8 +49,9 @@ public class SubStateManager<TYPE extends Enum<TYPE>> {
         recieveStateRequest(defaultState);
     }
 
+    @SuppressWarnings("unchecked")
     public Class<TYPE> getStateRequestType() {
-        return null;
+        return (Class<TYPE>) this.defaultState.getStateRequestType().getClass();
     }
 
     @Override

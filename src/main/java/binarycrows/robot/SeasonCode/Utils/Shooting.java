@@ -1,9 +1,13 @@
 package binarycrows.robot.SeasonCode.Utils;
 
+import java.util.Arrays;
 import java.util.function.Supplier;
 
+import binarycrows.robot.SeasonCode.Constants.FlywheelConstants;
+import binarycrows.robot.SeasonCode.Constants.ShootingConstants;
 import binarycrows.robot.SeasonCode.SubStateManagers.CANdle.CANdleStateRequest;
 import binarycrows.robot.SeasonCode.SubStateManagers.CANdle.CANdleSubStateManager;
+import binarycrows.robot.SeasonCode.SubStateManagers.Flywheel.FlywheelSubStateManager;
 import binarycrows.robot.SeasonCode.SubStateManagers.Hood.HoodSubStateManager;
 import binarycrows.robot.SeasonCode.SubStateManagers.SwerveDrive.DriveSubStateManager;
 import binarycrows.robot.SeasonCode.SubStateManagers.Turret.TurretSubStateManager;
@@ -19,21 +23,43 @@ public class Shooting {
     public static boolean isForceShooting = false;
     public static boolean canShoot = false;
 
+    public static boolean closeToTrench = false;
+
     public static double turretAngleRad;
     public static double hoodAngleRad;
     public static double flywheelVoltage;
+    public static double flywheelRPM;
 
     private static Supplier<Double> turretDeltaSupplierRad;
     private static Supplier<Double> hoodDeltaSupplierRad;
+    private static Supplier<Double> flywheelDeltaSupplierRPM;
+
+    private static Supplier<Translation2d> linearVelocitySupplier;
+    private static Supplier<Pose2d> robotPoseSupplier;
+    private static Supplier<Pose2d> turretPoseSupplier;
+
+    private static Supplier<Double> flywheelRPMSupplier;
  
 
     public static void init() {
         turretDeltaSupplierRad = TurretSubStateManager.getInstance()::getDeltaRad;
         hoodDeltaSupplierRad = HoodSubStateManager.getInstance()::getDeltaRad;
+        flywheelRPMSupplier = FlywheelSubStateManager.getInstance()::getRPM;
+        flywheelDeltaSupplierRPM = () -> {return flywheelRPM - flywheelRPMSupplier.get();};
+
+        linearVelocitySupplier = DriveSubStateManager.getInstance()::getLinearVelocitySOTM;
+        robotPoseSupplier = DriveSubStateManager.getInstance()::getRobotPose;
+        turretPoseSupplier = () -> {return robotPoseSupplier.get().transformBy(ShootingConstants.robotToTurret);};
+
+
+        // Java is evil so the arrays need to be prepopulated
+        for (Translation2d[] row : derivativesOfVelocity) Arrays.fill(row, Translation2d.kZero);
+        Arrays.fill(valuesOfDerivatiesOfVelocity, Translation2d.kZero);
     }
 
-    public static boolean getCanShoot() {
-        if (!robotOnCorrectSide) {
+    // TODO: Put reason on dashboard, maybe make Isaac's controller vibrate when we know a mechanism is screwed up (CAN stale, not moving, outside of mechanical range)
+    public static boolean getCanShoot() { // TODO: LED Suggestion is to have color for: has balls, full; can't shoot shown by flashing; 
+        if (!robotOnCorrectSide || closeToTrench) {
             CANdleSubStateManager.setLEDs(CANdleStateRequest.SHOOT_BAD_WRONG_SIDE_OF_FIELD);
         } else if (!velocityInLargeBounds) {
             CANdleSubStateManager.setLEDs(CANdleStateRequest.SHOOT_BAD_VELOCITY_WAY_TOO_HIGH);
@@ -41,14 +67,18 @@ public class Shooting {
             CANdleSubStateManager.setLEDs(CANdleStateRequest.SHOOT_BAD_VELOCITY_TOO_HIGH);
         } else if (!accelerationInBounds) {
             CANdleSubStateManager.setLEDs(CANdleStateRequest.SHOOT_BAD_ACCELERATION_TOO_HIGH);
+        } else if (!jerkInBounds) {
+            CANdleSubStateManager.setLEDs(CANdleStateRequest.SHOOT_BAD_JERK_TOO_HIGH);
         } else if (!distanceInLargeBounds) {
             CANdleSubStateManager.setLEDs(CANdleStateRequest.SHOOT_BAD_DISTANCE_WAY_TOO_HIGH);
         } else if (!distanceInBounds) {
             CANdleSubStateManager.setLEDs(CANdleStateRequest.SHOOT_BAD_DISTANCE_TOO_HIGH);
-        } else if (Math.abs(turretDeltaSupplierRad.get()) > maxTurretDeltaRad) {
+        } else if (Math.abs(turretDeltaSupplierRad.get()) > ShootingConstants.maxTurretDeltaRad) {
             CANdleSubStateManager.setLEDs(CANdleStateRequest.SHOOT_BAD_TURRET_DELTA_TOO_HIGH);
-        } else if (Math.abs(hoodDeltaSupplierRad.get()) > maxHoodDeltaRad) {
+        } else if (Math.abs(hoodDeltaSupplierRad.get()) > ShootingConstants.maxHoodDeltaRad) {
             CANdleSubStateManager.setLEDs(CANdleStateRequest.SHOOT_BAD_HOOD_DELTA_TOO_HIGH);
+        } else if (Math.abs(flywheelDeltaSupplierRPM.get()) > ShootingConstants.maxFlywheelDelta) {
+            CANdleSubStateManager.setLEDs(CANdleStateRequest.SHOOT_BAD_FLYWHEEL_DELTA_TOO_HIGH);
         } else {
             CANdleSubStateManager.setLEDs(CANdleStateRequest.SHOOT_GOOD);
             return true;
@@ -61,7 +91,8 @@ public class Shooting {
         double[] shootingParameters = calculate();
         turretAngleRad = shootingParameters[0];
         hoodAngleRad = shootingParameters[1];
-        flywheelVoltage = shootingParameters[2];
+        flywheelVoltage = FlywheelConstants.rpmToVoltage.get(shootingParameters[2]);
+        flywheelRPM = shootingParameters[2];
     }
 
     public static boolean getShooting() {
@@ -69,30 +100,19 @@ public class Shooting {
     }
 
 
-    // Base table goes distance, hood angle, flywheel voltage, time of flight
+    // Base table goes distance, hood angle, flywheel RPM, time of flight
     public static final UnkeyedLerpTable baseTable = new UnkeyedLerpTable(new double[][] {
         //           |distance|hood angle|flywheel|ToF|   
-        new double[] {0,       0,         0,       0}, // TODO: after tuning, do NOT leave 0,0,0 as a value
+        new double[] {0,       0,         0,       0}, // TO-DO: after tuning, do NOT leave 0,0,0 as a value
+        new double[] {9999,    9999,      9999,    9999}, // Will crash if there are not at least 2 values
     }, 
     false);
-
-    // Constants
-    public static final Translation2d targetPosition = new Translation2d(ConversionUtils.inchesToMeters(182.11), ConversionUtils.inchesToMeters(158.84));
-    public static final Transform2d robotToTurret = new Transform2d(new Translation2d(0, 0), Rotation2d.kZero); //TODO: Set to correct translation
-    public static final int numberOfAlgorithmIterations = 20; //TODO: This can certainly be much lower...
-    public static final double dragCoefficient = 0.2; //TODO: tune... ...a lot
-
-    public static final double maxTurretDeltaRad = 10;
-    public static final double maxHoodDeltaRad = 10;
-    public static final double maxFlywheelDelta = 10;
-    public static final double maxVelocity = 4.4;
-    public static final double maxAcceleration = 4.4;
-    public static final double maxVelocityLarge = 4.4;
-    public static final double maxTurretX = ConversionUtils.inchesToMeters(182.11);
-    public static final double maxDistanceFromGoal = 5;
-    public static final double maxDistanceFromGoalLarge = 6;
+    
+    
 
     // Calculation runtime variables
+    public static Translation2d targetPosition = new Translation2d(4.625594, 4.034536);
+
     private static Translation2d[][] derivativesOfVelocity =  new Translation2d[3][2];
     private static Translation2d[] valuesOfDerivatiesOfVelocity = new Translation2d[2];
 
@@ -105,27 +125,21 @@ public class Shooting {
     private static boolean velocityInBounds = true;
     private static boolean velocityInLargeBounds = true;
     private static boolean accelerationInBounds = true;
+    private static boolean jerkInBounds = true;
     private static boolean robotOnCorrectSide = true;
 
     private static boolean distanceInBounds = true;
     private static boolean distanceInLargeBounds = true;
 
     // Helpers
-    public static Translation2d getLinearVelocity() {
-        return DriveSubStateManager.getInstance().getLinearVelocitySOTM();
-    }
 
-    public static Pose2d getTurretPose() {
-        return DriveSubStateManager.getInstance().getRobotPose().transformBy(robotToTurret);
-    }
-
-    public static double getTimeOfFlight(double distance) {
-        return baseTable.get(distance, 3, 0);
-    }
     public static double getAngle(double distance) {
         return baseTable.get(distance, 1, 0);
     }
-    public static double getVoltage(double distance) {
+    public static double getTimeOfFlight(double distance) {
+        return baseTable.get(distance, 3, 0);
+    }
+    public static double getRPM(double distance) {
         return baseTable.get(distance, 2, 0);
     }
 
@@ -135,7 +149,7 @@ public class Shooting {
      */
     public static double[] calculate()
     {
-        Translation2d velocity = getLinearVelocity(); 
+        Translation2d velocity = linearVelocitySupplier.get(); 
         double velocityNorm = velocity.getNorm();
 
         int numFrames = derivativesOfVelocity[0].length;
@@ -159,9 +173,10 @@ public class Shooting {
             derivativesOfVelocity[derivative+1][numFrames-1] = valuesOfDerivatiesOfVelocity[derivative];
         }
 
-        velocityInBounds = velocityNorm < maxVelocity;
-        accelerationInBounds = valuesOfDerivatiesOfVelocity[0].getNorm() < maxAcceleration;
-        velocityInLargeBounds = velocityNorm < maxVelocityLarge;
+        velocityInBounds = velocityNorm < ShootingConstants.maxVelocity;
+        accelerationInBounds = valuesOfDerivatiesOfVelocity[0].getNorm() < ShootingConstants.maxAcceleration;
+        jerkInBounds = valuesOfDerivatiesOfVelocity[1].getNorm() < ShootingConstants.maxJerk;
+        velocityInLargeBounds = velocityNorm < ShootingConstants.maxVelocityLarge;
 
         Translation2d extraVelocity = Translation2d.kZero;
 
@@ -180,31 +195,35 @@ public class Shooting {
             nextShotTime = currentTime + lookaheadTimeSeconds + phaseTimeSeconds;
         } else if (nextShotTime < currentTime + phaseTimeSeconds && !hasShotInCurrentPhase)
         {
-            // TODO: The phase time will match the shooting rate we already have?
-           // if (Math.Abs(hoodController.turretDelta) < 8 && Math.Abs(hoodController.hoodDelta) < 6) shooterController.shootNoInput();
             hasShotInCurrentPhase = true;
         }
-        Pose2d turretPose = getTurretPose();
-        robotOnCorrectSide = turretPose.getX() > maxTurretX;
+        Pose2d turretPose = turretPoseSupplier.get();
+        robotOnCorrectSide = turretPose.getX() > ShootingConstants.maxTurretX;
+        Translation2d turretPoseTranslation = turretPose.getTranslation();
+        closeToTrench = 
+            ShootingConstants.trenchBoundsHumanPlayerOwnSide.contains(turretPoseTranslation) ||
+            ShootingConstants.trenchBoundsDepotOwnSide.contains(turretPoseTranslation) ||
+            ShootingConstants.trenchBoundsHumanPlayerOppositeSide.contains(turretPoseTranslation) ||
+            ShootingConstants.trenchBoundsDepotOppositeSide.contains(turretPoseTranslation);
 
         Translation2d lookaheadDelta = velocity.times(nextShotTime-currentTime);
-        turretPose = new Pose2d(turretPose.getTranslation().plus(lookaheadDelta),turretPose.getRotation());
+        turretPose = new Pose2d(turretPoseTranslation.plus(lookaheadDelta),turretPose.getRotation());
 
-        Translation2d targetDifference = targetPosition.minus(turretPose.getTranslation());
+        Translation2d targetDifference = targetPosition.minus(turretPoseTranslation);
         
         double offsetDistance = targetDifference.getNorm();
 
-        distanceInBounds = (offsetDistance < maxDistanceFromGoal);
-        distanceInLargeBounds = (offsetDistance < maxDistanceFromGoalLarge);
+        distanceInBounds = (offsetDistance < ShootingConstants.maxDistanceFromGoal);
+        distanceInLargeBounds = (offsetDistance < ShootingConstants.maxDistanceFromGoalLarge);
 
         Translation2d distanceVector = new Translation2d();
         Rotation2d turretAngle = Rotation2d.kZero;
         double timeOfFlight = getTimeOfFlight(offsetDistance);
         double hoodAngle = getAngle(offsetDistance);
-        double flywheelVoltage = getVoltage(offsetDistance);
+        double flywheelRPM = getRPM(offsetDistance);
         Translation2d requiredTotalVelocity = targetDifference.div(timeOfFlight);
 
-        for (int i = 0; i < numberOfAlgorithmIterations; i++)
+        for (int i = 0; i < ShootingConstants.numberOfAlgorithmIterations; i++)
         {
 
             Translation2d requiredImpartedVelocity = requiredTotalVelocity.minus(velocity);
@@ -217,11 +236,11 @@ public class Shooting {
             // 1. Account for Drag: "Virtual Distance"
             // The ball loses energy over time. We pretend the target is further away.
             // A simple approximation: Dist_virtual = Dist_actual * (1 + k * Dist_actual)
-            double virtualDistance = groundDistance * (1 + dragCoefficient * groundDistance);
+            double virtualDistance = groundDistance * (1 + ShootingConstants.dragCoefficient * groundDistance);
 
             // 2. Pass the VIRTUAL distance to your LUT
             hoodAngle = getAngle(virtualDistance);
-            flywheelVoltage = getVoltage(virtualDistance);
+            flywheelRPM = getRPM(virtualDistance);
             timeOfFlight = getTimeOfFlight(virtualDistance);
 
             // 3. Recalculate based on the new timeOfFlight from the LUT
@@ -232,7 +251,7 @@ public class Shooting {
 
             // 4) Rotate into ROBOT frame (turret frame if turret is robot-relative)
             
-            double cosYaw = turretPose.getRotation().getCos(); //TODO: For some reason these were negative in Unity
+            double cosYaw = turretPose.getRotation().getCos(); //TO-DO: For some reason these were negative in Unity
             double sinYaw = turretPose.getRotation().getSin();
 
             Translation2d V_turret = new Translation2d(
@@ -245,6 +264,7 @@ public class Shooting {
 
         }
         
-        return new double[] {turretAngle.getRadians(), hoodAngle, flywheelVoltage};
+        return new double[] {turretAngle.getRadians(), hoodAngle, flywheelRPM};
+        
     }
 }

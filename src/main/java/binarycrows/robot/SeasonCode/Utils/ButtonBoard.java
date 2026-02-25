@@ -32,13 +32,13 @@ public class ButtonBoard extends GenericGamepad {
         public static final int forceShoot = 15;
         public static final int increaseShooterFF = 16;
         public static final int decreaseShooterFF = 17;
-        public static final int flywheelReverse = 18; //TODO: Add to CAD
+        public static final int flywheelReverse = 18;
 
         // Climber
         public static final int climbLeft = 19;
         public static final int climbRight = 20;
         public static final int climbCenterLeft = 21;
-        public static final int climbCenterRight = 22; //TODO: Add to CAD
+        public static final int climbCenterRight = 22;
         public static final int climberUp = 23;
         public static final int climberDown = 24;
         public static final int manualClimberUp = 25;
@@ -49,8 +49,8 @@ public class ButtonBoard extends GenericGamepad {
         public static final int extra2 = 28;
         public static final int extra3 = 29;
         public static final int extra4 = 30;
-        public static final int extra5 = 31;
-        public static final int extra6 = 32; //TODO: Add to CAD
+        public static final int hoodForceUp = 31;
+        public static final int extra6 = 32;
 
         // Switches
         public static final int manualIntakeSwitch = 33;
@@ -62,7 +62,7 @@ public class ButtonBoard extends GenericGamepad {
 
 
     public ButtonBoard(int portID) {
-        super(portID, 33);
+        super(portID, 38);
     }
 
 

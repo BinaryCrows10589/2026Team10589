@@ -20,13 +20,12 @@ public class FlywheelSubStateManager extends SubStateManager<FlywheelStateReques
     private double flywheelVoltageFF = FlywheelConstants.baseShooterFF;
 
     public FlywheelSubStateManager() {
-        super();
+        super(new StateRequest<FlywheelStateRequest>(FlywheelStateRequest.SHOOT_ON_THE_MOVE, StateRequestPriority.NORMAL));
 
         outputs = new FlywheelOutputs();
 
         flywheelIO = MetaConstants.isReal ? new FlywheelTalonFX(outputs) : new FlywheelSim(outputs);
 
-        super.defaultState = new StateRequest<FlywheelStateRequest>(FlywheelStateRequest.SHOOT_ON_THE_MOVE, StateRequestPriority.NORMAL);
     }
 
     @Override
@@ -69,6 +68,10 @@ public class FlywheelSubStateManager extends SubStateManager<FlywheelStateReques
 
     public static FlywheelSubStateManager getInstance() {
         return (FlywheelSubStateManager) MainStateManager.getInstance().resolveSubStateManager(FlywheelStateRequest.class);
+    }
+
+    public double getRPM() {
+        return outputs.leftMotorVelocityRPS * 60.0 * FlywheelConstants.gearRatio;
     }
 
 

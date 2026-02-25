@@ -82,7 +82,7 @@ public class DriveSubStateManager extends SubStateManager<DriveStateRequest> {
 
 
     public DriveSubStateManager() {
-        super();
+        super(new StateRequest<DriveStateRequest>(DriveStateRequest.TELEOP_DRIVE, StateRequestPriority.NORMAL));
 
         gyroOutputs = new GyroOutputs();
         frontLeftOutputs = new SwerveModuleOutputs();
@@ -98,7 +98,6 @@ public class DriveSubStateManager extends SubStateManager<DriveStateRequest> {
 
         poseEstimator = new PoseEstimator(gyroOutputs.yawAngle, getModulePositions());
 
-        super.defaultState = new StateRequest<DriveStateRequest>(DriveStateRequest.TELEOP_DRIVE, StateRequestPriority.NORMAL);
     }
     private SwerveModule constructSwerveModule(String name, SwerveModuleOutputs outputs) {
         return new SwerveModule(MetaConstants.isReal ? new SwerveModuleTalonFX(name, outputs) : new SwerveModuleSim(name, outputs), name);

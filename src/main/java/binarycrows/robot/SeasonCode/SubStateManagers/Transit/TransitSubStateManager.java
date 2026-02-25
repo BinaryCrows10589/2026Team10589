@@ -23,14 +23,14 @@ public class TransitSubStateManager  extends SubStateManager<TransitStateRequest
     private int manualDirection = 0; // 1=forward, 0=off, -1=reverse
 
     public TransitSubStateManager() {
-        super();
+        super(new StateRequest<TransitStateRequest>(TransitStateRequest.UNPOWERED, StateRequestPriority.NORMAL));
 
         transitOutputs = new TransitOutputs();
+        sensorOutputs = new SensorsOutputs();
 
         transitIO = new TransitTalonFXS(transitOutputs);
         sensorsIO = new SensorsPWF(sensorOutputs);
 
-        super.defaultState = new StateRequest<TransitStateRequest>(TransitStateRequest.UNPOWERED, StateRequestPriority.NORMAL);
     }
 
     @Override

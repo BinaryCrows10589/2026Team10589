@@ -23,12 +23,10 @@ public class ClimberSubStateManager extends SubStateManager<ClimberStateRequest>
     private int manualOverrideDirection = 0; // 1=up, 0=none, -1=down
 
     public ClimberSubStateManager() {
-        super();
+        super(new StateRequest<ClimberStateRequest>(ClimberStateRequest.DOWN, StateRequestPriority.NORMAL));
         outputs = new ClimberOutputs();
 
         climberIO = new ClimberTalonFX(outputs);
-
-        super.defaultState = new StateRequest<ClimberStateRequest>(ClimberStateRequest.DOWN, StateRequestPriority.NORMAL);
     }
 
     @Override

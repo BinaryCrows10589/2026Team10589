@@ -18,7 +18,7 @@ public class SensorsPWF implements SensorsIO {
     private int outgoingFuelNumFramesDifferent;
 
     public SensorsPWF(SensorsOutputs outputs) {
-        // TODO: IF you need help setting the can ids for the TOF ask. Set them on the motor test board first as it is often glitchy. 
+        // TO-DO: IF you need help setting the can ids for the TOF ask. Set them on the motor test board first as it is often glitchy. 
         // You should do that next meeting while building happens
         // Clanker says: connect to http://<roboRIO-IP>:5812
         // https://www.playingwithfusion.com/include/getfile.php?fileid=7091

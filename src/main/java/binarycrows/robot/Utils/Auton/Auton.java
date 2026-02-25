@@ -8,15 +8,16 @@ import binarycrows.robot.Enums.StateRequestPriority;
 import binarycrows.robot.StateRequestGroup.SequentialGroup;
 import edu.wpi.first.math.geometry.Pose2d;
 
-public class Auton extends SequentialGroup {
+public class Auton {
 
     public Pose2d startingPoint;
 
-    public Supplier<StateRequest[]> stateRequestSupplier;
+    public Supplier<SequentialGroup> stateRequestSupplier;
+
+    public SequentialGroup builtAuton;
 
 
-    public Auton(Pose2d startingPoint, Supplier<StateRequest[]> stateRequests) {
-        super(StateRequestPriority.NORMAL, 30*1000, new StateRequest[]{});
+    public Auton(Pose2d startingPoint, Supplier<SequentialGroup> stateRequests) {
         this.startingPoint = startingPoint;
         this.stateRequestSupplier = stateRequests;
     }
@@ -26,7 +27,7 @@ public class Auton extends SequentialGroup {
      * MUST be called before trying to run, otherwise nothing will happen!
      */
     public void buildAuton() {
-        this.children = stateRequestSupplier.get();
+        this.builtAuton = stateRequestSupplier.get();
     }
 
 

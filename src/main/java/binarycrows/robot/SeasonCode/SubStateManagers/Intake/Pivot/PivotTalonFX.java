@@ -4,22 +4,16 @@ import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.configs.MagnetSensorConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
-import com.ctre.phoenix6.configs.TalonFXSConfiguration;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.PositionDutyCycle;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
-import com.ctre.phoenix6.hardware.TalonFXS;
-import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.signals.SensorDirectionValue;
 
 import binarycrows.robot.SeasonCode.Constants.CANIDs;
-import binarycrows.robot.SeasonCode.Constants.HoodConstants;
 import binarycrows.robot.SeasonCode.Constants.IntakeConstants;
 import binarycrows.robot.SeasonCode.Constants.MetaConstants;
-import binarycrows.robot.SeasonCode.Constants.IntakeConstants.Pivot;
-import binarycrows.robot.SeasonCode.Constants.SwerveDriveConstants;
 import binarycrows.robot.Utils.Tuning.RuntimeTunablePIDValues;
 import edu.wpi.first.math.geometry.Rotation2d;
 
@@ -59,8 +53,8 @@ public class PivotTalonFX implements PivotIO {
         masterMotorConfig.Voltage.PeakForwardVoltage = IntakeConstants.Pivot.maxMotorVoltageUp;
         masterMotorConfig.Voltage.PeakReverseVoltage = IntakeConstants.Pivot.maxMotorVoltageDown;
 
-        masterMotorConfig.CurrentLimits.StatorCurrentLimit = IntakeConstants.Pivot.statorCurrentLimit;
-        masterMotorConfig.CurrentLimits.StatorCurrentLimitEnable = true;
+        masterMotorConfig.TorqueCurrent.PeakForwardTorqueCurrent = IntakeConstants.Pivot.torqueCurrentLimit;
+        masterMotorConfig.TorqueCurrent.PeakReverseTorqueCurrent = -IntakeConstants.Pivot.torqueCurrentLimit;
 
         this.leftMotor.getConfigurator().apply(masterMotorConfig);
         

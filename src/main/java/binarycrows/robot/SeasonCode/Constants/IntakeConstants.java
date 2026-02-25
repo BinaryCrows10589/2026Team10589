@@ -46,6 +46,6 @@ public final class IntakeConstants {
         public static final double manualVoltage = 4;
         public static final double manualVoltageFF = 1;
 
-        public static final double statorCurrentLimit = 60;
+        public static final double torqueCurrentLimit = 60;
 }
 }

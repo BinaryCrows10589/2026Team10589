@@ -15,8 +15,7 @@ import org.littletonrobotics.junction.wpilog.WPILOGReader;
 import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 
 import binarycrows.robot.CrowMotion.UserSide.CMConfig;
-import binarycrows.robot.SeasonCode.Autons.StartOfRamp_ShootPreload_SweepCenterClose_Return;
-import binarycrows.robot.SeasonCode.Autons.Test.CMTest2;
+import binarycrows.robot.SeasonCode.Autons.StartPosition_HumanPlayerRamp_Trench_to_InitialFuelQuadrant_OwnAllianceHumanPlayer;
 import binarycrows.robot.SeasonCode.Constants.FieldConstants;
 import binarycrows.robot.SeasonCode.Constants.MetaConstants;
 import binarycrows.robot.SeasonCode.Constants.PoseEstimatorConstants;
@@ -30,6 +29,7 @@ import binarycrows.robot.SeasonCode.SubStateManagers.Intake.Rollers.IntakeRoller
 import binarycrows.robot.SeasonCode.SubStateManagers.SwerveDrive.DriveSubStateManager;
 import binarycrows.robot.SeasonCode.SubStateManagers.Transit.TransitSubStateManager;
 import binarycrows.robot.SeasonCode.SubStateManagers.Turret.TurretSubStateManager;
+import binarycrows.robot.SeasonCode.Utils.Climbing;
 import binarycrows.robot.SeasonCode.Utils.Shooting;
 import binarycrows.robot.Utils.Auton.Auton;
 import edu.wpi.first.apriltag.AprilTagFieldLayout.OriginPosition;
@@ -135,7 +135,7 @@ public class Robot extends LoggedRobot {
         4.3,
         3.5,
         4,
-        0,
+        2,
         .08,
         .05,
         SwerveDriveConstants.maxSpeedMPS,
@@ -154,8 +154,7 @@ public class Robot extends LoggedRobot {
 
 
     // Initialize autonomous chooser
-    chooser.addDefaultOption("MainAuton", new Auton(StartOfRamp_ShootPreload_SweepCenterClose_Return.startingPoint, StartOfRamp_ShootPreload_SweepCenterClose_Return::getAutonomous));
-    chooser.addOption("CMTest2", new Auton(CMTest2.startingPoint, CMTest2::getAutonomous));
+    chooser.addDefaultOption("MainAuton", new Auton(StartPosition_HumanPlayerRamp_Trench_to_InitialFuelQuadrant_OwnAllianceHumanPlayer.startingPoint, StartPosition_HumanPlayerRamp_Trench_to_InitialFuelQuadrant_OwnAllianceHumanPlayer::getAutonomous));
 
     onAutonSelect(chooser.get()); // Initialize first autonomous that is selected
 
@@ -215,9 +214,9 @@ public class Robot extends LoggedRobot {
   public void autonomousPeriodic() {
     if (!MetaConstants.startedAutonomous) {
       Auton auton = chooser.get();
-      if (auton.getLength() == 0) auton.buildAuton(); // In case it wasn't built for some reason (should NEVER be necessary!)
+      if (auton.builtAuton == null) auton.buildAuton(); // In case it wasn't built for some reason (should NEVER be necessary!)
       DriveSubStateManager.getInstance().setRobotPose(auton.startingPoint);
-      auton.dispatchSelf();
+      auton.builtAuton.dispatchSelf();
       MetaConstants.startedAutonomous = true;
     }
   }
@@ -225,6 +224,7 @@ public class Robot extends LoggedRobot {
   @Override
   public void teleopInit() {
     StateTable.log("IsDriverControlled", true);
+    Climbing.climbRight(); // Sim testing
   }
 
   @Override

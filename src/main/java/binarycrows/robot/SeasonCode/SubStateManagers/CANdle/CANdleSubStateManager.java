@@ -25,8 +25,10 @@ public class CANdleSubStateManager extends SubStateManager<CANdleStateRequest> {
     private CANdle candle;
     private CANdleConfiguration candleConfiguration;
 
+
+
     public CANdleSubStateManager() {
-        super();
+        super(new StateRequest<CANdleStateRequest>(CANdleStateRequest.HOPPER_EMPTY, StateRequestPriority.NORMAL));
         init();
     }
 

@@ -21,15 +21,13 @@ public class PivotSubStateManager extends SubStateManager<PivotStateRequest>  {
     private int manualDirection = 0; // 1=up 0=none 2=down
 
     public PivotSubStateManager() {
-        super();
+        super(new StateRequest<PivotStateRequest>(PivotStateRequest.UP, StateRequestPriority.NORMAL));
 
         outputs = new PivotOutputs();
 
         pivot = new Pivot(outputs);
 
         pivotTargetPosition = new RuntimeTunableValue("Tuning/Pivot/TargetPosition", 2);
-
-        super.defaultState = new StateRequest<PivotStateRequest>(PivotStateRequest.UP, StateRequestPriority.NORMAL);
     }
 
     @Override
@@ -55,8 +53,6 @@ public class PivotSubStateManager extends SubStateManager<PivotStateRequest>  {
         double voltage = 0;
         boolean runRaisedPID = false;
         double delta = 0;
-
-        System.out.println(pivotTargetPosition.getValue());
 
         switch (this.activeStateRequest.getStateRequestType()) {
             case DOWN:
@@ -92,7 +88,7 @@ public class PivotSubStateManager extends SubStateManager<PivotStateRequest>  {
     }
 
     public static PivotSubStateManager getInstance() {
-        return (PivotSubStateManager) MainStateManager.getInstance().resolveSubStateManager(PivotSubStateManager.class);
+        return (PivotSubStateManager) MainStateManager.getInstance().resolveSubStateManager(PivotStateRequest.class);
     }
     
     public String toString() {

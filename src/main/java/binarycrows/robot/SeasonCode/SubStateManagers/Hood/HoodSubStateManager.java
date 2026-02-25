@@ -24,15 +24,13 @@ public class HoodSubStateManager extends SubStateManager<HoodStateRequest> {
     private int manualDirection = 0; // 1=up, 0=none, -1=down
 
     public HoodSubStateManager() {
-        super();
+        super(new StateRequest<HoodStateRequest>(HoodStateRequest.RETRACTED, StateRequestPriority.NORMAL));
 
         outputs = new HoodOutputs();
 
         hood = new Hood(MetaConstants.isReal ? 
         HoodConstants.useIntegratedPID ? new HoodTalonFXSIntegratedPID(outputs) : new HoodTalonFXSWPILibPID(outputs)
         : new HoodSim(outputs));
-
-        super.defaultState = new StateRequest<HoodStateRequest>(HoodStateRequest.RETRACTED, StateRequestPriority.NORMAL);
     }
 
     @Override
@@ -52,7 +50,8 @@ public class HoodSubStateManager extends SubStateManager<HoodStateRequest> {
                 targetPosition = manualOverrideTargetRotation;
                 break;
             case SHOOT_ON_THE_MOVE:
-                targetPosition = Rotation2d.fromRadians(Shooting.hoodAngleRad);
+                if (Shooting.closeToTrench) targetPosition = Rotation2d.kZero;
+                else targetPosition = Rotation2d.fromRadians(Shooting.hoodAngleRad);
                 break;
             case RETRACTED:
                 targetPosition = Rotation2d.kZero;

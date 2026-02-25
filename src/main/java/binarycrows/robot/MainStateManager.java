@@ -5,6 +5,8 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
+import org.littletonrobotics.junction.Logger;
+
 import binarycrows.robot.Enums.StateRequestGroupChildTimeoutBehavior;
 import binarycrows.robot.Enums.StateRequestStatus;
 import binarycrows.robot.StateRequestGroup.SequentialGroup;
@@ -22,6 +24,8 @@ public class MainStateManager extends Thread {
     private HashMap<Class, SubStateManager> subStateManagerTypeLookup = new HashMap<Class, SubStateManager>();
 
     private ArrayList<StateRequestGroup> activeStateRequestGroups = new ArrayList<>();
+    private boolean activeStateRequestGroupsIsLocked = false;
+    private ArrayList<StateRequestGroup> pendingStateRequestGroups = new ArrayList<>();
 
     private MainStateManager()
     {
@@ -44,9 +48,7 @@ public class MainStateManager extends Thread {
             while (activeStateRequestGroups.size() == 0)
                 try {
                     wait();
-                } catch (InterruptedException e) {
-                    System.out.println("Resume MainStateManager");
-                }
+                } catch (InterruptedException e) {}
             }
             periodic();
         }
@@ -64,6 +66,7 @@ public class MainStateManager extends Thread {
         // Keep track of state request groups to remove without live updating the arraylist
         ArrayList<StateRequestGroup> finishedStateRequestGroups = new ArrayList<>();
 
+        activeStateRequestGroupsIsLocked = true;
         for (StateRequestGroup stateRequestGroup : activeStateRequestGroups) {
 
             if (stateRequestGroup.status == StateRequestStatus.PENDING) {
@@ -85,9 +88,16 @@ public class MainStateManager extends Thread {
                 }
 
                 StateRequest childStateRequest = sequentialGroup.getCurrentStateRequest();
-                StateRequestStatus requestStatus = childStateRequest.getStatus();
+                StateRequestStatus requestStatus;
+                if (childStateRequest == null) {
+                    System.err.print("WARNING: Null child state request encountered");
+                    requestStatus = StateRequestStatus.FULFILLED;
 
-                if (childStateRequest.getIsTimedOut()) childStateRequest.updateStatus(StateRequestStatus.TIMED_OUT);
+                } else {
+                    requestStatus = childStateRequest.getStatus();
+
+                    if (childStateRequest.getIsTimedOut()) childStateRequest.updateStatus(StateRequestStatus.TIMED_OUT);
+                }
 
                 if (requestStatus == StateRequestStatus.FRESH) {
 
@@ -114,6 +124,11 @@ public class MainStateManager extends Thread {
                 throw new UnsupportedOperationException("The class '" + stateRequestGroup.getClass().getCanonicalName() + "' has no StateRequestGroup behavior implementation");
             }
         }
+        activeStateRequestGroupsIsLocked = false;
+        for (StateRequestGroup stateRequestGroup : pendingStateRequestGroups) {
+            activeStateRequestGroups.add(stateRequestGroup);
+        }
+        pendingStateRequestGroups.clear();
 
         // Remove unneeded state request groups
         for (StateRequestGroup stateRequestGroup : finishedStateRequestGroups) {
@@ -125,7 +140,8 @@ public class MainStateManager extends Thread {
     public synchronized void dispatchStateRequest(StateRequest stateRequest) {
         if (stateRequest instanceof StateRequestGroup) {
             StateRequestGroup stateRequestGroup = (StateRequestGroup) stateRequest;
-            activeStateRequestGroups.add(stateRequestGroup);
+            if (activeStateRequestGroupsIsLocked) pendingStateRequestGroups.add(stateRequestGroup);
+            else activeStateRequestGroups.add(stateRequestGroup);
             stateRequestGroup.updateStatus(StateRequestStatus.PENDING);
             this.notify(); // Trigger MainStateManager to wake up and start processing groups again.
         } else {

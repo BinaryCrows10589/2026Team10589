@@ -92,7 +92,7 @@ public class PoseEstimator {
             StateTable.log("PoseEstimator/EstimatedPosition", this.swerveDrivePoseEstimator.getEstimatedPosition());
 
         } catch(Exception E) {
-           System.out.println("FAILED TO UPDATE POSE ESTIMATOR: " + E.getMessage());
+           System.err.println("FAILED TO UPDATE POSE ESTIMATOR: " + E.getMessage());
         }
     }
 
@@ -221,11 +221,12 @@ public class PoseEstimator {
                 swerveDrivePoseEstimator.resetPosition(DriveSubStateManager.getInstance().getGyroAngleRotation2d(),
                 DriveSubStateManager.getInstance().getModulePositions(), robotPose.toPose2d());
             }
+                    // TODO: Add fudge factors here
                     swerveDrivePoseEstimator.addVisionMeasurement(robotPose.toPose2d(), timestamp, PoseEstimatorConstants.questNavPoseEstimateTrust);
                 }
                 StateTable.log("QuestNav/Updating", true);
             } catch (Exception e) {
-                System.out.println(e.getMessage());
+                System.err.println(e.getMessage());
             }
         } else {
             StateTable.log("QuestNav/HasFrames", false);
