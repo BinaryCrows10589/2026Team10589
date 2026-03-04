@@ -1,6 +1,7 @@
 package binarycrows.robot.SeasonCode.Constants;
 
 import binarycrows.robot.Utils.ConversionUtils;
+import binarycrows.robot.Utils.UnkeyedLerpTable;
 import edu.wpi.first.math.geometry.Rectangle2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
@@ -27,4 +28,12 @@ public class ShootingConstants {
     public static final Rectangle2d trenchBoundsDepotOwnSide = new Rectangle2d(new Translation2d(4, 8.1), new Translation2d(5.25, 6.8));
     public static final Rectangle2d trenchBoundsHumanPlayerOppositeSide = new Rectangle2d(new Translation2d(11.3, 1.3), new Translation2d(12.5, 0));
     public static final Rectangle2d trenchBoundsDepotOppositeSide = new Rectangle2d(new Translation2d(11.3, 8.1), new Translation2d(12.5, 6.8));
+
+    // Base table goes distance, hood angle, flywheel RPM, time of flight
+    public static final UnkeyedLerpTable baseTable = new UnkeyedLerpTable(new double[][] {
+        //           |distance|hood angle|flywheel|ToF|   
+        new double[] {0,       0,         0,       0}, // TO-DO: after tuning, do NOT leave 0,0,0 as a value
+        new double[] {9999,    9999,      9999,    9999}, // Will crash if there are not at least 2 values
+    }, 
+    false);
 }

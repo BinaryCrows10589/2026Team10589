@@ -1,16 +1,16 @@
 package binarycrows.robot.SeasonCode.SubStateManagers.Transit;
 
+import java.util.function.Supplier;
+
 import binarycrows.robot.MainStateManager;
 import binarycrows.robot.StateRequest;
 import binarycrows.robot.StateTable;
 import binarycrows.robot.SubStateManager;
 import binarycrows.robot.Enums.StateRequestPriority;
 import binarycrows.robot.SeasonCode.Constants.TransitConstants;
-import binarycrows.robot.SeasonCode.SubStateManagers.Hood.HoodStateRequest;
-import binarycrows.robot.SeasonCode.SubStateManagers.Hood.HoodSubStateManager;
+import binarycrows.robot.SeasonCode.SubStateManagers.Shooting.ShootingSubStateManager;
 import binarycrows.robot.SeasonCode.SubStateManagers.Transit.SensorsIO.SensorsOutputs;
 import binarycrows.robot.SeasonCode.SubStateManagers.Transit.TransitIO.TransitOutputs;
-import binarycrows.robot.SeasonCode.Utils.Shooting;
 
 public class TransitSubStateManager  extends SubStateManager<TransitStateRequest> {
     
@@ -22,6 +22,8 @@ public class TransitSubStateManager  extends SubStateManager<TransitStateRequest
 
     private int manualDirection = 0; // 1=forward, 0=off, -1=reverse
 
+    private Supplier<Boolean> shooting;
+
     public TransitSubStateManager() {
         super(new StateRequest<TransitStateRequest>(TransitStateRequest.UNPOWERED, StateRequestPriority.NORMAL));
 
@@ -31,11 +33,17 @@ public class TransitSubStateManager  extends SubStateManager<TransitStateRequest
         transitIO = new TransitTalonFXS(transitOutputs);
         sensorsIO = new SensorsPWF(sensorOutputs);
 
+        shooting = ShootingSubStateManager.getInstance()::getShooting;
+
     }
 
     @Override
     public void recieveStateRequest(StateRequest<TransitStateRequest> request) {
         super.recieveStateRequest(request);
+    }
+
+    public boolean getOutgoingFuelSensorTripped() {
+        return sensorOutputs.outgoingFuelTripped;
     }
 
     @Override
@@ -66,7 +74,7 @@ public class TransitSubStateManager  extends SubStateManager<TransitStateRequest
                 transitIO.setInAndUpVoltage(TransitConstants.standardInAndUpMotorVoltage * manualDirection);
                 break;
             case SHOOTER:
-                if (Shooting.getShooting()) {
+                if (shooting.get()) {
                     transitIO.setLatitudinalVoltage(TransitConstants.standardLatitudinalMotorVoltage);
                     transitIO.setLongitudinalVoltage(TransitConstants.standardLongitudinalMotorVoltage);
                     transitIO.setInAndUpVoltage(TransitConstants.standardInAndUpMotorVoltage);

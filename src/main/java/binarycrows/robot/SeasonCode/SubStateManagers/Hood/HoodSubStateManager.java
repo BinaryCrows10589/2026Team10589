@@ -1,5 +1,7 @@
 package binarycrows.robot.SeasonCode.SubStateManagers.Hood;
 
+import java.util.function.Supplier;
+
 import binarycrows.robot.MainStateManager;
 import binarycrows.robot.StateRequest;
 import binarycrows.robot.StateTable;
@@ -8,7 +10,7 @@ import binarycrows.robot.Enums.StateRequestPriority;
 import binarycrows.robot.SeasonCode.Constants.HoodConstants;
 import binarycrows.robot.SeasonCode.Constants.MetaConstants;
 import binarycrows.robot.SeasonCode.SubStateManagers.Hood.HoodIO.HoodOutputs;
-import binarycrows.robot.SeasonCode.Utils.Shooting;
+import binarycrows.robot.SeasonCode.SubStateManagers.Shooting.ShootingSubStateManager;
 import edu.wpi.first.math.geometry.Rotation2d;
 
 public class HoodSubStateManager extends SubStateManager<HoodStateRequest> {
@@ -22,6 +24,9 @@ public class HoodSubStateManager extends SubStateManager<HoodStateRequest> {
     private Rotation2d targetPosition = HoodConstants.hoodStartingPosition;
 
     private int manualDirection = 0; // 1=up, 0=none, -1=down
+
+    private Supplier<Boolean> closeToTrenchSupplier;
+    private Supplier<Double> hoodAngleSupplier;
 
     public HoodSubStateManager() {
         super(new StateRequest<HoodStateRequest>(HoodStateRequest.RETRACTED, StateRequestPriority.NORMAL));
@@ -39,6 +44,9 @@ public class HoodSubStateManager extends SubStateManager<HoodStateRequest> {
         if (activeStateRequest.getStateRequestType() == HoodStateRequest.MANUAL_OVERRIDE) {
             manualOverrideTargetRotation = outputs.hoodRotation;
         }
+
+        closeToTrenchSupplier = ShootingSubStateManager.getInstance()::getIsCloseToTrench;
+        hoodAngleSupplier = ShootingSubStateManager.getInstance()::getHoodAngleRad;
     }
 
     @Override
@@ -50,8 +58,8 @@ public class HoodSubStateManager extends SubStateManager<HoodStateRequest> {
                 targetPosition = manualOverrideTargetRotation;
                 break;
             case SHOOT_ON_THE_MOVE:
-                if (Shooting.closeToTrench) targetPosition = Rotation2d.kZero;
-                else targetPosition = Rotation2d.fromRadians(Shooting.hoodAngleRad);
+                if (closeToTrenchSupplier.get()) targetPosition = Rotation2d.kZero;
+                else targetPosition = Rotation2d.fromRadians(hoodAngleSupplier.get());
                 break;
             case RETRACTED:
                 targetPosition = Rotation2d.kZero;

@@ -1,15 +1,16 @@
 package binarycrows.robot.SeasonCode.SubStateManagers.Turret;
 
+import java.util.function.Supplier;
+
 import binarycrows.robot.MainStateManager;
 import binarycrows.robot.StateRequest;
 import binarycrows.robot.StateTable;
 import binarycrows.robot.SubStateManager;
 import binarycrows.robot.Enums.StateRequestPriority;
-import binarycrows.robot.Enums.StateRequestStatus;
 import binarycrows.robot.SeasonCode.Constants.MetaConstants;
 import binarycrows.robot.SeasonCode.Constants.TurretConstants;
+import binarycrows.robot.SeasonCode.SubStateManagers.Shooting.ShootingSubStateManager;
 import binarycrows.robot.SeasonCode.SubStateManagers.Turret.TurretIO.TurretOutputs;
-import binarycrows.robot.SeasonCode.Utils.Shooting;
 import edu.wpi.first.math.geometry.Rotation2d;
 
 public class TurretSubStateManager extends SubStateManager<TurretStateRequest> {
@@ -22,6 +23,8 @@ public class TurretSubStateManager extends SubStateManager<TurretStateRequest> {
 
     private Rotation2d targetPosition;
 
+    private Supplier<Boolean> shooting;
+    private Supplier<Double> shootingTurretAngleRad;
 
     public TurretSubStateManager() {
         super(new StateRequest<TurretStateRequest>(TurretStateRequest.SHOOT_ON_THE_MOVE, StateRequestPriority.NORMAL));
@@ -29,6 +32,9 @@ public class TurretSubStateManager extends SubStateManager<TurretStateRequest> {
         outputs = new TurretOutputs();
 
         turret = new Turret(MetaConstants.isReal ? new TurretTalonFX(outputs) : new TurretSim(outputs));
+
+        shooting = ShootingSubStateManager.getInstance()::getShooting;
+        shootingTurretAngleRad = ShootingSubStateManager.getInstance()::getTurretAngleRad;
 
     }
 
@@ -49,7 +55,7 @@ public class TurretSubStateManager extends SubStateManager<TurretStateRequest> {
                 turret.setTurretVoltage(TurretConstants.manualVoltage * (manualDirection));
                 break;
             case SHOOT_ON_THE_MOVE:
-                turret.setTargetAngle(Rotation2d.fromRadians(Shooting.turretAngleRad), Shooting.getShooting());
+                turret.setTargetAngle(Rotation2d.fromRadians(shootingTurretAngleRad.get()), shooting.get());
                 break;
         }
          

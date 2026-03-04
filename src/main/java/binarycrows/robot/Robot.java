@@ -26,11 +26,11 @@ import binarycrows.robot.SeasonCode.SubStateManagers.Flywheel.FlywheelSubStateMa
 import binarycrows.robot.SeasonCode.SubStateManagers.Hood.HoodSubStateManager;
 import binarycrows.robot.SeasonCode.SubStateManagers.Intake.Pivot.PivotSubStateManager;
 import binarycrows.robot.SeasonCode.SubStateManagers.Intake.Rollers.IntakeRollersSubStateManager;
+import binarycrows.robot.SeasonCode.SubStateManagers.Shooting.ShootingSubStateManager;
 import binarycrows.robot.SeasonCode.SubStateManagers.SwerveDrive.DriveSubStateManager;
 import binarycrows.robot.SeasonCode.SubStateManagers.Transit.TransitSubStateManager;
 import binarycrows.robot.SeasonCode.SubStateManagers.Turret.TurretSubStateManager;
 import binarycrows.robot.SeasonCode.Utils.Climbing;
-import binarycrows.robot.SeasonCode.Utils.Shooting;
 import binarycrows.robot.Utils.Auton.Auton;
 import edu.wpi.first.apriltag.AprilTagFieldLayout.OriginPosition;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -99,7 +99,8 @@ public class Robot extends LoggedRobot {
         new HoodSubStateManager(),
         new FlywheelSubStateManager(),
         new ClimberSubStateManager(),
-        new CANdleSubStateManager()
+        new CANdleSubStateManager(),
+        new ShootingSubStateManager()
       );
 
     
@@ -149,7 +150,6 @@ public class Robot extends LoggedRobot {
         10
         );
 
-        Shooting.init();
 
 
 
@@ -195,8 +195,6 @@ public class Robot extends LoggedRobot {
         averageFrameTime = (averageFrameTime * .9) + (frameTime * .1);
     }
     frameStartTime = currentTime;
-
-    Shooting.periodic();
 
   }
 

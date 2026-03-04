@@ -1,5 +1,7 @@
 package binarycrows.robot.SeasonCode.SubStateManagers.Flywheel;
 
+import java.util.function.Supplier;
+
 import binarycrows.robot.MainStateManager;
 import binarycrows.robot.StateRequest;
 import binarycrows.robot.StateTable;
@@ -8,7 +10,7 @@ import binarycrows.robot.Enums.StateRequestPriority;
 import binarycrows.robot.SeasonCode.Constants.FlywheelConstants;
 import binarycrows.robot.SeasonCode.Constants.MetaConstants;
 import binarycrows.robot.SeasonCode.SubStateManagers.Flywheel.FlywheelIO.FlywheelOutputs;
-import binarycrows.robot.SeasonCode.Utils.Shooting;
+import binarycrows.robot.SeasonCode.SubStateManagers.Shooting.ShootingSubStateManager;
 import edu.wpi.first.math.MathUtil;
 
 public class FlywheelSubStateManager extends SubStateManager<FlywheelStateRequest> {
@@ -19,6 +21,9 @@ public class FlywheelSubStateManager extends SubStateManager<FlywheelStateReques
 
     private double flywheelVoltageFF = FlywheelConstants.baseShooterFF;
 
+    private Supplier<Boolean> isShootingSupplier;
+    private Supplier<Double> flywheelVoltageSupplier;
+
     public FlywheelSubStateManager() {
         super(new StateRequest<FlywheelStateRequest>(FlywheelStateRequest.SHOOT_ON_THE_MOVE, StateRequestPriority.NORMAL));
 
@@ -26,6 +31,8 @@ public class FlywheelSubStateManager extends SubStateManager<FlywheelStateReques
 
         flywheelIO = MetaConstants.isReal ? new FlywheelTalonFX(outputs) : new FlywheelSim(outputs);
 
+        isShootingSupplier = ShootingSubStateManager.getInstance()::getShooting;
+        flywheelVoltageSupplier = ShootingSubStateManager.getInstance()::getFlywheelVoltage;
     }
 
     @Override
@@ -40,8 +47,8 @@ public class FlywheelSubStateManager extends SubStateManager<FlywheelStateReques
 
         switch (activeStateRequest.getStateRequestType()) {
             case SHOOT_ON_THE_MOVE:
-                if (Shooting.isShooting) { // Run at voltage
-                    flywheelIO.setRotorVoltage(MathUtil.clamp(Shooting.flywheelVoltage + flywheelVoltageFF, 0, FlywheelConstants.maxMotorVoltage));
+                if (isShootingSupplier.get()) { // Run at voltage
+                    flywheelIO.setRotorVoltage(MathUtil.clamp(flywheelVoltageSupplier.get() + flywheelVoltageFF, 0, FlywheelConstants.maxMotorVoltage));
                 } else { // Run idle
                     if (outputs.leftMotorVelocityRPS < FlywheelConstants.idleMinVelocityRPS) {
                         flywheelIO.setRotorVoltage(FlywheelConstants.idleRecoveryVoltage);

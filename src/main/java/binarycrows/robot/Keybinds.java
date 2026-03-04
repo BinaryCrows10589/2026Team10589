@@ -10,6 +10,8 @@ import binarycrows.robot.SeasonCode.SubStateManagers.Hood.HoodSubStateManager;
 import binarycrows.robot.SeasonCode.SubStateManagers.Intake.Pivot.PivotStateRequest;
 import binarycrows.robot.SeasonCode.SubStateManagers.Intake.Pivot.PivotSubStateManager;
 import binarycrows.robot.SeasonCode.SubStateManagers.Intake.Rollers.IntakeRollersStateRequest;
+import binarycrows.robot.SeasonCode.SubStateManagers.Shooting.ShootingStateRequest;
+import binarycrows.robot.SeasonCode.SubStateManagers.Shooting.ShootingSubStateManager;
 import binarycrows.robot.SeasonCode.SubStateManagers.SwerveDrive.DriveStateRequest;
 import binarycrows.robot.SeasonCode.SubStateManagers.SwerveDrive.DriveSubStateManager;
 import binarycrows.robot.SeasonCode.SubStateManagers.Transit.TransitStateRequest;
@@ -19,7 +21,6 @@ import binarycrows.robot.SeasonCode.SubStateManagers.Turret.TurretSubStateManage
 import binarycrows.robot.SeasonCode.Utils.ButtonBoard;
 import binarycrows.robot.SeasonCode.Utils.ButtonBoard.ButtonBoardButtons;
 import binarycrows.robot.SeasonCode.Utils.Climbing;
-import binarycrows.robot.SeasonCode.Utils.Shooting;
 import binarycrows.robot.Utils.ConversionUtils;
 import binarycrows.robot.Utils.StateRequestUtils;
 import binarycrows.robot.Utils.Gamepad.GenericGamepad;
@@ -143,11 +144,11 @@ public class Keybinds {
 
         // Shooting
         buttonBoard1.onPress(ButtonBoardButtons.shoot, 
-            () -> {Shooting.isShooting = true;},
-            () -> {Shooting.isShooting = false;});
+            StateRequestUtils.createStateRequestRunnable(ShootingStateRequest.SHOOT),
+            StateRequestUtils.createStateRequestRunnable(ShootingStateRequest.STANDBY));
         buttonBoard1.onPress(ButtonBoardButtons.forceShoot,  
-            () -> {Shooting.isForceShooting = true;},
-            () -> {Shooting.isForceShooting = false;});
+            StateRequestUtils.createStateRequestRunnable(ShootingStateRequest.FORCE_SHOOT),
+            StateRequestUtils.createStateRequestRunnable(ShootingStateRequest.STANDBY));
         buttonBoard1.onPress(ButtonBoardButtons.increaseShooterFF, FlywheelSubStateManager.getInstance()::increaseShooterFF);
         buttonBoard1.onPress(ButtonBoardButtons.decreaseShooterFF, FlywheelSubStateManager.getInstance()::decreaseShooterFF);
         buttonBoard1.onPress(ButtonBoardButtons.flywheelReverse, 

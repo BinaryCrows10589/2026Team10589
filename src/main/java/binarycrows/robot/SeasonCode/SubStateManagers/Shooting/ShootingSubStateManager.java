@@ -1,8 +1,13 @@
-package binarycrows.robot.SeasonCode.Utils;
+package binarycrows.robot.SeasonCode.SubStateManagers.Shooting;
 
 import java.util.Arrays;
 import java.util.function.Supplier;
 
+import binarycrows.robot.MainStateManager;
+import binarycrows.robot.StateRequest;
+import binarycrows.robot.SubStateManager;
+import binarycrows.robot.Enums.StateRequestPriority;
+import binarycrows.robot.Enums.StateRequestStatus;
 import binarycrows.robot.SeasonCode.Constants.FlywheelConstants;
 import binarycrows.robot.SeasonCode.Constants.ShootingConstants;
 import binarycrows.robot.SeasonCode.SubStateManagers.CANdle.CANdleStateRequest;
@@ -10,38 +15,37 @@ import binarycrows.robot.SeasonCode.SubStateManagers.CANdle.CANdleSubStateManage
 import binarycrows.robot.SeasonCode.SubStateManagers.Flywheel.FlywheelSubStateManager;
 import binarycrows.robot.SeasonCode.SubStateManagers.Hood.HoodSubStateManager;
 import binarycrows.robot.SeasonCode.SubStateManagers.SwerveDrive.DriveSubStateManager;
+import binarycrows.robot.SeasonCode.SubStateManagers.Transit.TransitSubStateManager;
 import binarycrows.robot.SeasonCode.SubStateManagers.Turret.TurretSubStateManager;
-import binarycrows.robot.Utils.ConversionUtils;
-import binarycrows.robot.Utils.UnkeyedLerpTable;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
 
-public class Shooting {
-    public static boolean isShooting = false;
-    public static boolean isForceShooting = false;
-    public static boolean canShoot = false;
+public class ShootingSubStateManager extends SubStateManager<ShootingStateRequest> {
+    private boolean canShoot = false;
 
-    public static boolean closeToTrench = false;
+    private boolean closeToTrench = false;
 
-    public static double turretAngleRad;
-    public static double hoodAngleRad;
-    public static double flywheelVoltage;
-    public static double flywheelRPM;
+    public double turretAngleRad;
+    public double hoodAngleRad;
+    public double flywheelVoltage;
+    public double flywheelRPM;
 
-    private static Supplier<Double> turretDeltaSupplierRad;
-    private static Supplier<Double> hoodDeltaSupplierRad;
-    private static Supplier<Double> flywheelDeltaSupplierRPM;
+    private Supplier<Double> turretDeltaSupplierRad;
+    private Supplier<Double> hoodDeltaSupplierRad;
+    private Supplier<Double> flywheelDeltaSupplierRPM;
 
-    private static Supplier<Translation2d> linearVelocitySupplier;
-    private static Supplier<Pose2d> robotPoseSupplier;
-    private static Supplier<Pose2d> turretPoseSupplier;
+    private Supplier<Translation2d> linearVelocitySupplier;
+    private Supplier<Pose2d> robotPoseSupplier;
+    private Supplier<Pose2d> turretPoseSupplier;
 
-    private static Supplier<Double> flywheelRPMSupplier;
- 
+    private Supplier<Double> flywheelRPMSupplier;
 
-    public static void init() {
+    private Supplier<Boolean> outgoingFuelSensorSupplier;
+
+    public ShootingSubStateManager() {
+        super(new StateRequest<>(ShootingStateRequest.STANDBY, StateRequestPriority.NORMAL));
+
         turretDeltaSupplierRad = TurretSubStateManager.getInstance()::getDeltaRad;
         hoodDeltaSupplierRad = HoodSubStateManager.getInstance()::getDeltaRad;
         flywheelRPMSupplier = FlywheelSubStateManager.getInstance()::getRPM;
@@ -51,14 +55,19 @@ public class Shooting {
         robotPoseSupplier = DriveSubStateManager.getInstance()::getRobotPose;
         turretPoseSupplier = () -> {return robotPoseSupplier.get().transformBy(ShootingConstants.robotToTurret);};
 
+        outgoingFuelSensorSupplier = TransitSubStateManager.getInstance()::getOutgoingFuelSensorTripped;
+
 
         // Java is evil so the arrays need to be prepopulated
         for (Translation2d[] row : derivativesOfVelocity) Arrays.fill(row, Translation2d.kZero);
         Arrays.fill(valuesOfDerivatiesOfVelocity, Translation2d.kZero);
     }
 
+    public boolean getIsCloseToTrench() {return closeToTrench;}
+
+
     // TODO: Put reason on dashboard, maybe make Isaac's controller vibrate when we know a mechanism is screwed up (CAN stale, not moving, outside of mechanical range)
-    public static boolean getCanShoot() { // TODO: LED Suggestion is to have color for: has balls, full; can't shoot shown by flashing; 
+    public boolean getCanShoot() { // TODO: LED Suggestion is to have color for: has balls, full; can't shoot shown by flashing; 
         if (!robotOnCorrectSide || closeToTrench) {
             CANdleSubStateManager.setLEDs(CANdleStateRequest.SHOOT_BAD_WRONG_SIDE_OF_FIELD);
         } else if (!velocityInLargeBounds) {
@@ -86,68 +95,83 @@ public class Shooting {
         return false;
     }
 
-    public static void periodic() {
+    public void periodic() {
         canShoot = getCanShoot();
         double[] shootingParameters = calculate();
         turretAngleRad = shootingParameters[0];
         hoodAngleRad = shootingParameters[1];
         flywheelVoltage = FlywheelConstants.rpmToVoltage.get(shootingParameters[2]);
         flywheelRPM = shootingParameters[2];
+
+        switch (activeStateRequest.getStateRequestType()) {
+            case SHOOT_PRELOADS:
+                if (!outgoingFuelSensorSupplier.get()) { // All preloads must have been shot
+                    this.activeStateRequest.updateStatus(StateRequestStatus.FULFILLED);
+                }
+            default: break;
+        }
     }
 
-    public static boolean getShooting() {
-        return isShooting && canShoot || isForceShooting;
+    public boolean getShooting() {
+        switch (activeStateRequest.getStateRequestType()) {
+            case SHOOT: return canShoot;
+            case SHOOT_PRELOADS: return this.activeStateRequest.getStatus() != StateRequestStatus.FULFILLED; // Only shoot if we haven't shot all preloads (we will verify if shot is possible in testing)
+            case FORCE_SHOOT: return true;
+            default: return false;
+        }
     }
 
+    public double getTurretAngleRad() {
+        return turretAngleRad;
+    }
 
-    // Base table goes distance, hood angle, flywheel RPM, time of flight
-    public static final UnkeyedLerpTable baseTable = new UnkeyedLerpTable(new double[][] {
-        //           |distance|hood angle|flywheel|ToF|   
-        new double[] {0,       0,         0,       0}, // TO-DO: after tuning, do NOT leave 0,0,0 as a value
-        new double[] {9999,    9999,      9999,    9999}, // Will crash if there are not at least 2 values
-    }, 
-    false);
-    
-    
+    public double getHoodAngleRad() {
+        return hoodAngleRad;
+    }
 
+    public double getFlywheelVoltage() {
+        return flywheelVoltage;
+    }
+
+    
     // Calculation runtime variables
-    public static Translation2d targetPosition = new Translation2d(4.625594, 4.034536);
+    public Translation2d targetPosition = new Translation2d(4.625594, 4.034536);
 
-    private static Translation2d[][] derivativesOfVelocity =  new Translation2d[3][2];
-    private static Translation2d[] valuesOfDerivatiesOfVelocity = new Translation2d[2];
+    private Translation2d[][] derivativesOfVelocity =  new Translation2d[3][2];
+    private Translation2d[] valuesOfDerivatiesOfVelocity = new Translation2d[2];
 
-    private static double lookaheadTimeSeconds = 0.2f;
-    private static double phaseTimeSeconds = 0.03f;
+    private double lookaheadTimeSeconds = 0.2f;
+    private double phaseTimeSeconds = 0.03f;
 
-    private static double nextShotTime = -1;
-    private static boolean hasShotInCurrentPhase;
+    private double nextShotTime = -1;
+    private boolean hasShotInCurrentPhase;
 
-    private static boolean velocityInBounds = true;
-    private static boolean velocityInLargeBounds = true;
-    private static boolean accelerationInBounds = true;
-    private static boolean jerkInBounds = true;
-    private static boolean robotOnCorrectSide = true;
+    private boolean velocityInBounds = true;
+    private boolean velocityInLargeBounds = true;
+    private boolean accelerationInBounds = true;
+    private boolean jerkInBounds = true;
+    private boolean robotOnCorrectSide = true;
 
-    private static boolean distanceInBounds = true;
-    private static boolean distanceInLargeBounds = true;
+    private boolean distanceInBounds = true;
+    private boolean distanceInLargeBounds = true;
 
     // Helpers
 
-    public static double getAngle(double distance) {
-        return baseTable.get(distance, 1, 0);
+    public double getAngle(double distance) {
+        return ShootingConstants.baseTable.get(distance, 1, 0);
     }
-    public static double getTimeOfFlight(double distance) {
-        return baseTable.get(distance, 3, 0);
+    public double getTimeOfFlight(double distance) {
+        return ShootingConstants.baseTable.get(distance, 3, 0);
     }
-    public static double getRPM(double distance) {
-        return baseTable.get(distance, 2, 0);
+    public double getRPM(double distance) {
+        return ShootingConstants.baseTable.get(distance, 2, 0);
     }
 
     /**
      * Calculates optimal values for shooter control systems (shoot-on-the-move)
      * @return array containing turret angle in radians, hood angle in radians, and flywheel voltage
      */
-    public static double[] calculate()
+    public double[] calculate()
     {
         Translation2d velocity = linearVelocitySupplier.get(); 
         double velocityNorm = velocity.getNorm();
@@ -266,5 +290,9 @@ public class Shooting {
         
         return new double[] {turretAngle.getRadians(), hoodAngle, flywheelRPM};
         
+    }
+
+    public static ShootingSubStateManager getInstance() {
+        return (ShootingSubStateManager) MainStateManager.getInstance().resolveSubStateManager(ShootingStateRequest.class);
     }
 }
