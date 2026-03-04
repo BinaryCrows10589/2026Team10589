@@ -29,7 +29,8 @@ import edu.wpi.first.math.MathUtil;
 
 public class Keybinds {
     public static GenericGamepad driverController = new XboxGamepad(0);
-    public static GenericGamepad buttonBoard1 = new ButtonBoard(1);
+    public static GenericGamepad testController = new XboxGamepad(1);
+    public static GenericGamepad buttonBoard1 = new ButtonBoard(2);
 
 
     public static void periodic() {
@@ -95,6 +96,10 @@ public class Keybinds {
             DriveSubStateManager.getInstance()::enableSlowMode,
             DriveSubStateManager.getInstance()::disableSlowMode
         );
+
+        // Test Controller
+        
+        testController.onPress(XboxGamepad.XboxGamepadID.a, StateRequestUtils.createStateRequestRunnable(IntakeRollersStateRequest.INVERT));
 
         // Button Board
 
