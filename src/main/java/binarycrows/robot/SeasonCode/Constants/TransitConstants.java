@@ -6,11 +6,11 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.playingwithfusion.TimeOfFlight.RangingMode;
 
 public final class TransitConstants {
-    public static final InvertedValue longitudinalMasterMotorInverted = InvertedValue.Clockwise_Positive;
+    public static final InvertedValue longitudinalMotorInverted = InvertedValue.Clockwise_Positive;
     public static final InvertedValue latitudinalMasterMotorInverted = InvertedValue.Clockwise_Positive;
     public static final InvertedValue inAndUpMotorInverted = InvertedValue.Clockwise_Positive;
 
-    public static final NeutralModeValue longitudinalMasterMotorNeutralMode = NeutralModeValue.Coast;
+    public static final NeutralModeValue longitudinalMotorNeutralMode = NeutralModeValue.Coast;
     public static final NeutralModeValue latitudinalMasterMotorNeutralMode = NeutralModeValue.Coast;
     public static final NeutralModeValue inAndUpMotorNeutralMode = NeutralModeValue.Coast;
 

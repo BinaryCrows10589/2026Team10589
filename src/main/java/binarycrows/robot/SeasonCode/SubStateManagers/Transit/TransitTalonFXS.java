@@ -4,6 +4,7 @@ import com.ctre.phoenix6.configs.TalonFXSConfiguration;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFXS;
+import com.ctre.phoenix6.signals.MotorArrangementValue;
 
 import binarycrows.robot.SeasonCode.Constants.CANIDs;
 import binarycrows.robot.SeasonCode.Constants.TransitConstants;
@@ -12,46 +13,34 @@ public class TransitTalonFXS implements TransitIO {
 
     public TransitOutputs outputs;
     
-    private TalonFXS leftLongitudinalMotor;
-    private TalonFXS rightLongitudinalMotor;
+    private TalonFXS longitudinalMotor;
     private TalonFXS leftLatitudinalMotor;
     private TalonFXS rightLatitudinalMotor;
     private TalonFXS inAndUpMotor;
 
-    private VoltageOut longitudinalMasterMotorVoltageRequest = new VoltageOut(0);
+    private VoltageOut longitudinalMotorVoltageRequest = new VoltageOut(0);
     private VoltageOut latitudinalMasterMotorVoltageRequest = new VoltageOut(0);
     private VoltageOut inAndUpMotorVoltageRequest = new VoltageOut(0);
 
     public TransitTalonFXS(TransitOutputs outputs) {
         this.outputs = outputs;
         // Left Longitudinal Motor
-        leftLongitudinalMotor = new TalonFXS(CANIDs.RIO.leftLongitudinalMotor);
+        longitudinalMotor = new TalonFXS(CANIDs.RIO.longitudinalMotor);
 
-        TalonFXSConfiguration longitudinalMasterMotorConfig = new TalonFXSConfiguration();
-        longitudinalMasterMotorConfig.MotorOutput.Inverted = TransitConstants.longitudinalMasterMotorInverted;
-        longitudinalMasterMotorConfig.MotorOutput.NeutralMode = TransitConstants.longitudinalMasterMotorNeutralMode;
+        TalonFXSConfiguration longitudinalMotorConfig = new TalonFXSConfiguration();
+        longitudinalMotorConfig.MotorOutput.Inverted = TransitConstants.longitudinalMotorInverted;
+        longitudinalMotorConfig.MotorOutput.NeutralMode = TransitConstants.longitudinalMotorNeutralMode;
+        longitudinalMotorConfig.Commutation.MotorArrangement = MotorArrangementValue.Minion_JST;
 
-        this.leftLongitudinalMotor.getVelocity().setUpdateFrequency(20);
-        this.leftLongitudinalMotor.getAcceleration().setUpdateFrequency(20);
-        this.leftLongitudinalMotor.getPosition().setUpdateFrequency(20);
-        this.leftLongitudinalMotor.getTorqueCurrent().setUpdateFrequency(50);
+        this.longitudinalMotor.getVelocity().setUpdateFrequency(20);
+        this.longitudinalMotor.getAcceleration().setUpdateFrequency(20);
+        this.longitudinalMotor.getPosition().setUpdateFrequency(20);
+        this.longitudinalMotor.getTorqueCurrent().setUpdateFrequency(50);
 
-        longitudinalMasterMotorConfig.Voltage.PeakForwardVoltage = TransitConstants.maxLongitudinalMotorVoltage;
-        longitudinalMasterMotorConfig.Voltage.PeakReverseVoltage = -TransitConstants.maxLongitudinalMotorVoltage;
+        longitudinalMotorConfig.Voltage.PeakForwardVoltage = TransitConstants.maxLongitudinalMotorVoltage;
+        longitudinalMotorConfig.Voltage.PeakReverseVoltage = -TransitConstants.maxLongitudinalMotorVoltage;
 
-        this.leftLongitudinalMotor.getConfigurator().apply(longitudinalMasterMotorConfig);
-        
-        // Right Longitudinal Motor
-        rightLongitudinalMotor = new TalonFXS(CANIDs.RIO.rightLongitudinalMotor);
-
-        this.rightLongitudinalMotor.getVelocity().setUpdateFrequency(20);
-        this.rightLongitudinalMotor.getAcceleration().setUpdateFrequency(20);
-        this.rightLongitudinalMotor.getPosition().setUpdateFrequency(20);
-        this.rightLongitudinalMotor.getTorqueCurrent().setUpdateFrequency(50);
-
-        this.rightLongitudinalMotor.getConfigurator().apply(longitudinalMasterMotorConfig);
-
-        rightLongitudinalMotor.setControl(new Follower(leftLongitudinalMotor.getDeviceID(), TransitConstants.isLongitudinalSlaveReversed));
+        this.longitudinalMotor.getConfigurator().apply(longitudinalMotorConfig);
 
         // Left Latitudinal Motor
         leftLatitudinalMotor = new TalonFXS(CANIDs.RIO.leftLatitudinalMotor);
@@ -59,6 +48,7 @@ public class TransitTalonFXS implements TransitIO {
         TalonFXSConfiguration latitudinalMasterMotorConfig = new TalonFXSConfiguration();
         latitudinalMasterMotorConfig.MotorOutput.Inverted = TransitConstants.latitudinalMasterMotorInverted;
         latitudinalMasterMotorConfig.MotorOutput.NeutralMode = TransitConstants.latitudinalMasterMotorNeutralMode;
+        latitudinalMasterMotorConfig.Commutation.MotorArrangement = MotorArrangementValue.Minion_JST;
 
         this.leftLatitudinalMotor.getVelocity().setUpdateFrequency(20);
         this.leftLatitudinalMotor.getAcceleration().setUpdateFrequency(20);
@@ -108,8 +98,8 @@ public class TransitTalonFXS implements TransitIO {
 
     @Override
     public void setLongitudinalVoltage(double rotorVoltage) {
-        longitudinalMasterMotorVoltageRequest = new VoltageOut(rotorVoltage);
-        leftLongitudinalMotor.setControl(longitudinalMasterMotorVoltageRequest);
+        longitudinalMotorVoltageRequest = new VoltageOut(rotorVoltage);
+        longitudinalMotor.setControl(longitudinalMotorVoltageRequest);
     }
     
     @Override
@@ -120,15 +110,11 @@ public class TransitTalonFXS implements TransitIO {
 
     @Override
     public void update() {
-        outputs.leftLongitudinalMotorVelocityRPS = leftLongitudinalMotor.getVelocity().getValueAsDouble();
-        outputs.leftLongitudinalMotorAppliedVoltage = leftLongitudinalMotor.getMotorVoltage().getValueAsDouble();
-        outputs.leftLongitudinalMotorSupplyAmps = leftLongitudinalMotor.getSupplyCurrent().getValueAsDouble();
-        outputs.leftLongitudinalMotorTorqueAmps = leftLongitudinalMotor.getTorqueCurrent().getValueAsDouble();
+        outputs.longitudinalMotorVelocityRPS = longitudinalMotor.getVelocity().getValueAsDouble();
+        outputs.longitudinalMotorAppliedVoltage = longitudinalMotor.getMotorVoltage().getValueAsDouble();
+        outputs.longitudinalMotorSupplyAmps = longitudinalMotor.getSupplyCurrent().getValueAsDouble();
+        outputs.longitudinalMotorTorqueAmps = longitudinalMotor.getTorqueCurrent().getValueAsDouble();
 
-        outputs.rightLongitudinalMotorVelocityRPS = rightLongitudinalMotor.getVelocity().getValueAsDouble();
-        outputs.rightLongitudinalMotorAppliedVoltage = rightLongitudinalMotor.getMotorVoltage().getValueAsDouble();
-        outputs.rightLongitudinalMotorSupplyAmps = rightLongitudinalMotor.getSupplyCurrent().getValueAsDouble();
-        outputs.rightLongitudinalMotorTorqueAmps = rightLongitudinalMotor.getTorqueCurrent().getValueAsDouble();
 
         outputs.leftLatitudinalMotorVelocityRPS = leftLatitudinalMotor.getVelocity().getValueAsDouble();
         outputs.leftLatitudinalMotorAppliedVoltage = leftLatitudinalMotor.getMotorVoltage().getValueAsDouble();

@@ -1,13 +1,11 @@
 package binarycrows.robot.SeasonCode.SubStateManagers.Intake.Rollers;
 
 import com.ctre.phoenix6.configs.TalonFXSConfiguration;
-import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFXS;
-import com.ctre.phoenix6.signals.NeutralModeValue;
+import com.ctre.phoenix6.signals.MotorArrangementValue;
 
 import binarycrows.robot.SeasonCode.Constants.CANIDs;
-import binarycrows.robot.SeasonCode.Constants.FlywheelConstants;
 import binarycrows.robot.SeasonCode.Constants.IntakeConstants;
 
 public class IntakeRollersTalonFXS implements IntakeRollersIO {
@@ -27,6 +25,7 @@ public class IntakeRollersTalonFXS implements IntakeRollersIO {
         TalonFXSConfiguration motorConfig = new TalonFXSConfiguration();
         motorConfig.MotorOutput.Inverted = IntakeConstants.Rollers.masterMotorInverted;
         motorConfig.MotorOutput.NeutralMode = IntakeConstants.Rollers.motorNeutralMode;
+        motorConfig.Commutation.MotorArrangement = MotorArrangementValue.Minion_JST;
 
         this.motor.getVelocity().setUpdateFrequency(20);
         this.motor.getAcceleration().setUpdateFrequency(20);

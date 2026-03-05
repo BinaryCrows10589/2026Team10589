@@ -4,10 +4,9 @@ import com.ctre.phoenix6.configs.TalonFXSConfiguration;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFXS;
-import com.ctre.phoenix6.signals.NeutralModeValue;
+import com.ctre.phoenix6.signals.MotorArrangementValue;
 
 import binarycrows.robot.SeasonCode.Constants.CANIDs;
-import binarycrows.robot.SeasonCode.Constants.FlywheelConstants;
 import binarycrows.robot.SeasonCode.Constants.IntakeConstants;
 
 public class IntakeRollersDualTalonFXS implements IntakeRollersIO {
@@ -28,6 +27,7 @@ public class IntakeRollersDualTalonFXS implements IntakeRollersIO {
         TalonFXSConfiguration masterMotorConfig = new TalonFXSConfiguration();
         masterMotorConfig.MotorOutput.Inverted = IntakeConstants.Rollers.masterMotorInverted;
         masterMotorConfig.MotorOutput.NeutralMode = IntakeConstants.Rollers.motorNeutralMode;
+        masterMotorConfig.Commutation.MotorArrangement = MotorArrangementValue.Minion_JST;
 
         this.leftMotor.getVelocity().setUpdateFrequency(20);
         this.leftMotor.getAcceleration().setUpdateFrequency(20);

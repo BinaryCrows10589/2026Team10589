@@ -1,23 +1,10 @@
 package binarycrows.robot.SeasonCode.SubStateManagers.Intake.Pivot;
 
-import com.ctre.phoenix6.configs.TalonFXConfiguration;
-import com.ctre.phoenix6.configs.TalonFXSConfiguration;
-import com.ctre.phoenix6.controls.Follower;
-import com.ctre.phoenix6.controls.PositionDutyCycle;
-import com.ctre.phoenix6.controls.VoltageOut;
-import com.ctre.phoenix6.hardware.TalonFX;
-import com.ctre.phoenix6.hardware.TalonFXS;
 import com.ctre.phoenix6.signals.MotorAlignmentValue;
-import com.ctre.phoenix6.signals.NeutralModeValue;
-
-import binarycrows.robot.SeasonCode.Constants.CANIDs;
 import binarycrows.robot.SeasonCode.Constants.HoodConstants;
 import binarycrows.robot.SeasonCode.Constants.IntakeConstants;
-import binarycrows.robot.SeasonCode.Constants.IntakeConstants.Pivot;
 import binarycrows.robot.SeasonCode.Constants.MetaConstants;
-import binarycrows.robot.SeasonCode.Constants.TurretConstants;
 import binarycrows.robot.Utils.Tuning.RuntimeTunablePIDValues;
-import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.system.plant.DCMotor;

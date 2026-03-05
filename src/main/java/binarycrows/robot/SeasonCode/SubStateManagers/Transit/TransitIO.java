@@ -13,15 +13,10 @@ public interface TransitIO {
         public double rightLatitudinalMotorSupplyAmps = 0;
         public double rightLatitudinalMotorTorqueAmps = 0;
 
-        public double leftLongitudinalMotorVelocityRPS = 0;
-        public double leftLongitudinalMotorAppliedVoltage = 0;
-        public double leftLongitudinalMotorSupplyAmps = 0;
-        public double leftLongitudinalMotorTorqueAmps = 0;
-
-        public double rightLongitudinalMotorVelocityRPS = 0;
-        public double rightLongitudinalMotorAppliedVoltage = 0;
-        public double rightLongitudinalMotorSupplyAmps = 0;
-        public double rightLongitudinalMotorTorqueAmps = 0;
+        public double longitudinalMotorVelocityRPS = 0;
+        public double longitudinalMotorAppliedVoltage = 0;
+        public double longitudinalMotorSupplyAmps = 0;
+        public double longitudinalMotorTorqueAmps = 0;
 
         public double inAndUpMotorVelocityRPS = 0;
         public double inAndUpMotorAppliedVoltage = 0;

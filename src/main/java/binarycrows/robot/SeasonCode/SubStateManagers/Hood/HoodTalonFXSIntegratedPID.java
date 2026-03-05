@@ -8,6 +8,7 @@ import com.ctre.phoenix6.controls.PositionDutyCycle;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFXS;
+import com.ctre.phoenix6.signals.MotorArrangementValue;
 import com.ctre.phoenix6.signals.SensorDirectionValue;
 
 import binarycrows.robot.SeasonCode.Constants.CANIDs;
@@ -40,6 +41,7 @@ public class HoodTalonFXSIntegratedPID implements HoodIO {
         TalonFXSConfiguration motorConfig = new TalonFXSConfiguration();
         motorConfig.MotorOutput.Inverted = HoodConstants.motorInverted;
         motorConfig.MotorOutput.NeutralMode = HoodConstants.motorNeutralMode;
+        motorConfig.Commutation.MotorArrangement = MotorArrangementValue.Minion_JST;
 
         this.hoodMotor.getVelocity().setUpdateFrequency(20);
         this.hoodMotor.getAcceleration().setUpdateFrequency(20);

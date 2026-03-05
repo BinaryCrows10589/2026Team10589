@@ -6,6 +6,7 @@ import com.ctre.phoenix6.configs.TalonFXSConfiguration;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFXS;
+import com.ctre.phoenix6.signals.MotorArrangementValue;
 import com.ctre.phoenix6.signals.SensorDirectionValue;
 
 import binarycrows.robot.SeasonCode.Constants.CANIDs;
@@ -13,7 +14,6 @@ import binarycrows.robot.SeasonCode.Constants.HoodConstants;
 import binarycrows.robot.SeasonCode.Constants.MetaConstants;
 import binarycrows.robot.SeasonCode.Constants.SwerveDriveConstants;
 import binarycrows.robot.Utils.Tuning.RuntimeTunablePIDValues;
-import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
@@ -43,6 +43,7 @@ public class HoodTalonFXSWPILibPID implements HoodIO {
         TalonFXSConfiguration motorConfig = new TalonFXSConfiguration();
         motorConfig.MotorOutput.Inverted = HoodConstants.motorInverted;
         motorConfig.MotorOutput.NeutralMode = HoodConstants.motorNeutralMode;
+        motorConfig.Commutation.MotorArrangement = MotorArrangementValue.Minion_JST;
 
         this.hoodMotor.getVelocity().setUpdateFrequency(20);
         this.hoodMotor.getAcceleration().setUpdateFrequency(20);
