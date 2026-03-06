@@ -31,6 +31,10 @@ public class FlywheelSubStateManager extends SubStateManager<FlywheelStateReques
 
         flywheelIO = MetaConstants.isReal ? new FlywheelTalonFX(outputs) : new FlywheelSim(outputs);
 
+        
+    }
+
+    public void setupSuppliers() {
         isShootingSupplier = ShootingSubStateManager.getInstance()::getShooting;
         flywheelVoltageSupplier = ShootingSubStateManager.getInstance()::getFlywheelVoltage;
     }

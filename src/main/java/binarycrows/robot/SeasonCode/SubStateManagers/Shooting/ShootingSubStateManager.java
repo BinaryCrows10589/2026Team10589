@@ -45,7 +45,13 @@ public class ShootingSubStateManager extends SubStateManager<ShootingStateReques
 
     public ShootingSubStateManager() {
         super(new StateRequest<>(ShootingStateRequest.STANDBY, StateRequestPriority.NORMAL));
+        // Java is evil so the arrays need to be prepopulated
+        for (Translation2d[] row : derivativesOfVelocity) Arrays.fill(row, Translation2d.kZero);
+        Arrays.fill(valuesOfDerivatiesOfVelocity, Translation2d.kZero);
+    }
 
+    @Override
+    public void setupSuppliers() {
         turretDeltaSupplierRad = TurretSubStateManager.getInstance()::getDeltaRad;
         hoodDeltaSupplierRad = HoodSubStateManager.getInstance()::getDeltaRad;
         flywheelRPMSupplier = FlywheelSubStateManager.getInstance()::getRPM;
@@ -56,11 +62,6 @@ public class ShootingSubStateManager extends SubStateManager<ShootingStateReques
         turretPoseSupplier = () -> {return robotPoseSupplier.get().transformBy(ShootingConstants.robotToTurret);};
 
         outgoingFuelSensorSupplier = TransitSubStateManager.getInstance()::getOutgoingFuelSensorTripped;
-
-
-        // Java is evil so the arrays need to be prepopulated
-        for (Translation2d[] row : derivativesOfVelocity) Arrays.fill(row, Translation2d.kZero);
-        Arrays.fill(valuesOfDerivatiesOfVelocity, Translation2d.kZero);
     }
 
     public boolean getIsCloseToTrench() {return closeToTrench;}

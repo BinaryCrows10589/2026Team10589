@@ -33,8 +33,12 @@ public class TransitSubStateManager  extends SubStateManager<TransitStateRequest
         transitIO = new TransitTalonFXS(transitOutputs);
         sensorsIO = new SensorsPWF(sensorOutputs);
 
-        shooting = ShootingSubStateManager.getInstance()::getShooting;
 
+    }
+
+    @Override
+    public void setupSuppliers() {
+        shooting = ShootingSubStateManager.getInstance()::getShooting;
     }
 
     @Override

@@ -33,9 +33,14 @@ public class TurretSubStateManager extends SubStateManager<TurretStateRequest> {
 
         turret = new Turret(MetaConstants.isReal ? new TurretTalonFX(outputs) : new TurretSim(outputs));
 
+        
+
+    }
+
+    @Override
+    public void setupSuppliers() {
         shooting = ShootingSubStateManager.getInstance()::getShooting;
         shootingTurretAngleRad = ShootingSubStateManager.getInstance()::getTurretAngleRad;
-
     }
 
     @Override

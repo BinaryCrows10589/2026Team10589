@@ -23,6 +23,8 @@ public class SubStateManager<TYPE extends Enum<TYPE>> {
         if (activeStateRequest == null) activeStateRequest = defaultState;
     }
 
+    public void setupSuppliers() {}
+
     /**
      * Accepts a state request and resolves whether it should replace the current state request.
      * @param request

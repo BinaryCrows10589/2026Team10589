@@ -39,6 +39,10 @@ public class MainStateManager extends Thread {
             subStateManagerTypeLookup.put(subStateManager.getStateRequestType(), subStateManager);
         });
         StateTable.log("SubStateManagerTypeLookup", subStateManagerTypeLookup.toString());
+
+        subStateManagerArray.forEach((SubStateManager subStateManager) -> {
+            subStateManager.setupSuppliers();
+        });
     }
 
     public void run() {
