@@ -48,7 +48,7 @@ public final class TurretConstants {
 
     public static final LerpTable velocityToVoltageLerpTable = MetaConstants.isReal ? 
     // Real
-    new LerpTable(new double[] {}, new double[] {}, true) 
+    new LerpTable(new double[] {0, 0}, new double[] {0, 0}, true) 
     : 
     // Sim
     new LerpTable(

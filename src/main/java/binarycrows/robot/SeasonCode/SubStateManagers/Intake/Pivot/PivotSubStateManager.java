@@ -5,9 +5,7 @@ import binarycrows.robot.StateRequest;
 import binarycrows.robot.StateTable;
 import binarycrows.robot.SubStateManager;
 import binarycrows.robot.Enums.StateRequestPriority;
-import binarycrows.robot.SeasonCode.Constants.ClimberConstants;
 import binarycrows.robot.SeasonCode.Constants.IntakeConstants;
-import binarycrows.robot.SeasonCode.SubStateManagers.Climber.ClimberStateRequest;
 import binarycrows.robot.SeasonCode.SubStateManagers.Intake.Pivot.PivotIO.PivotOutputs;
 import binarycrows.robot.Utils.Tuning.RuntimeTunableValue;
 
@@ -80,9 +78,11 @@ public class PivotSubStateManager extends SubStateManager<PivotStateRequest>  {
         }
 
         StateTable.log("Intake/Pivot/PositionDelta", delta);
-
+        /* 
         if (runRaisedPID) pivot.setPIDTarget(IntakeConstants.Pivot.pivotRaisedPosition);
         else pivot.setVoltage(voltage);
+        */
+        pivot.setVoltage(0);
 
         
     }

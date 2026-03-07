@@ -98,7 +98,7 @@ public class Robot extends LoggedRobot {
         new PivotSubStateManager(),
         new HoodSubStateManager(),
         new FlywheelSubStateManager(),
-        new ClimberSubStateManager(),
+        //new ClimberSubStateManager(),
         new CANdleSubStateManager(),
         new ShootingSubStateManager()
       );

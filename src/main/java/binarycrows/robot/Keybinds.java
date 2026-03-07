@@ -161,7 +161,8 @@ public class Keybinds {
         StateRequestUtils.createStateRequestRunnable(FlywheelStateRequest.SHOOT_ON_THE_MOVE));
         
         // Climber
-        buttonBoard1.onPress(ButtonBoardButtons.climbLeft, Climbing::climbLeft, Climbing::cancelClimb);
+        
+        /*buttonBoard1.onPress(ButtonBoardButtons.climbLeft, Climbing::climbLeft, Climbing::cancelClimb);
         buttonBoard1.onPress(ButtonBoardButtons.climbRight, Climbing::climbRight, Climbing::cancelClimb);
         buttonBoard1.onPress(ButtonBoardButtons.climbCenterLeft, Climbing::climbCenterLeft, Climbing::cancelClimb);
         buttonBoard1.onPress(ButtonBoardButtons.climbCenterRight, Climbing::climbCenterRight, Climbing::cancelClimb);
@@ -172,7 +173,7 @@ public class Keybinds {
         ClimberSubStateManager.getInstance()::manualStop);
         buttonBoard1.onPress(ButtonBoardButtons.manualClimberDown, 
         ClimberSubStateManager.getInstance()::manualDown, 
-        ClimberSubStateManager.getInstance()::manualStop);
+        ClimberSubStateManager.getInstance()::manualStop);*/
 
         // Switches
         buttonBoard1.onPress(ButtonBoardButtons.manualIntakeSwitch,
