@@ -55,22 +55,25 @@ public class PivotSubStateManager extends SubStateManager<PivotStateRequest>  {
         switch (this.activeStateRequest.getStateRequestType()) {
             case DOWN:
                 delta = IntakeConstants.Pivot.pivotDownPosition.minus(outputs.encoderRotation).getDegrees();
-                if (delta < -80) voltage = -1;
-                else voltage = -0.1;
+                if (delta > 80) voltage = 1;
+                else if (delta > 45) voltage = 0.5;
+                else if (delta > 20) voltage = 0.25;
+                else if (delta > 5) voltage = 0.15;
+                else voltage = 0;
                 break;
             case RAISED:
                 delta = IntakeConstants.Pivot.pivotRaisedPosition.minus(outputs.encoderRotation).getDegrees();
-                if (delta > 25) voltage = .1;
-                else if (delta < 25) voltage = -.1;
+                if (delta > 25) voltage = .15;
+                else if (delta < 25) voltage = -.25;
                 else runRaisedPID = true;
                 break;
             case UP:
                 delta = IntakeConstants.Pivot.pivotUpPosition.minus(outputs.encoderRotation).getDegrees();
-                if (delta > 80) voltage = 1;
-                else if (delta > 45) voltage = 0.75;
-                else if (delta > 25) voltage = 0.5;
-                else if (delta > 5) voltage = 0.25;
-                else voltage = 0.1;
+                if (delta < -80) voltage = -1;
+                else if (delta < -45) voltage = -0.75;
+                else if (delta < -25) voltage = -0.5;
+                else if (delta < -5) voltage = -0.25;
+                else voltage = 0;
                 break;
             case MANUAL_OVERRIDE:
                 voltage = manualDirection * IntakeConstants.Pivot.manualVoltage + outputs.encoderRotation.getCos() * IntakeConstants.Pivot.manualVoltageFF;
@@ -78,11 +81,9 @@ public class PivotSubStateManager extends SubStateManager<PivotStateRequest>  {
         }
 
         StateTable.log("Intake/Pivot/PositionDelta", delta);
-        /* 
+
         if (runRaisedPID) pivot.setPIDTarget(IntakeConstants.Pivot.pivotRaisedPosition);
         else pivot.setVoltage(voltage);
-        */
-        pivot.setVoltage(0);
 
         
     }

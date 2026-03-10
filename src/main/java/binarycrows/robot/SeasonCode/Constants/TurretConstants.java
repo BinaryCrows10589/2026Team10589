@@ -14,37 +14,41 @@ public final class TurretConstants {
     public static final double turretPIDValueD = 0;
     public static final double turretPIDValueFF = 0;
 
-    public static final double maximumVoltage = .5;
+    public static final double maximumVoltage = 4;
 
-    public static final Rotation2d turretEncoderOffset = Rotation2d.fromRotations(0.0);
+    public static final Rotation2d turretEncoderOffset = Rotation2d.fromRotations(0.501709);
 
     public static final InvertedValue motorInverted = InvertedValue.Clockwise_Positive;
-    public static final NeutralModeValue motorNeutralMode = NeutralModeValue.Brake;
+    public static final NeutralModeValue motorNeutralMode = NeutralModeValue.Coast;
 
-    public static double correctionVelocityRadPerSec = MetaConstants.isReal ? 0 : 0.75;
-    public static Rotation2d correctionZone = MetaConstants.isReal ? Rotation2d.fromDegrees(0) : Rotation2d.fromDegrees(20);
+    public static double correctionVelocityRadPerSec = MetaConstants.isReal ? 2 : 0.75;
+    public static Rotation2d correctionZone = MetaConstants.isReal ? Rotation2d.fromDegrees(10) : Rotation2d.fromDegrees(20);
 
-    public static double decelerationBufferRad = MetaConstants.isReal ? 0 : 0.025;
+    public static double decelerationBufferRad = MetaConstants.isReal ? 0.025 : 0.025;
 
-    public static double startingVelocityRadPerSec = MetaConstants.isReal ? 0 : 0.1;
+    public static double startingVelocityRadPerSec = MetaConstants.isReal ? 2 : 0.1;
 
-    public static double correctionFactorTuningDeltaThresholdRad = MetaConstants.isReal ? 0 : 0.05;
+    public static double correctionFactorTuningDeltaThresholdRad = MetaConstants.isReal ? 0.05 : 0.05;
 
-    public static double maxTurretVelocityRadPerSec = MetaConstants.isReal ? 0 : 12;
+    public static double maxTurretVelocityRadPerSec = MetaConstants.isReal ? 4 : 12;
     public static double minTurretVelocityRadPerSec = correctionVelocityRadPerSec;
 
-    public static double maxAccelerationPerFrameRadPerSecPerSec = MetaConstants.isReal ? 0 : 40;
-    public static double maxDecelerationPerFrameRadPerSecPerSec = MetaConstants.isReal ? 0 : 200; // Will need to be significantly higher than max
+    public static double maxAccelerationPerFrameRadPerSecPerSec = MetaConstants.isReal ? 5 : 40;
+    public static double maxDecelerationPerFrameRadPerSecPerSec = MetaConstants.isReal ? 10 : 200; // Will need to be significantly higher than max
 
     public static final double minimumRotationRad = -5 * Math.PI / 4; // 5pi/4 = 225 degrees, or 45 more than 180
     public static final double maximumRotationRad = 5 * Math.PI / 4;
     public static final double idealMinimumRotationRad = -Math.PI;
     public static final double idealMaximumRotationRad = Math.PI;
 
-    public static final double encoderReadingAtMaxRotation = 0.9;
-    public static final double encoderReadingAtMinRotation = 0;
+    public static final double encoderReadingAtMaxRotation = 0.8;
+    public static final double encoderReadingAtMinRotation = 0.2;
 
     public static final double manualVoltage = .25;
+
+    public static final double velocityToVoltage(double velocityRadPerSec) {
+        return 0.483*velocityRadPerSec + 0.272;
+    }
 
     public static final LerpTable velocityToVoltageLerpTable = MetaConstants.isReal ? 
     // Real

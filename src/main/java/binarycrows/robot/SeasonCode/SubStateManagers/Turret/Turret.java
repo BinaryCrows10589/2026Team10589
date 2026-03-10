@@ -201,7 +201,7 @@ public class Turret {
 
         desiredVelocityRadPerSec = Math.signum(desiredVelocityRadPerSec) * Math.min(Math.abs(desiredVelocityRadPerSec), TurretConstants.maxTurretVelocityRadPerSec);
         
-        turretIO.setRotorVoltage(TurretConstants.velocityToVoltageLerpTable.get(desiredVelocityRadPerSec));
+        turretIO.setRotorVoltage(TurretConstants.velocityToVoltage(desiredVelocityRadPerSec));
 
     }
 
@@ -214,7 +214,7 @@ public class Turret {
     }
 
     public void setTurretVelocity(double velocityRadPerSec) {
-        turretIO.setRotorVoltage(TurretConstants.velocityToVoltageLerpTable.get(velocityRadPerSec));
+        turretIO.setRotorVoltage(TurretConstants.velocityToVoltage(velocityRadPerSec));
     }
 
     public void setTargetTurretPosition(double targetPosition) {

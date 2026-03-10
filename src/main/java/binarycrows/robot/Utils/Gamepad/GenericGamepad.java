@@ -65,7 +65,7 @@ public class GenericGamepad {
 
     public void onPress(int buttonIndex, Runnable onPress, Runnable onRelease) {
         buttonMap[buttonIndex][0] = onPress;
-        buttonMap[buttonIndex][1] = onPress;
+        buttonMap[buttonIndex][1] = onRelease;
     }
 
     public void onRelease(int buttonIndex, StateRequest onRelease) {

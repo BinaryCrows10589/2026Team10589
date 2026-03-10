@@ -1,5 +1,6 @@
 package binarycrows.robot.SeasonCode.SubStateManagers.Turret;
 
+import java.util.ArrayList;
 import java.util.function.Supplier;
 
 import binarycrows.robot.MainStateManager;
@@ -26,6 +27,15 @@ public class TurretSubStateManager extends SubStateManager<TurretStateRequest> {
     private Supplier<Boolean> shooting;
     private Supplier<Double> shootingTurretAngleRad;
 
+    private ArrayList<Double> voltageToVelocityRadPerSecTable = new ArrayList<>();
+    private ArrayList<Double> voltageToVelocityVoltageTable = new ArrayList<>();
+    private double voltageIncrement = 0.2;
+    private double startVoltage = 0;
+    private double endVoltage = 8;
+    private int framesPerIncrement = 25;
+    private int frameCounter = 0;
+    private double voltageCounter = 0;
+
     public TurretSubStateManager() {
         super(new StateRequest<TurretStateRequest>(TurretStateRequest.SHOOT_ON_THE_MOVE, StateRequestPriority.NORMAL));
 
@@ -46,6 +56,15 @@ public class TurretSubStateManager extends SubStateManager<TurretStateRequest> {
     @Override
     public void recieveStateRequest(StateRequest<TurretStateRequest> request) {
         super.recieveStateRequest(request);
+
+        if (activeStateRequest == request) {
+
+            if (activeStateRequest.getStateRequestType() == TurretStateRequest.CONSTRUCT_VOLTAGE_TABLE) {
+                frameCounter = 0;
+                voltageCounter = 0;
+            }
+
+        }
     }
 
     @Override
@@ -61,10 +80,46 @@ public class TurretSubStateManager extends SubStateManager<TurretStateRequest> {
                 break;
             case SHOOT_ON_THE_MOVE:
                 turret.setTargetAngle(Rotation2d.fromRadians(shootingTurretAngleRad.get()), shooting.get());
+                StateTable.log("Turret/ShootOnTheMoveTargetAngleRad", shootingTurretAngleRad.get());
+                break;
+            case CONSTRUCT_VOLTAGE_TABLE:
+                
+                if (frameCounter > framesPerIncrement){
+                    voltageToVelocityRadPerSecTable.add(outputs.turretRotationalVelocityRadPerSec);
+                    voltageToVelocityVoltageTable.add(voltageCounter);
+                    frameCounter = 0;
+                    voltageCounter += voltageIncrement;
+                }
+                frameCounter++;
+                if (voltageCounter > endVoltage) {
+                    turret.setTurretVoltage(0);
+                } else {
+                    turret.setTurretVoltage(voltageCounter);
+
+                }
+                StateTable.log("Turret/Table/RotVelRadPerSec", convertLogArray(voltageToVelocityRadPerSecTable));
+                StateTable.log("Turret/Table/RotVelVoltage", convertLogArray(voltageToVelocityVoltageTable.toArray()));
                 break;
         }
          
 
+    }
+
+    private static double[] convertLogArray(Object[] array) {
+        double[] v = new double[array.length];
+        int i = 0;
+        for(Object item : array) {
+            v[i++] = (double) item;
+        }
+        return v;
+    }
+    private static double[] convertLogArray(ArrayList<Double> array) {
+        double[] v = new double[array.size()];
+        int i = 0;
+        for(Object item : array) {
+            v[i++] = (double) item;
+        }
+        return v;
     }
 
     public static TurretSubStateManager getInstance() {

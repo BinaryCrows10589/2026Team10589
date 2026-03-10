@@ -3,6 +3,7 @@ package binarycrows.robot.SeasonCode.SubStateManagers.Shooting;
 import java.util.Arrays;
 import java.util.function.Supplier;
 
+import binarycrows.robot.Keybinds;
 import binarycrows.robot.MainStateManager;
 import binarycrows.robot.StateRequest;
 import binarycrows.robot.SubStateManager;
@@ -99,7 +100,8 @@ public class ShootingSubStateManager extends SubStateManager<ShootingStateReques
     public void periodic() {
         canShoot = getCanShoot();
         double[] shootingParameters = calculate();
-        turretAngleRad = shootingParameters[0];
+        Rotation2d testAngle = Keybinds.getTestAngle();
+        if (testAngle != null) turretAngleRad = testAngle.getRadians();//shootingParameters[0];
         hoodAngleRad = shootingParameters[1];
         flywheelVoltage = FlywheelConstants.rpmToVoltage.get(shootingParameters[2]);
         flywheelRPM = shootingParameters[2];

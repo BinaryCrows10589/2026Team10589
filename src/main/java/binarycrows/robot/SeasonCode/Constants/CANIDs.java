@@ -37,8 +37,7 @@ public final class CANIDs {
         public static final int rightPivotMotor = 9;
         public static final int pivotEncoder = 10;
 
-        public static final int longitudinalMotor = 11;
-        public static final int rightLongitudinalMotor = 12;
+        public static final int longitudinalMotor = 12;
         public static final int leftLatitudinalMotor = 13;
         public static final int rightLatitudinalMotor = 14;
         public static final int inAndUpMotor = 15;

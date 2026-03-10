@@ -86,6 +86,7 @@ public class TransitTalonFXS implements TransitIO {
 
         inAndUpMotorConfig.Voltage.PeakForwardVoltage = TransitConstants.maxInAndUpMotorVoltage;
         inAndUpMotorConfig.Voltage.PeakReverseVoltage = -TransitConstants.maxInAndUpMotorVoltage;
+        inAndUpMotorConfig.Commutation.MotorArrangement = MotorArrangementValue.Minion_JST;
 
         this.inAndUpMotor.getConfigurator().apply(inAndUpMotorConfig);
     }
@@ -110,22 +111,25 @@ public class TransitTalonFXS implements TransitIO {
 
     @Override
     public void update() {
+        outputs.longitudinalMotorRequestedVoltage = longitudinalMotorVoltageRequest.Output;
         outputs.longitudinalMotorVelocityRPS = longitudinalMotor.getVelocity().getValueAsDouble();
         outputs.longitudinalMotorAppliedVoltage = longitudinalMotor.getMotorVoltage().getValueAsDouble();
         outputs.longitudinalMotorSupplyAmps = longitudinalMotor.getSupplyCurrent().getValueAsDouble();
         outputs.longitudinalMotorTorqueAmps = longitudinalMotor.getTorqueCurrent().getValueAsDouble();
 
-
+        outputs.leftLatitudinalMotorRequestedVoltage = latitudinalMasterMotorVoltageRequest.Output;
         outputs.leftLatitudinalMotorVelocityRPS = leftLatitudinalMotor.getVelocity().getValueAsDouble();
         outputs.leftLatitudinalMotorAppliedVoltage = leftLatitudinalMotor.getMotorVoltage().getValueAsDouble();
         outputs.leftLatitudinalMotorSupplyAmps = leftLatitudinalMotor.getSupplyCurrent().getValueAsDouble();
         outputs.leftLatitudinalMotorTorqueAmps = leftLatitudinalMotor.getTorqueCurrent().getValueAsDouble();
 
+        outputs.rightLatitudinalMotorRequestedVoltage = latitudinalMasterMotorVoltageRequest.Output;
         outputs.rightLatitudinalMotorVelocityRPS = rightLatitudinalMotor.getVelocity().getValueAsDouble();
         outputs.rightLatitudinalMotorAppliedVoltage = rightLatitudinalMotor.getMotorVoltage().getValueAsDouble();
         outputs.rightLatitudinalMotorSupplyAmps = rightLatitudinalMotor.getSupplyCurrent().getValueAsDouble();
         outputs.rightLatitudinalMotorTorqueAmps = rightLatitudinalMotor.getTorqueCurrent().getValueAsDouble();
 
+        outputs.inAndUpMotorRequestedVoltage = inAndUpMotorVoltageRequest.Output;
         outputs.inAndUpMotorVelocityRPS = inAndUpMotor.getVelocity().getValueAsDouble();
         outputs.inAndUpMotorAppliedVoltage = inAndUpMotor.getMotorVoltage().getValueAsDouble();
         outputs.inAndUpMotorSupplyAmps =  inAndUpMotor.getSupplyCurrent().getValueAsDouble();
