@@ -9,6 +9,7 @@ import org.littletonrobotics.junction.mechanism.LoggedMechanismRoot2d;
 import binarycrows.robot.Robot;
 import binarycrows.robot.SeasonCode.Constants.MetaConstants;
 import binarycrows.robot.SeasonCode.Constants.TurretConstants;
+import binarycrows.robot.SeasonCode.Constants.TurretConstants.TurretControlConstants;
 import binarycrows.robot.SeasonCode.SubStateManagers.Turret.TurretIO.TurretOutputs;
 import binarycrows.robot.Utils.Tuning.RuntimeTunableValue;
 import edu.wpi.first.math.MathUtil;
@@ -43,6 +44,7 @@ public class Turret {
         turretMechLigament = new LoggedMechanismLigament2d("turretLigament", 0.5, 0);
         turretMechRoot.append(turretMechLigament);
 
+        /* 
         correctionVelocityTunerRadPerSec = new RuntimeTunableValue("TurretTuning/correctionVelocityTunerRadPerSec", TurretConstants.correctionVelocityRadPerSec);
         correctionZoneTunerRad = new RuntimeTunableValue("TurretTuning/correctionZoneTunerRad", TurretConstants.correctionZone.getRadians());
         decelerationBufferTunerRad = new RuntimeTunableValue("TurretTuning/decelerationBufferTunerRad", TurretConstants.decelerationBufferRad);
@@ -52,10 +54,10 @@ public class Turret {
         minTurretVelocityTunerRadPerSec = new RuntimeTunableValue("TurretTuning/minTurretVelocityTunerRadPerSec", TurretConstants.minTurretVelocityRadPerSec);
         maxAccelerationPerFrameTunerRadPerSecPerSec = new RuntimeTunableValue("TurretTuning/maxAccelerationPerFrameTunerRadPerSecPerSec", TurretConstants.maxAccelerationPerFrameRadPerSecPerSec);
         maxDecelerationPerFrameTunerRadPerSecPerSec = new RuntimeTunableValue("TurretTuning/maxDecelerationPerFrameTunerRadPerSecPerSec", TurretConstants.maxDecelerationPerFrameRadPerSecPerSec);
-
+        */
     }
 
-    private void updateTunables() {
+    /*private void updateTunables() {
         if (MetaConstants.inProduction) return;
 
         TurretConstants.correctionVelocityRadPerSec = (double) correctionVelocityTunerRadPerSec.getValue();
@@ -68,10 +70,11 @@ public class Turret {
         TurretConstants.maxAccelerationPerFrameRadPerSecPerSec = (double) maxAccelerationPerFrameTunerRadPerSecPerSec.getValue();
         TurretConstants.maxDecelerationPerFrameRadPerSecPerSec = (double) maxDecelerationPerFrameTunerRadPerSecPerSec.getValue();
 
-    }
+    }*/
 
     public void update() {
-        updateTunables();
+        //updateTunables();
+
 
         turretIO.update();
 
@@ -105,13 +108,13 @@ public class Turret {
         double targetPositionNoWrap = encoderAngleRad + deltaRad; // Position we target ignoring absolute max and min
 
         if ( // If we would overextend by going to this position directly...
-            targetPositionNoWrap > TurretConstants.maximumRotationRad || 
-            targetPositionNoWrap < TurretConstants.minimumRotationRad) 
+            targetPositionNoWrap > Math.PI+TurretConstants.forwardOverextensionRad || 
+            targetPositionNoWrap < -Math.PI-TurretConstants.reverseOverextensionRad) 
             {
                 targetTurretPosition = Rotation2d.fromRadians(targetAngleRad); // Just go to it within the normal range
         } else if ( // If we would exit our ideal range by going to this position directly...
-            targetPositionNoWrap > TurretConstants.idealMaximumRotationRad || 
-            targetPositionNoWrap < TurretConstants.idealMinimumRotationRad) {
+            targetPositionNoWrap > Math.PI || 
+            targetPositionNoWrap < -Math.PI) {
             
             if (isActivelyShooting) {
                 targetTurretPosition = Rotation2d.fromRadians(targetPositionNoWrap); // Allow extending out of ideal range
@@ -128,20 +131,26 @@ public class Turret {
         double desiredVelocityRadPerSec;
 
 
+
         TurretOutputs outputs = turretIO.getOutputs();
+
+        TurretControlConstants controlConstants = 
+        outputs.turretRotation.getRadians() > Math.PI || outputs.turretRotation.getRadians() < -Math.PI ?
+        TurretConstants.overextensionTurretControlConstants : TurretConstants.normalTurretControlConstants;
+
 
         double delta = targetTurretPosition.getRadians() - outputs.turretRotation.getRadians();
 
         Logger.recordOutput("Turret/Control/Delta", delta);
 
-        if (Math.abs(delta) < TurretConstants.correctionZone.getRadians()) { // Within correction zone
-            desiredVelocityRadPerSec = TurretConstants.correctionVelocityRadPerSec * delta / TurretConstants.correctionZone.getRadians();
+        if (Math.abs(delta) < controlConstants.correctionZone().getRadians()) { // Within correction zone
+            desiredVelocityRadPerSec = controlConstants.correctionVelocityRadPerSec() * delta / controlConstants.correctionZone().getRadians();
 
         } else {
 
             
 
-            double correctionZoneBorder = targetTurretPosition.getRadians() + TurretConstants.correctionZone.getRadians() * Math.signum(delta);
+            double correctionZoneBorder = targetTurretPosition.getRadians() + controlConstants.correctionZone().getRadians() * Math.signum(delta);
 
             delta = correctionZoneBorder - outputs.turretRotation.getRadians();
 
@@ -151,13 +160,13 @@ public class Turret {
 
             if (turretVelocityDirection == 0) turretVelocityDirection = Math.signum(delta);
 
-            double maxDesiredVelocity = outputs.turretRotationalVelocityRadPerSec + TurretConstants.maxAccelerationPerFrameRadPerSecPerSec * turretVelocityDirection * Robot.averageFrameTime;
-            double minDesiredVelocity = outputs.turretRotationalVelocityRadPerSec - TurretConstants.maxDecelerationPerFrameRadPerSecPerSec * turretVelocityDirection * Robot.averageFrameTime;
+            double maxDesiredVelocity = outputs.turretRotationalVelocityRadPerSec + controlConstants.maxAccelerationPerFrameRadPerSecPerSec() * turretVelocityDirection * Robot.averageFrameTime;
+            double minDesiredVelocity = outputs.turretRotationalVelocityRadPerSec - controlConstants.maxDecelerationPerFrameRadPerSecPerSec() * turretVelocityDirection * Robot.averageFrameTime;
             
 
             double distanceToStartDecelerating = (outputs.turretRotationalVelocityRadPerSec * outputs.turretRotationalVelocityRadPerSec
-                        - TurretConstants.correctionVelocityRadPerSec * TurretConstants.correctionVelocityRadPerSec)
-                        / (2 * TurretConstants.maxDecelerationPerFrameRadPerSecPerSec) + TurretConstants.decelerationBufferRad;
+                        - controlConstants.correctionVelocityRadPerSec() * controlConstants.correctionVelocityRadPerSec())
+                        / (2 * controlConstants.maxDecelerationPerFrameRadPerSecPerSec()) + controlConstants.decelerationBufferRad();
             boolean forceDecelerate = Math.abs(delta) < distanceToStartDecelerating;
 
             double targetVelocity = Math.signum(delta) * Math.abs(forceDecelerate ? minDesiredVelocity : maxDesiredVelocity);//delta / Robot.averageFrameTime;  
@@ -176,13 +185,13 @@ public class Turret {
             
             double actualTravelLastFrame = outputs.turretRotation.minus(turretPositionLastFrame).getRadians();
 
-            if (Math.abs(actualTravelLastFrame) > TurretConstants.correctionFactorTuningDeltaThresholdRad)
+            if (Math.abs(actualTravelLastFrame) > controlConstants.correctionFactorTuningDeltaThresholdRad())
             correctionFactor = estimatedTravelLastFrame / actualTravelLastFrame * .2 + correctionFactor * .8; // Potentially tune the proportions or remove them if not needed
             
             Logger.recordOutput("Turret/Control/CorrectionFactor", correctionFactor);
 
             if (Math.signum(outputs.turretRotationalVelocityRadPerSec) == Math.signum(delta)) {
-                targetVelocity = Math.signum(targetVelocity) * Math.max(Math.abs(targetVelocity), TurretConstants.minTurretVelocityRadPerSec);
+                targetVelocity = Math.signum(targetVelocity) * Math.max(Math.abs(targetVelocity), controlConstants.minTurretVelocityRadPerSec());
             }
 
             Logger.recordOutput("Turret/Control/EvenMoreCappedTargetVelocity", targetVelocity);
@@ -192,14 +201,14 @@ public class Turret {
 
             desiredVelocityRadPerSec = targetVelocity;
 
-            if (Math.abs(desiredVelocityRadPerSec) < TurretConstants.startingVelocityRadPerSec) {
-                desiredVelocityRadPerSec = Math.signum(delta) * TurretConstants.startingVelocityRadPerSec;
+            if (Math.abs(desiredVelocityRadPerSec) < controlConstants.startingVelocityRadPerSec()) {
+                desiredVelocityRadPerSec = Math.signum(delta) * controlConstants.startingVelocityRadPerSec();
             }
             
             //desiredVelocityRadPerSec *= correctionFactor;
         }
 
-        desiredVelocityRadPerSec = Math.signum(desiredVelocityRadPerSec) * Math.min(Math.abs(desiredVelocityRadPerSec), TurretConstants.maxTurretVelocityRadPerSec);
+        desiredVelocityRadPerSec = Math.signum(desiredVelocityRadPerSec) * Math.min(Math.abs(desiredVelocityRadPerSec), controlConstants.maxTurretVelocityRadPerSec());
         
         turretIO.setRotorVoltage(TurretConstants.velocityToVoltage(desiredVelocityRadPerSec));
 
