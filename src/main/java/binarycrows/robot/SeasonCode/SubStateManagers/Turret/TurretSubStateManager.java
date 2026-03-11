@@ -72,7 +72,7 @@ public class TurretSubStateManager extends SubStateManager<TurretStateRequest> {
         
         StateTable.logObject("Turret/Outputs", outputs);
         turret.update();
-        if (targetPosition == null) targetPosition = outputs.turretRotation;
+        if (targetPosition == null) targetPosition = outputs.encoderRotation;
 
         switch (activeStateRequest.getStateRequestType()) {
             case MANUAL_OVERRIDE:

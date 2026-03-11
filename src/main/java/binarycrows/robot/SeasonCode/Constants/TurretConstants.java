@@ -71,7 +71,7 @@ public final class TurretConstants {
     public static final double reverseOverextensionRad = Math.PI / 4.0;
     public static final double forwardOverextensionRad = Math.PI / 4.0;
 
-    public static final Rotation2d encoderHalfCircleDistance = Rotation2d.fromRotations(0.8).minus(turretEncoderOffset);
+    public static final Rotation2d encoderHalfCircleDistance = Rotation2d.fromRotations(0.890869).minus(turretEncoderOffset);
 
     public static final double manualVoltage = .25;
 

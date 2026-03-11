@@ -108,13 +108,12 @@ public class Keybinds {
         // Test Controller
         
         testController.onPress(XboxGamepad.XboxGamepadID.a, 
-        StateRequestUtils.createStateRequestRunnable(PivotStateRequest.DOWN));
+        StateRequestUtils.createStateRequestRunnable(TransitStateRequest.POWERED),
+        StateRequestUtils.createStateRequestRunnable(TransitStateRequest.UNPOWERED));
 
         testController.onPress(XboxGamepad.XboxGamepadID.b, 
-        StateRequestUtils.createStateRequestRunnable(PivotStateRequest.RAISED));
-
-        testController.onPress(XboxGamepad.XboxGamepadID.y, 
-        StateRequestUtils.createStateRequestRunnable(PivotStateRequest.UP));
+        StateRequestUtils.createStateRequestRunnable(TransitStateRequest.REVERSE),
+        StateRequestUtils.createStateRequestRunnable(TransitStateRequest.UNPOWERED));
 
 
         

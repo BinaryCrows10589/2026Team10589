@@ -81,7 +81,7 @@ public class Turret {
         if (targetTurretPosition != null) {
             updateTurretControl();
         }
-        turretMechLigament.setAngle(turretIO.getOutputs().turretRotation);
+        turretMechLigament.setAngle(turretIO.getOutputs().encoderRotation);
         Logger.recordOutput("TurretMech2d", turretMech2d);
     }
 
@@ -135,11 +135,11 @@ public class Turret {
         TurretOutputs outputs = turretIO.getOutputs();
 
         TurretControlConstants controlConstants = 
-        outputs.turretRotation.getRadians() > Math.PI || outputs.turretRotation.getRadians() < -Math.PI ?
+        outputs.motorRotation.getRadians() > Math.PI || outputs.motorRotation.getRadians() < -Math.PI ?
         TurretConstants.overextensionTurretControlConstants : TurretConstants.normalTurretControlConstants;
 
 
-        double delta = targetTurretPosition.getRadians() - outputs.turretRotation.getRadians();
+        double delta = targetTurretPosition.getRadians() - outputs.encoderRotation.getRadians();
 
         Logger.recordOutput("Turret/Control/Delta", delta);
 
@@ -152,7 +152,7 @@ public class Turret {
 
             double correctionZoneBorder = targetTurretPosition.getRadians() + controlConstants.correctionZone().getRadians() * Math.signum(delta);
 
-            delta = correctionZoneBorder - outputs.turretRotation.getRadians();
+            delta = correctionZoneBorder - outputs.encoderRotation.getRadians();
 
             Logger.recordOutput("Turret/Control/DeltaBeforeCorrectionZone", delta);
 
@@ -183,7 +183,7 @@ public class Turret {
 
             Logger.recordOutput("Turret/Control/CappedTargetVelocity", targetVelocity);
             
-            double actualTravelLastFrame = outputs.turretRotation.minus(turretPositionLastFrame).getRadians();
+            double actualTravelLastFrame = outputs.encoderRotation.minus(turretPositionLastFrame).getRadians();
 
             if (Math.abs(actualTravelLastFrame) > controlConstants.correctionFactorTuningDeltaThresholdRad())
             correctionFactor = estimatedTravelLastFrame / actualTravelLastFrame * .2 + correctionFactor * .8; // Potentially tune the proportions or remove them if not needed
@@ -197,7 +197,7 @@ public class Turret {
             Logger.recordOutput("Turret/Control/EvenMoreCappedTargetVelocity", targetVelocity);
 
             estimatedTravelLastFrame = (outputs.turretRotationalVelocityRadPerSec + targetVelocity) / 2 * Robot.averageFrameTime;
-            turretPositionLastFrame = outputs.turretRotation;
+            turretPositionLastFrame = outputs.encoderRotation;
 
             desiredVelocityRadPerSec = targetVelocity;
 

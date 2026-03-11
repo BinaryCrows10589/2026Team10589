@@ -57,10 +57,9 @@ public class TurretSim implements TurretIO {
         outputs.relativeEncoderValueRotations = turretMotor.getAngularPositionRotations();
 
 
-        outputs.turretRotation = Rotation2d.fromRotations(turretMotor.getAngularPositionRotations());
         outputs.turretRotationalVelocityRadPerSec = turretMotor.getAngularVelocityRadPerSec();
         outputs.targetPosition = targetPosition;
-        outputs.distanceFromSetpoint = outputs.targetPosition.minus(outputs.turretRotation);
+        outputs.distanceFromSetpoint = outputs.targetPosition.minus(outputs.encoderRotation);
 
         turretMotor.setInputVoltage(motorVoltage);
     }

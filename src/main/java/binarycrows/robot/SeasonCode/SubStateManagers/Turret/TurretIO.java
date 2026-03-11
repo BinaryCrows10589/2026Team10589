@@ -14,7 +14,6 @@ public interface TurretIO {
         public double absoluteEncoderValueRotations;
         public double relativeEncoderValueRotations;
         public Rotation2d encoderRotation;
-        public Rotation2d turretRotation;
         public double turretRotationalVelocityRadPerSec;
         public Rotation2d targetPosition;
         public Rotation2d distanceFromSetpoint;
