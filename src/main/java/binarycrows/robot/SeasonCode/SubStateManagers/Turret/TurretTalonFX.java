@@ -5,9 +5,11 @@ import com.ctre.phoenix6.configs.MagnetSensorConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.PositionDutyCycle;
+import com.ctre.phoenix6.controls.StaticBrake;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.signals.SensorDirectionValue;
 
 import binarycrows.robot.SeasonCode.Constants.CANIDs;
@@ -24,7 +26,6 @@ public class TurretTalonFX implements TurretIO {
     private TalonFX turretMotor;
     private CANcoder turretEncoder;
 
-    private Rotation2d turretEncoderOffset;
 
     private VoltageOut turretVoltageRequest = new VoltageOut(0);
 
@@ -70,7 +71,6 @@ public class TurretTalonFX implements TurretIO {
         turretEncoderConfig.MagnetSensor = magnetConfigs;
         turretEncoder.getConfigurator().apply(turretEncoderConfig);
 
-        turretEncoderOffset = TurretConstants.turretEncoderOffset;
 
         configurePID();
 
@@ -102,7 +102,7 @@ public class TurretTalonFX implements TurretIO {
         outputs.distanceFromSetpoint = outputs.targetPosition.minus(outputs.encoderRotation);
 
         if (outputs.encoderRotation != outputs.motorRotation && outputs.motorRotation.getRotations() <= 1 && outputs.motorRotation.getRotations() >= 0) {
-            resetMotorToAbsolute();
+            //resetMotorToAbsolute();
         }
 
         updatePIDValuesFromNetworkTables();
@@ -155,6 +155,7 @@ public class TurretTalonFX implements TurretIO {
 
     @Override
     public void setTargetPosition(Rotation2d position) {
+
         targetPosition = position;
         turretControlRequest = new PositionDutyCycle(targetPosition.getRotations());
         turretMotor.setControl(turretControlRequest);

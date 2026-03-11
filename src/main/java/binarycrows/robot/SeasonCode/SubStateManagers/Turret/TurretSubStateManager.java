@@ -79,7 +79,7 @@ public class TurretSubStateManager extends SubStateManager<TurretStateRequest> {
                 turret.setTurretVoltage(TurretConstants.manualVoltage * (manualDirection));
                 break;
             case SHOOT_ON_THE_MOVE:
-                turret.setTargetAngle(Rotation2d.fromRadians(shootingTurretAngleRad.get()), shooting.get());
+                turret.setTargetAngle(Rotation2d.fromRadians(shootingTurretAngleRad.get()), shooting.get() && !turret.getHasWrapped());
                 StateTable.log("Turret/ShootOnTheMoveTargetAngleRad", shootingTurretAngleRad.get());
                 break;
             case CONSTRUCT_VOLTAGE_TABLE:

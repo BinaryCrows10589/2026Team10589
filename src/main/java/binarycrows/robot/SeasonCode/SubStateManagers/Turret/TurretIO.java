@@ -27,6 +27,8 @@ public interface TurretIO {
 
     public default void resetMotorToAbsolute() {};
 
+    public default void forceBrake() {};
+
 
     public default TurretOutputs getOutputs() {return null;};
 }

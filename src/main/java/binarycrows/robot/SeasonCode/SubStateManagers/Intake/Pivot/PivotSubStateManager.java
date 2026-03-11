@@ -19,7 +19,7 @@ public class PivotSubStateManager extends SubStateManager<PivotStateRequest>  {
     private int manualDirection = 0; // 1=up 0=none 2=down
 
     public PivotSubStateManager() {
-        super(new StateRequest<PivotStateRequest>(PivotStateRequest.UP, StateRequestPriority.NORMAL));
+        super(new StateRequest<PivotStateRequest>(PivotStateRequest.DOWN, StateRequestPriority.NORMAL));
 
         outputs = new PivotOutputs();
 

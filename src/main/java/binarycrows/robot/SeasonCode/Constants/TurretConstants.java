@@ -1,7 +1,5 @@
 package binarycrows.robot.SeasonCode.Constants;
 
-import java.util.Objects;
-
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
@@ -37,20 +35,20 @@ public final class TurretConstants {
     public static final NeutralModeValue motorNeutralMode = NeutralModeValue.Coast;
 
     public static final TurretControlConstants normalTurretControlConstants = new TurretControlConstants(
-        MetaConstants.isReal ? 2 : 0.75, // Correction velocity rad per sec
-        MetaConstants.isReal ? Rotation2d.fromDegrees(10) : Rotation2d.fromDegrees(20), // Correction zone
+        MetaConstants.isReal ? 2 : 0.75, // Correction velocity (rad/sec)
+        MetaConstants.isReal ? Rotation2d.fromDegrees(20) : Rotation2d.fromDegrees(20), // Correction zone
 
-        MetaConstants.isReal ? 0.025 : 0.025, // Deceleration buffer rad
+        MetaConstants.isReal ? 0.4 : 0.025, // Deceleration buffer rad
 
-        MetaConstants.isReal ? 2 : 0.1, // Starting velocity rad per sec
+        MetaConstants.isReal ? 4 : 0.1, // Starting velocity rad per sec
 
         MetaConstants.isReal ? 0.05 : 0.05, // Correction factor tuning delta threshold rad
 
-        MetaConstants.isReal ? 4 : 12, // Max turret velocity rad per sec
+        MetaConstants.isReal ? 8 : 12, // Max turret velocity rad per sec
         MetaConstants.isReal ? 2 : 0.75, // Min turret velocity rad per sec
 
-        MetaConstants.isReal ? 5 : 40, // Max acceleration per frame rad per sec
-        MetaConstants.isReal ? 10 : 200 // Max deceleration per frame rad per sec (will need to be significantly higher than max)
+        MetaConstants.isReal ? 10 : 40, // Max acceleration per frame (rad/s^2)
+        MetaConstants.isReal ? 20 : 200 // Max deceleration per frame (rad/s/s) (will need to be significantly higher than max)
     );
     public static final TurretControlConstants overextensionTurretControlConstants = new TurretControlConstants(
         MetaConstants.isReal ? 1.25 : 0.75, // Correction velocity rad per sec
@@ -66,10 +64,14 @@ public final class TurretConstants {
         MetaConstants.isReal ? 1.75 : 0.75, // Min turret velocity rad per sec
 
         MetaConstants.isReal ? 5 : 40, // Max acceleration per frame rad per sec
-        MetaConstants.isReal ? 10 : 200 // Max deceleration per frame rad per sec (will need to be significantly higher than max)
+        MetaConstants.isReal ? 50 : 200 // Max deceleration per frame rad per sec (will need to be significantly higher than max)
     );
-    public static final double reverseOverextensionRad = Math.PI / 4.0;
-    public static final double forwardOverextensionRad = Math.PI / 4.0;
+
+    public static final double forwardOverextensionRad = Math.PI / 4.0 * (0.6);
+    public static final double reverseOverextensionRad = Math.PI / 4.0 * (0.8);
+
+    public static final double forwardForceNormalRangeDistanceRotations = .5 + (0.125 * (0.6));
+    public static final double reverseForceNormalRangeDistanceRotations = -.5 - (0.125 * (0.8));
 
     public static final Rotation2d encoderHalfCircleDistance = Rotation2d.fromRotations(0.890869).minus(turretEncoderOffset);
 

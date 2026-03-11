@@ -35,6 +35,8 @@ public class Turret {
     private RuntimeTunableValue maxAccelerationPerFrameTunerRadPerSecPerSec;
     private RuntimeTunableValue maxDecelerationPerFrameTunerRadPerSecPerSec;
 
+    private boolean hasWrapped = false;
+
     
     public Turret(TurretIO turretIO) {
         this.turretIO = turretIO;
@@ -78,6 +80,10 @@ public class Turret {
 
         turretIO.update();
 
+
+        // TODO: Make these constants
+        hasWrapped = (turretIO.getOutputs().motorRotation.getRotations() > TurretConstants.forwardForceNormalRangeDistanceRotations || turretIO.getOutputs().motorRotation.getRotations() < TurretConstants.reverseForceNormalRangeDistanceRotations);
+
         if (targetTurretPosition != null) {
             updateTurretControl();
         }
@@ -108,8 +114,8 @@ public class Turret {
         double targetPositionNoWrap = encoderAngleRad + deltaRad; // Position we target ignoring absolute max and min
 
         if ( // If we would overextend by going to this position directly...
-            targetPositionNoWrap > Math.PI+TurretConstants.forwardOverextensionRad || 
-            targetPositionNoWrap < -Math.PI-TurretConstants.reverseOverextensionRad) 
+            targetPositionNoWrap >= Math.PI+TurretConstants.forwardOverextensionRad || 
+            targetPositionNoWrap <= -Math.PI-TurretConstants.reverseOverextensionRad) 
             {
                 targetTurretPosition = Rotation2d.fromRadians(targetAngleRad); // Just go to it within the normal range
         } else if ( // If we would exit our ideal range by going to this position directly...
@@ -125,6 +131,10 @@ public class Turret {
             targetTurretPosition = Rotation2d.fromRadians(targetAngleRad); // No matter what we will be within the ideal range
         }
 
+    }
+
+    public boolean getHasWrapped() {
+        return hasWrapped;
     }
 
     public void updateTurretControl() {
