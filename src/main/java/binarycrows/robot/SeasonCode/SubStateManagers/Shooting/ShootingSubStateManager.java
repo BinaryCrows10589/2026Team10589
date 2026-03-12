@@ -18,6 +18,7 @@ import binarycrows.robot.SeasonCode.SubStateManagers.Hood.HoodSubStateManager;
 import binarycrows.robot.SeasonCode.SubStateManagers.SwerveDrive.DriveSubStateManager;
 import binarycrows.robot.SeasonCode.SubStateManagers.Transit.TransitSubStateManager;
 import binarycrows.robot.SeasonCode.SubStateManagers.Turret.TurretSubStateManager;
+import binarycrows.robot.Utils.Tuning.RuntimeTunableValue;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -128,8 +129,11 @@ public class ShootingSubStateManager extends SubStateManager<ShootingStateReques
         return turretAngleRad;
     }
 
+    RuntimeTunableValue hoodAngle = new RuntimeTunableValue("/Hoodtuning/Angle", 0.0);
+
     public double getHoodAngleRad() {
-        return hoodAngleRad;
+        //return hoodAngleRad;
+        return (double) hoodAngle.getValue();
     }
 
     public double getFlywheelVoltage() {

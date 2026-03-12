@@ -16,14 +16,14 @@ public class HoodConstants {
 
     public static final double hoodGravityFF = MetaConstants.isReal ? 1.0 : 0;
 
-    public static final boolean useIntegratedPID = false;
+    public static final boolean useIntegratedPID = true;
 
     public static final double maximumVoltage = 0.5;
 
     public static final InvertedValue motorInverted = InvertedValue.Clockwise_Positive;
     public static final NeutralModeValue motorNeutralMode = NeutralModeValue.Brake;
 
-    public static final Rotation2d hoodEncoderOffset = Rotation2d.kZero;
+    public static final Rotation2d hoodEncoderOffset = Rotation2d.kZero; // TODO: Set
 
     public static double correctionVelocityRadPerSec = MetaConstants.isReal ? 0 : 0.75;
     public static Rotation2d correctionZone = MetaConstants.isReal ? Rotation2d.fromDegrees(0) : Rotation2d.fromDegrees(20);

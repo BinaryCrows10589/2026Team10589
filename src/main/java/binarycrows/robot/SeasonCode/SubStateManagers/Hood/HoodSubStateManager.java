@@ -29,7 +29,7 @@ public class HoodSubStateManager extends SubStateManager<HoodStateRequest> {
     private Supplier<Double> hoodAngleSupplier;
 
     public HoodSubStateManager() {
-        super(new StateRequest<HoodStateRequest>(HoodStateRequest.RETRACTED, StateRequestPriority.NORMAL));
+        super(new StateRequest<HoodStateRequest>(HoodStateRequest.SHOOT_ON_THE_MOVE, StateRequestPriority.NORMAL));
 
         outputs = new HoodOutputs();
 

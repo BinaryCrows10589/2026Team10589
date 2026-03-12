@@ -81,7 +81,6 @@ public class Turret {
         turretIO.update();
 
 
-        // TODO: Make these constants
         hasWrapped = (turretIO.getOutputs().motorRotation.getRotations() > TurretConstants.forwardForceNormalRangeDistanceRotations || turretIO.getOutputs().motorRotation.getRotations() < TurretConstants.reverseForceNormalRangeDistanceRotations);
 
         if (targetTurretPosition != null) {
