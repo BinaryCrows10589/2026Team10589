@@ -77,11 +77,11 @@ public class HoodSubStateManager extends SubStateManager<HoodStateRequest> {
         double voltage = 0;
         double delta = targetPosition.getDegrees() - outputs.hoodRotation.getDegrees();
 
-        if (delta > 20) voltage = 0.02;
-        else if (delta > 5) voltage = 0.002;
-        else if (delta < -5) voltage = -0.002;
-        else if (delta < -20) voltage = -0.02;
-        else controlPID();
+        if (delta > 20) voltage = 0.0;
+        else if (delta > 5) voltage = 0.0;
+        else if (delta < -5) voltage = -0.0;
+        else if (delta < -20) voltage = -0.0;
+        else voltage=0;//controlPID();
 
         if (voltage != 0) hood.setVoltage(voltage);
     }

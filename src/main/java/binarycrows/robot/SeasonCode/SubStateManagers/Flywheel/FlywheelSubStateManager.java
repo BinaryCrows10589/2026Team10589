@@ -52,7 +52,7 @@ public class FlywheelSubStateManager extends SubStateManager<FlywheelStateReques
         switch (activeStateRequest.getStateRequestType()) {
             case SHOOT_ON_THE_MOVE:
                 if (isShootingSupplier.get()) { // Run at voltage
-                    flywheelIO.setRotorVoltage(MathUtil.clamp(flywheelVoltageSupplier.get() + flywheelVoltageFF, 0, FlywheelConstants.maxMotorVoltage));
+                    flywheelIO.setRotorVoltage(FlywheelConstants.motorShootingVoltage);//MathUtil.clamp(flywheelVoltageSupplier.get() + flywheelVoltageFF, 0, FlywheelConstants.maxMotorVoltage));
                 } else { // Run idle
                     if (outputs.leftMotorVelocityRPS < FlywheelConstants.idleMinVelocityRPS) {
                         flywheelIO.setRotorVoltage(FlywheelConstants.idleRecoveryVoltage);

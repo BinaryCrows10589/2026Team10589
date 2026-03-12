@@ -116,13 +116,12 @@ public class ShootingSubStateManager extends SubStateManager<ShootingStateReques
     }
 
     public boolean getShooting() {
-        return true; /* 
         switch (activeStateRequest.getStateRequestType()) {
             case SHOOT: return canShoot;
             case SHOOT_PRELOADS: return this.activeStateRequest.getStatus() != StateRequestStatus.FULFILLED; // Only shoot if we haven't shot all preloads (we will verify if shot is possible in testing)
             case FORCE_SHOOT: return true;
             default: return false;
-        }*/
+        }
     }
 
     public double getTurretAngleRad() {

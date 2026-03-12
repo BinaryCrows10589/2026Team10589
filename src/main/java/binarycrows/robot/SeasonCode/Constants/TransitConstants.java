@@ -14,16 +14,16 @@ public final class TransitConstants {
     public static final NeutralModeValue latitudinalMasterMotorNeutralMode = NeutralModeValue.Coast;
     public static final NeutralModeValue inAndUpMotorNeutralMode = NeutralModeValue.Coast;
 
-    public static final double maxLongitudinalMotorVoltage = 4;
-    public static final double maxLatitudinalMotorVoltage = 4;
-    public static final double maxInAndUpMotorVoltage = 4;
+    public static final double maxLongitudinalMotorVoltage = 8;
+    public static final double maxLatitudinalMotorVoltage = 8;
+    public static final double maxInAndUpMotorVoltage = 8;
 
     public static final MotorAlignmentValue isLongitudinalSlaveReversed = MotorAlignmentValue.Opposed;
     public static final MotorAlignmentValue isLatitudinalSlaveReversed = MotorAlignmentValue.Opposed;
     
-    public static final double standardLongitudinalMotorVoltage = 3.5;
-    public static final double standardLatitudinalMotorVoltage = 3.5;
-    public static final double standardInAndUpMotorVoltage = 3.5;
+    public static final double standardLongitudinalMotorVoltage = 4;
+    public static final double standardLatitudinalMotorVoltage = 5;
+    public static final double standardInAndUpMotorVoltage = 6;
 
     public final class Sensors {
         public static final RangingMode binFullRangingMode = RangingMode.Short;

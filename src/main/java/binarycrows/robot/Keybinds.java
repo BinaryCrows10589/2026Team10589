@@ -115,7 +115,13 @@ public class Keybinds {
         StateRequestUtils.createStateRequestRunnable(TransitStateRequest.REVERSE),
         StateRequestUtils.createStateRequestRunnable(TransitStateRequest.UNPOWERED));
 
+        testController.onPress(XboxGamepad.XboxGamepadID.x, 
+        StateRequestUtils.createStateRequestRunnable(ShootingStateRequest.FORCE_SHOOT),
+        StateRequestUtils.createStateRequestRunnable(ShootingStateRequest.STANDBY));
 
+        testController.onPress(XboxGamepad.XboxGamepadID.y, 
+        StateRequestUtils.createStateRequestRunnable(IntakeRollersStateRequest.INTAKING),
+        StateRequestUtils.createStateRequestRunnable(IntakeRollersStateRequest.OFF));
         
 
         // Button Board
