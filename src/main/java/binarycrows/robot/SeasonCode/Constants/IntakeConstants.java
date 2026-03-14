@@ -16,7 +16,7 @@ public final class IntakeConstants {
 
         public static final MotorAlignmentValue isSlaveReversed = MotorAlignmentValue.Opposed;
 
-        public static final double intakingMotorVoltage = 1.5;
+        public static final double intakingMotorVoltage = 4;
     }
 
     public final class Pivot {

@@ -9,11 +9,11 @@ import edu.wpi.first.math.geometry.Rotation2d;
 public class HoodConstants {
     public static final double motorToHoodGearRatio = 1;
 
-    public static final double hoodPIDValueP = 0.8;
-    public static final double hoodPIDValueI = 0;
+    public static final double hoodPIDValueP = 3.5;
+    public static final double hoodPIDValueI = 0.6;
     public static final double hoodPIDValueD = 0;
     public static final double hoodPIDValueFF = 0;
-    public static final double hoodPIDValueG = 0.0;
+    public static final double hoodPIDValueG = 0.05;
 
     public static final double hoodGravityFF = MetaConstants.isReal ? 0.0 : 0;
 
@@ -24,7 +24,7 @@ public class HoodConstants {
     public static final InvertedValue motorInverted = InvertedValue.Clockwise_Positive;
     public static final NeutralModeValue motorNeutralMode = NeutralModeValue.Brake;
 
-    public static final Rotation2d hoodEncoderOffset = Rotation2d.fromRotations(0.707275);
+    public static final Rotation2d hoodEncoderOffset = Rotation2d.fromRotations(0.707);
 
     public static double correctionVelocityRadPerSec = MetaConstants.isReal ? 0 : 0.75;
     public static Rotation2d correctionZone = MetaConstants.isReal ? Rotation2d.fromDegrees(0) : Rotation2d.fromDegrees(20);

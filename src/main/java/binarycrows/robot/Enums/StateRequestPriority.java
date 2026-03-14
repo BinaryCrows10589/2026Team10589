@@ -3,7 +3,7 @@ package binarycrows.robot.Enums;
 public final class StateRequestPriority {
     /**
      * Mostly for debugging or duct-tape fixes at competitions.
-     */
+    */
     public static final int DO_NOT_IGNORE = 4;
     
     public static final int HIGH = 3;

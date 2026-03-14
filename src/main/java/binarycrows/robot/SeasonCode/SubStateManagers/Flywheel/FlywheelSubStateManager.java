@@ -12,7 +12,6 @@ import binarycrows.robot.SeasonCode.Constants.FlywheelConstants;
 import binarycrows.robot.SeasonCode.Constants.MetaConstants;
 import binarycrows.robot.SeasonCode.SubStateManagers.Flywheel.FlywheelIO.FlywheelOutputs;
 import binarycrows.robot.SeasonCode.SubStateManagers.Shooting.ShootingSubStateManager;
-import binarycrows.robot.SeasonCode.SubStateManagers.Turret.TurretStateRequest;
 import edu.wpi.first.math.MathUtil;
 
 public class FlywheelSubStateManager extends SubStateManager<FlywheelStateRequest> {
@@ -29,8 +28,8 @@ public class FlywheelSubStateManager extends SubStateManager<FlywheelStateReques
     private ArrayList<Double> voltageToVelocityRotPerSecTable = new ArrayList<>();
     private ArrayList<Double> voltageToVelocityVoltageTable = new ArrayList<>();
     private double voltageIncrement = 0.2;
-    private double endVoltage = 8;
-    private int framesPerIncrement = 25;
+    private double endVoltage = 11;
+    private int framesPerIncrement = 30;
     private int frameCounter = 0;
     private double voltageCounter = 0;
 
@@ -71,7 +70,7 @@ public class FlywheelSubStateManager extends SubStateManager<FlywheelStateReques
         switch (activeStateRequest.getStateRequestType()) {
             case SHOOT_ON_THE_MOVE:
                 if (isShootingSupplier.get()) { // Run at voltage
-                    flywheelIO.setRotorVoltage(FlywheelConstants.motorShootingVoltage);//MathUtil.clamp(flywheelVoltageSupplier.get() + flywheelVoltageFF, 0, FlywheelConstants.maxMotorVoltage));
+                    flywheelIO.setRotorVoltage(MathUtil.clamp(flywheelVoltageSupplier.get() + flywheelVoltageFF, 0, FlywheelConstants.maxMotorVoltage));
                 } else { // Run idle
                     if (outputs.leftMotorVelocityRPS < FlywheelConstants.idleMinVelocityRPS) {
                         flywheelIO.setRotorVoltage(FlywheelConstants.idleRecoveryVoltage);
@@ -109,10 +108,14 @@ public class FlywheelSubStateManager extends SubStateManager<FlywheelStateReques
                     flywheelIO.setRotorVoltage(voltageCounter);
 
                 }
-                StateTable.log("Turret/Table/RotVelRotPerSec", convertLogArray(voltageToVelocityRotPerSecTable));
-                StateTable.log("Turret/Table/RotVelVoltage", convertLogArray(voltageToVelocityVoltageTable.toArray()));
+                StateTable.log("Flywheel/Table/RotVelRotPerSec", convertLogArray(voltageToVelocityRotPerSecTable));
+                StateTable.log("Flywheel/Table/RotVelVoltage", convertLogArray(voltageToVelocityVoltageTable.toArray()));
                 break;
         }
+    }
+
+    public double getVoltage() {
+        return outputs.leftMotorAppliedVoltage;
     }
 
     private static double[] convertLogArray(Object[] array) {

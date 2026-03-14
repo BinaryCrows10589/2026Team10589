@@ -130,7 +130,9 @@ public class ShootingSubStateManager extends SubStateManager<ShootingStateReques
         return turretAngleRad;
     }
 
-    RuntimeTunableValue hoodAngle = new RuntimeTunableValue("Tuning/Hood/Angle", 0.0);
+    RuntimeTunableValue hoodAngle = new RuntimeTunableValue("Tuning/Shooting/Angle", 0.0);
+    RuntimeTunableValue rpm = new RuntimeTunableValue("Tuning/Shooting/RPM", 0.0);
+
 
     public double getHoodAngleRad() {
         //return hoodAngleRad;
@@ -138,7 +140,8 @@ public class ShootingSubStateManager extends SubStateManager<ShootingStateReques
     }
 
     public double getFlywheelVoltage() {
-        return flywheelVoltage;
+        return FlywheelConstants.rpmToVoltage.get((double) rpm.getValue());
+        //return flywheelVoltage;
     }
 
     

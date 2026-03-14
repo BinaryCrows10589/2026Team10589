@@ -106,17 +106,11 @@ public class Keybinds {
         );
 
         // Test Controller
-        
-        testController.onPress(XboxGamepad.XboxGamepadID.a, 
-        StateRequestUtils.createStateRequestRunnable(TransitStateRequest.POWERED),
-        StateRequestUtils.createStateRequestRunnable(TransitStateRequest.UNPOWERED));
-
-        testController.onPress(XboxGamepad.XboxGamepadID.b, 
-        StateRequestUtils.createStateRequestRunnable(TransitStateRequest.REVERSE),
-        StateRequestUtils.createStateRequestRunnable(TransitStateRequest.UNPOWERED));
 
         testController.onPress(XboxGamepad.XboxGamepadID.x, 
-        StateRequestUtils.createStateRequestRunnable(FlywheelStateRequest.CONSTRUCT_VOLTAGE_TABLE));
+        StateRequestUtils.createStateRequestRunnable(ShootingStateRequest.FORCE_SHOOT),
+        StateRequestUtils.createStateRequestRunnable(ShootingStateRequest.STANDBY)
+        );
 
         testController.onPress(XboxGamepad.XboxGamepadID.y, 
         StateRequestUtils.createStateRequestRunnable(IntakeRollersStateRequest.INTAKING),

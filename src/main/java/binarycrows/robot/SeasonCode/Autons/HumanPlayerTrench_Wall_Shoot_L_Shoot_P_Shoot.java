@@ -35,8 +35,8 @@ public class HumanPlayerTrench_Wall_Shoot_L_Shoot_P_Shoot {
                 15*1000)),
             new CMStateRequest(new CMTrajectory(
                 "startPosition_HumanPlayerTrench_Wall_L_Out", 
-                Paths.startPosition_HumanPlayerTrench_Wall_L_Out.pathPoints(), 
-                new CMRotation[] {Paths.startPosition_HumanPlayerTrench_Wall_L_Out.getFirstRotation(1)}, // TODO: prolly want to specify accel decel whatnot (and add other constructors)
+                Paths.HumanPlayerSide_L_Out_Trench.pathPoints(), 
+                new CMRotation[] {Paths.HumanPlayerSide_L_Out_Trench.getFirstRotation(1)}, // TODO: prolly want to specify accel decel whatnot (and add other constructors)
                 new CMEvent[] {}, 
                 TrajectoryPriority.PREFER_TRANSLATION, 
                 false, // TODO: Since not stopping, use all parameters of CMTrajectory

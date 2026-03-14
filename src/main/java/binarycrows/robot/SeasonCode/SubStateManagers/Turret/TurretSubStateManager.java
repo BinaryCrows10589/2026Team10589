@@ -74,7 +74,7 @@ public class TurretSubStateManager extends SubStateManager<TurretStateRequest> {
         turret.update();
         if (targetPosition == null) targetPosition = outputs.encoderRotation;
 
-        switch (activeStateRequest.getStateRequestType()) {
+        /*switch (activeStateRequest.getStateRequestType()) {
             case MANUAL_OVERRIDE:
                 turret.setTurretVoltage(TurretConstants.manualVoltage * (manualDirection));
                 break;
@@ -100,7 +100,7 @@ public class TurretSubStateManager extends SubStateManager<TurretStateRequest> {
                 StateTable.log("Turret/Table/RotVelRadPerSec", convertLogArray(voltageToVelocityRadPerSecTable));
                 StateTable.log("Turret/Table/RotVelVoltage", convertLogArray(voltageToVelocityVoltageTable.toArray()));
                 break;
-        }
+        }*/
          
 
     }
