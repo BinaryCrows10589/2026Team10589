@@ -45,8 +45,13 @@ public class HoodSubStateManager extends SubStateManager<HoodStateRequest> {
             manualOverrideTargetRotation = outputs.hoodRotation;
         }
 
+    }
+
+    @Override
+    public void setupSuppliers() {
         closeToTrenchSupplier = ShootingSubStateManager.getInstance()::getIsCloseToTrench;
         hoodAngleSupplier = ShootingSubStateManager.getInstance()::getHoodAngleRad;
+
     }
 
     @Override
@@ -75,15 +80,20 @@ public class HoodSubStateManager extends SubStateManager<HoodStateRequest> {
     }
     private void controlVoltage() {
         double voltage = 0;
+        boolean isPID = false;
         double delta = targetPosition.getDegrees() - outputs.hoodRotation.getDegrees();
 
-        if (delta > 20) voltage = 0.0;
-        else if (delta > 5) voltage = 0.0;
-        else if (delta < -5) voltage = -0.0;
-        else if (delta < -20) voltage = -0.0;
-        else voltage=0;//controlPID();
+        System.out.println(delta);
 
-        if (voltage != 0) hood.setVoltage(voltage);
+        if (delta > 20) voltage = 1.1;
+        else if (delta > 5) voltage = .85;
+        else if (delta < -5) voltage = -.25;
+        else {
+            controlPID();
+            isPID = true;
+        }
+
+        if (!isPID) hood.setVoltage(voltage);
     }
     private void controlLikeTurret() {
         hood.setTargetLikeTurret(targetPosition);

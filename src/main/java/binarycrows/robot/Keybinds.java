@@ -116,8 +116,7 @@ public class Keybinds {
         StateRequestUtils.createStateRequestRunnable(TransitStateRequest.UNPOWERED));
 
         testController.onPress(XboxGamepad.XboxGamepadID.x, 
-        StateRequestUtils.createStateRequestRunnable(ShootingStateRequest.FORCE_SHOOT),
-        StateRequestUtils.createStateRequestRunnable(ShootingStateRequest.STANDBY));
+        StateRequestUtils.createStateRequestRunnable(FlywheelStateRequest.CONSTRUCT_VOLTAGE_TABLE));
 
         testController.onPress(XboxGamepad.XboxGamepadID.y, 
         StateRequestUtils.createStateRequestRunnable(IntakeRollersStateRequest.INTAKING),

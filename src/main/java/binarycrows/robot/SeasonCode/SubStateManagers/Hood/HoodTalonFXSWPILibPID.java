@@ -61,7 +61,7 @@ public class HoodTalonFXSWPILibPID implements HoodIO {
         MagnetSensorConfigs magnetConfigs = new MagnetSensorConfigs();
         magnetConfigs.AbsoluteSensorDiscontinuityPoint = 1;
         magnetConfigs.MagnetOffset = 0.0;
-        magnetConfigs.SensorDirection = SensorDirectionValue.CounterClockwise_Positive;
+        magnetConfigs.SensorDirection = SensorDirectionValue.Clockwise_Positive;
         hoodEncoderConfig.MagnetSensor = magnetConfigs;
         hoodEncoder.getConfigurator().apply(hoodEncoderConfig);
 

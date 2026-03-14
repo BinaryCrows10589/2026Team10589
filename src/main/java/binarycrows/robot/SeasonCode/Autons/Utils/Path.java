@@ -16,4 +16,8 @@ public record Path(PathRotation[] pathRotations, CMAutonPoint... pathPoints) {
         }
     }
 
+    public CMRotation getFirstRotation(double maxToleranceDegrees) {
+        return pathRotations[0].createCMRotation(maxToleranceDegrees);
+    }
+
 }

@@ -50,6 +50,7 @@ public class ShootingSubStateManager extends SubStateManager<ShootingStateReques
         // Java is evil so the arrays need to be prepopulated
         for (Translation2d[] row : derivativesOfVelocity) Arrays.fill(row, Translation2d.kZero);
         Arrays.fill(valuesOfDerivatiesOfVelocity, Translation2d.kZero);
+        
     }
 
     @Override
@@ -129,7 +130,7 @@ public class ShootingSubStateManager extends SubStateManager<ShootingStateReques
         return turretAngleRad;
     }
 
-    RuntimeTunableValue hoodAngle = new RuntimeTunableValue("/Hoodtuning/Angle", 0.0);
+    RuntimeTunableValue hoodAngle = new RuntimeTunableValue("Tuning/Hood/Angle", 0.0);
 
     public double getHoodAngleRad() {
         //return hoodAngleRad;
