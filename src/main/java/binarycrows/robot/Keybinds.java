@@ -11,7 +11,6 @@ import binarycrows.robot.SeasonCode.SubStateManagers.Intake.Pivot.PivotStateRequ
 import binarycrows.robot.SeasonCode.SubStateManagers.Intake.Pivot.PivotSubStateManager;
 import binarycrows.robot.SeasonCode.SubStateManagers.Intake.Rollers.IntakeRollersStateRequest;
 import binarycrows.robot.SeasonCode.SubStateManagers.Shooting.ShootingStateRequest;
-import binarycrows.robot.SeasonCode.SubStateManagers.Shooting.ShootingSubStateManager;
 import binarycrows.robot.SeasonCode.SubStateManagers.SwerveDrive.DriveStateRequest;
 import binarycrows.robot.SeasonCode.SubStateManagers.SwerveDrive.DriveSubStateManager;
 import binarycrows.robot.SeasonCode.SubStateManagers.Transit.TransitStateRequest;
@@ -29,8 +28,10 @@ import edu.wpi.first.math.MathUtil;
 
 public class Keybinds {
     public static GenericGamepad driverController = new XboxGamepad(0);
-    public static GenericGamepad testController = new XboxGamepad(1);
-    public static GenericGamepad buttonBoard1 = new ButtonBoard(2);
+    public static GenericGamepad buttonBoard1 = new ButtonBoard(1, 18);
+    public static GenericGamepad buttonBoard2 = new ButtonBoard(2, 20);
+    public static GenericGamepad testController = new XboxGamepad(3);
+
 
 
     public static void periodic() {
@@ -104,90 +105,90 @@ public class Keybinds {
         // Button Board
 
         // Intake
-        buttonBoard1.onPress(ButtonBoardButtons.intakeDown, 
+        buttonBoard1.onPress(ButtonBoardButtons.BB1.intakeDown, 
         StateRequestUtils.createDualStateRequestRunnable(PivotStateRequest.DOWN, IntakeRollersStateRequest.INTAKING));
-        buttonBoard1.onPress(ButtonBoardButtons.intakeRaised, 
+        buttonBoard2.onPress(ButtonBoardButtons.BB2.intakeRaised, 
         StateRequestUtils.createDualStateRequestRunnable(PivotStateRequest.RAISED, IntakeRollersStateRequest.REVERSE));
-        buttonBoard1.onPress(ButtonBoardButtons.intakeUp, 
+        buttonBoard2.onPress(ButtonBoardButtons.BB2.intakeUp, 
         StateRequestUtils.createDualStateRequestRunnable(PivotStateRequest.UP, IntakeRollersStateRequest.OFF));
 
-        buttonBoard1.onPress(ButtonBoardButtons.intakeManualDown, 
+        buttonBoard2.onPress(ButtonBoardButtons.BB2.intakeManualDown, 
         PivotSubStateManager.getInstance()::manualDown,
         PivotSubStateManager.getInstance()::manualStop);
-        buttonBoard1.onPress(ButtonBoardButtons.intakeManualUp, 
+        buttonBoard1.onPress(ButtonBoardButtons.BB1.intakeManualUp, 
         PivotSubStateManager.getInstance()::manualUp,
         PivotSubStateManager.getInstance()::manualStop);
         
-        buttonBoard1.onPress(ButtonBoardButtons.intakeWheelToggle, 
+        buttonBoard2.onPress(ButtonBoardButtons.BB2.intakeWheelToggle, 
         StateRequestUtils.createStateRequestRunnable(IntakeRollersStateRequest.INVERT));
 
         // Transit
-        buttonBoard1.onPress(ButtonBoardButtons.transitManualForward, 
+        buttonBoard2.onPress(ButtonBoardButtons.BB2.transitManualForward, 
         TransitSubStateManager.getInstance()::manualForward);
-        buttonBoard1.onPress(ButtonBoardButtons.transitManualReverse, 
+        buttonBoard2.onPress(ButtonBoardButtons.BB2.transitManualReverse, 
         TransitSubStateManager.getInstance()::manualReverse);
 
         // Turret
-        buttonBoard1.onPress(ButtonBoardButtons.turretManualLeft, 
+        buttonBoard2.onPress(ButtonBoardButtons.BB2.turretManualLeft, 
         TurretSubStateManager.getInstance()::manualLeft, 
         TurretSubStateManager.getInstance()::manualStop);
-        buttonBoard1.onPress(ButtonBoardButtons.turretManualRight, 
+        buttonBoard1.onPress(ButtonBoardButtons.BB1.turretManualRight, 
         TurretSubStateManager.getInstance()::manualRight, 
         TurretSubStateManager.getInstance()::manualStop);
 
         // Hood
-        buttonBoard1.onPress(ButtonBoardButtons.hoodManualUp, 
+        buttonBoard1.onPress(ButtonBoardButtons.BB1.hoodManualUp, 
         HoodSubStateManager.getInstance()::manualUp,
         HoodSubStateManager.getInstance()::manualStop);
-        buttonBoard1.onPress(ButtonBoardButtons.hoodManualDown, 
+        buttonBoard2.onPress(ButtonBoardButtons.BB2.hoodManualDown, 
         HoodSubStateManager.getInstance()::manualDown,
         HoodSubStateManager.getInstance()::manualStop);
-        buttonBoard1.onPress(ButtonBoardButtons.hoodForceRetract, 
+        buttonBoard2.onPress(ButtonBoardButtons.BB2.hoodForceRetract, 
         StateRequestUtils.createStateRequestRunnable(HoodStateRequest.RETRACTED));
-        buttonBoard1.onPress(ButtonBoardButtons.hoodForceUp, 
+        buttonBoard2.onPress(ButtonBoardButtons.BB2.hoodForceUp, 
         StateRequestUtils.createStateRequestRunnable(HoodStateRequest.SHOOT_ON_THE_MOVE));
 
         // Shooting
-        buttonBoard1.onPress(ButtonBoardButtons.shoot, 
+        buttonBoard2.onPress(ButtonBoardButtons.BB2.shoot, 
             StateRequestUtils.createStateRequestRunnable(ShootingStateRequest.SHOOT),
             StateRequestUtils.createStateRequestRunnable(ShootingStateRequest.STANDBY));
-        buttonBoard1.onPress(ButtonBoardButtons.forceShoot,  
+        buttonBoard2.onPress(ButtonBoardButtons.BB2.forceShoot,  
             StateRequestUtils.createStateRequestRunnable(ShootingStateRequest.FORCE_SHOOT),
             StateRequestUtils.createStateRequestRunnable(ShootingStateRequest.STANDBY));
-        buttonBoard1.onPress(ButtonBoardButtons.increaseShooterFF, FlywheelSubStateManager.getInstance()::increaseShooterFF);
-        buttonBoard1.onPress(ButtonBoardButtons.decreaseShooterFF, FlywheelSubStateManager.getInstance()::decreaseShooterFF);
-        buttonBoard1.onPress(ButtonBoardButtons.flywheelReverse, 
+        buttonBoard2.onPress(ButtonBoardButtons.BB2.increaseShooterFeedForward, FlywheelSubStateManager.getInstance()::increaseShooterFF);
+        buttonBoard2.onPress(ButtonBoardButtons.BB2.decreaseShooterFeedForward, FlywheelSubStateManager.getInstance()::decreaseShooterFF);
+        buttonBoard1.onPress(ButtonBoardButtons.BB1.flywheelReverse, 
         StateRequestUtils.createStateRequestRunnable(FlywheelStateRequest.REVERSE), 
         StateRequestUtils.createStateRequestRunnable(FlywheelStateRequest.SHOOT_ON_THE_MOVE));
         
         // Climber
-        buttonBoard1.onPress(ButtonBoardButtons.climbLeft, Climbing::climbLeft, Climbing::cancelClimb);
-        buttonBoard1.onPress(ButtonBoardButtons.climbRight, Climbing::climbRight, Climbing::cancelClimb);
-        buttonBoard1.onPress(ButtonBoardButtons.climbCenterLeft, Climbing::climbCenterLeft, Climbing::cancelClimb);
-        buttonBoard1.onPress(ButtonBoardButtons.climbCenterRight, Climbing::climbCenterRight, Climbing::cancelClimb);
-        buttonBoard1.onPress(ButtonBoardButtons.climberUp, StateRequestUtils.createStateRequestRunnable(ClimberStateRequest.UP));
-        buttonBoard1.onPress(ButtonBoardButtons.climberDown, StateRequestUtils.createStateRequestRunnable(ClimberStateRequest.DOWN));
-        buttonBoard1.onPress(ButtonBoardButtons.manualClimberUp, 
+        buttonBoard1.onPress(ButtonBoardButtons.BB1.climbLeft, Climbing::climbLeft, Climbing::cancelClimb);
+        buttonBoard1.onPress(ButtonBoardButtons.BB1.climbRight, Climbing::climbRight, Climbing::cancelClimb);
+        buttonBoard2.onPress(ButtonBoardButtons.BB2.climbCenterLeft, Climbing::climbCenterLeft, Climbing::cancelClimb);
+        buttonBoard2.onPress(ButtonBoardButtons.BB2.climbCenterRight, Climbing::climbCenterRight, Climbing::cancelClimb);
+        buttonBoard1.onPress(ButtonBoardButtons.BB1.climberUp, StateRequestUtils.createStateRequestRunnable(ClimberStateRequest.UP));
+        buttonBoard1.onPress(ButtonBoardButtons.BB1.climberDown, StateRequestUtils.createStateRequestRunnable(ClimberStateRequest.DOWN));
+        buttonBoard1.onPress(ButtonBoardButtons.BB1.manualClimberUp, 
         ClimberSubStateManager.getInstance()::manualUp, 
         ClimberSubStateManager.getInstance()::manualStop);
-        buttonBoard1.onPress(ButtonBoardButtons.manualClimberDown, 
+        buttonBoard1.onPress(ButtonBoardButtons.BB1.manualClimberDown, 
         ClimberSubStateManager.getInstance()::manualDown, 
         ClimberSubStateManager.getInstance()::manualStop);
 
         // Switches
-        buttonBoard1.onPress(ButtonBoardButtons.manualIntakeSwitch,
+        buttonBoard1.onPress(ButtonBoardButtons.BB1.manualIntakeSwitch,
         StateRequestUtils.createStateRequestRunnable(PivotStateRequest.MANUAL_OVERRIDE),
         StateRequestUtils.createStateRequestRunnable(PivotStateRequest.RESTORE_CLOSEST));
-        buttonBoard1.onPress(ButtonBoardButtons.manualTransitSwitch, 
+        buttonBoard1.onPress(ButtonBoardButtons.BB1.manualTransitSwitch, 
         StateRequestUtils.createStateRequestRunnable(TransitStateRequest.MANUAL_OVERRIDE),
         StateRequestUtils.createStateRequestRunnable(TransitStateRequest.SHOOTER));
-        buttonBoard1.onPress(ButtonBoardButtons.manualTurretSwitch, 
+        buttonBoard1.onPress(ButtonBoardButtons.BB1.manualTurretSwitch, 
         StateRequestUtils.createStateRequestRunnable(TurretStateRequest.MANUAL_OVERRIDE),
         StateRequestUtils.createStateRequestRunnable(TurretStateRequest.SHOOT_ON_THE_MOVE));
-        buttonBoard1.onPress(ButtonBoardButtons.manualHoodSwitch,  
+        buttonBoard1.onPress(ButtonBoardButtons.BB1.manualHoodSwitch,  
         StateRequestUtils.createStateRequestRunnable(HoodStateRequest.MANUAL_OVERRIDE),
         StateRequestUtils.createStateRequestRunnable(HoodStateRequest.SHOOT_ON_THE_MOVE));
-        buttonBoard1.onPress(ButtonBoardButtons.manualClimberSwitch, 
+        buttonBoard1.onPress(ButtonBoardButtons.BB1.manualClimberSwitch, 
         StateRequestUtils.createStateRequestRunnable(ClimberStateRequest.MANUAL_OVERRIDE),
         StateRequestUtils.createStateRequestRunnable(ClimberStateRequest.RESTORE_CLOSEST));
     }
