@@ -5,14 +5,15 @@ import com.ctre.phoenix6.configs.MagnetSensorConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.PositionDutyCycle;
+import com.ctre.phoenix6.controls.StaticBrake;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.signals.SensorDirectionValue;
 
 import binarycrows.robot.SeasonCode.Constants.CANIDs;
 import binarycrows.robot.SeasonCode.Constants.MetaConstants;
-import binarycrows.robot.SeasonCode.Constants.SwerveDriveConstants;
 import binarycrows.robot.SeasonCode.Constants.TurretConstants;
 import binarycrows.robot.Utils.Tuning.RuntimeTunablePIDValues;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -25,7 +26,6 @@ public class TurretTalonFX implements TurretIO {
     private TalonFX turretMotor;
     private CANcoder turretEncoder;
 
-    private Rotation2d turretEncoderOffset;
 
     private VoltageOut turretVoltageRequest = new VoltageOut(0);
 
@@ -45,11 +45,21 @@ public class TurretTalonFX implements TurretIO {
         this.turretMotor.getAcceleration().setUpdateFrequency(20);
         this.turretMotor.getPosition().setUpdateFrequency(20);
         this.turretMotor.getTorqueCurrent().setUpdateFrequency(50);
+        
+        motorConfig.Feedback.SensorToMechanismRatio = TurretConstants.motorToTurretGearRatio;
 
         motorConfig.Voltage.PeakForwardVoltage = TurretConstants.maximumVoltage; 
         motorConfig.Voltage.PeakReverseVoltage = -TurretConstants.maximumVoltage;
         motorConfig.TorqueCurrent.PeakForwardTorqueCurrent = TurretConstants.torqueCurrentLimit;
         motorConfig.TorqueCurrent.PeakReverseTorqueCurrent = -TurretConstants.torqueCurrentLimit;
+
+        motorConfig.SoftwareLimitSwitch.ForwardSoftLimitEnable = true;
+        motorConfig.SoftwareLimitSwitch.ForwardSoftLimitThreshold = 
+            0.5 + Rotation2d.fromRadians(TurretConstants.forwardOverextensionRad).getRotations();
+        motorConfig.SoftwareLimitSwitch.ReverseSoftLimitEnable = true;
+        motorConfig.SoftwareLimitSwitch.ReverseSoftLimitThreshold = 
+            -0.5 - Rotation2d.fromRadians(TurretConstants.reverseOverextensionRad).getRotations();
+        
         this.turretMotor.getConfigurator().apply(motorConfig);
 
         turretEncoder = new CANcoder(CANIDs.RIO.turretEncoder);
@@ -61,7 +71,6 @@ public class TurretTalonFX implements TurretIO {
         turretEncoderConfig.MagnetSensor = magnetConfigs;
         turretEncoder.getConfigurator().apply(turretEncoderConfig);
 
-        turretEncoderOffset = TurretConstants.turretEncoderOffset;
 
         configurePID();
 
@@ -70,6 +79,7 @@ public class TurretTalonFX implements TurretIO {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+        update();
         resetMotorToAbsolute();
 
     }
@@ -82,29 +92,32 @@ public class TurretTalonFX implements TurretIO {
         outputs.motorSupplyAmps = turretMotor.getSupplyCurrent().getValueAsDouble();
         outputs.motorTorqueAmps = turretMotor.getTorqueCurrent().getValueAsDouble();
 
-        outputs.motorRotation = Rotation2d.fromRotations(turretMotor.getRotorPosition().getValueAsDouble());
-        outputs.encoderValue = turretEncoder.getAbsolutePosition().getValueAsDouble();
+        outputs.motorRotation = Rotation2d.fromRotations(turretMotor.getPosition().getValueAsDouble());
+        outputs.absoluteEncoderValueRotations = turretEncoder.getAbsolutePosition().getValueAsDouble();
+        outputs.relativeEncoderValueRotations = turretMotor.getRotorPosition().getValueAsDouble() * TurretConstants.motorToTurretGearRatio;
+
         outputs.encoderRotation = getEncoderRotation();
-        outputs.turretRotation = Rotation2d.fromRotations(turretEncoder.getAbsolutePosition().getValueAsDouble()).minus(turretEncoderOffset);
         outputs.turretRotationalVelocityRadPerSec = turretEncoder.getVelocity().getValueAsDouble() * 2 * Math.PI;
         outputs.targetPosition = targetPosition;
-        outputs.distanceFromSetpoint = outputs.targetPosition.minus(outputs.turretRotation);
+        outputs.distanceFromSetpoint = outputs.targetPosition.minus(outputs.encoderRotation);
+
+        if (outputs.encoderRotation != outputs.motorRotation && outputs.motorRotation.getRotations() <= 1 && outputs.motorRotation.getRotations() >= 0) {
+            //resetMotorToAbsolute();
+        }
 
         updatePIDValuesFromNetworkTables();
     }
     
     private Rotation2d getEncoderRotation() {
-        double encoderValue = outputs.encoderValue;
+        double encoderValue = outputs.absoluteEncoderValueRotations;
 
         // Proportion (zero to one) that the encoder is at between min and max rotation
         double encoderProportion = 
-        (encoderValue - TurretConstants.encoderReadingAtMinRotation) / 
-        (TurretConstants.encoderReadingAtMaxRotation - TurretConstants.encoderReadingAtMinRotation);
+        (encoderValue - TurretConstants.turretEncoderOffset.getRotations()) / 
+        TurretConstants.encoderHalfCircleDistance.getRotations();
         
         // Value of encoder proportion within 
-        double scaledValue =
-        ((encoderProportion * TurretConstants.minimumRotationRad) - TurretConstants.maximumRotationRad) /
-        (encoderProportion + TurretConstants.minimumRotationRad);
+        double scaledValue = encoderProportion * Math.PI;
 
         return Rotation2d.fromRadians(scaledValue);
     }
@@ -142,6 +155,7 @@ public class TurretTalonFX implements TurretIO {
 
     @Override
     public void setTargetPosition(Rotation2d position) {
+
         targetPosition = position;
         turretControlRequest = new PositionDutyCycle(targetPosition.getRotations());
         turretMotor.setControl(turretControlRequest);
@@ -150,8 +164,7 @@ public class TurretTalonFX implements TurretIO {
     @Override
     public void resetMotorToAbsolute() {
         this.turretMotor.setPosition((
-            this.turretEncoder.getAbsolutePosition().getValueAsDouble() 
-            - this.turretEncoderOffset.getRotations()) * SwerveDriveConstants.turnGearRatio);
+            outputs.encoderRotation.getRotations()));
     }
 
     public TurretOutputs getOutputs() {return outputs;};

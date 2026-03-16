@@ -6,23 +6,28 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.playingwithfusion.TimeOfFlight.RangingMode;
 
 public final class TransitConstants {
-    public static final InvertedValue longitudinalMotorInverted = InvertedValue.Clockwise_Positive;
-    public static final InvertedValue latitudinalMasterMotorInverted = InvertedValue.Clockwise_Positive;
-    public static final InvertedValue inAndUpMotorInverted = InvertedValue.Clockwise_Positive;
+    public static final InvertedValue longitudinalMotorInverted = InvertedValue.CounterClockwise_Positive;
+    public static final InvertedValue latitudinalMasterMotorInverted = InvertedValue.CounterClockwise_Positive;
+    public static final InvertedValue inAndUpMotorInverted = InvertedValue.CounterClockwise_Positive;
 
     public static final NeutralModeValue longitudinalMotorNeutralMode = NeutralModeValue.Coast;
     public static final NeutralModeValue latitudinalMasterMotorNeutralMode = NeutralModeValue.Coast;
     public static final NeutralModeValue inAndUpMotorNeutralMode = NeutralModeValue.Coast;
 
-    public static final double maxLongitudinalMotorVoltage = .5;
-    public static final double maxLatitudinalMotorVoltage = .5;
-    public static final double maxInAndUpMotorVoltage = .5;
+    public static final double maxLongitudinalMotorVoltage = 8;
+    public static final double maxLatitudinalMotorVoltage = 8;
+    public static final double maxInAndUpMotorVoltage = 8;
 
     public static final MotorAlignmentValue isLongitudinalSlaveReversed = MotorAlignmentValue.Opposed;
     public static final MotorAlignmentValue isLatitudinalSlaveReversed = MotorAlignmentValue.Opposed;
-    public static final double standardLatitudinalMotorVoltage = .25;
-    public static final double standardLongitudinalMotorVoltage = .25;
-    public static final double standardInAndUpMotorVoltage = .25;
+    
+    public static final double standardLongitudinalMotorVoltagePercent = .4;
+    public static final double standardLatitudinalMotorVoltagePercent = .6;
+    public static final double standardInAndUpMotorVoltagePercent = .8;
+
+    public static final double standardLongitudinalMotorVoltage = .4;
+    public static final double standardLatitudinalMotorVoltage = .6;
+    public static final double standardInAndUpMotorVoltage = .8;
 
     public final class Sensors {
         public static final RangingMode binFullRangingMode = RangingMode.Short;

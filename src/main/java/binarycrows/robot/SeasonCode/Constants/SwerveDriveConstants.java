@@ -22,10 +22,10 @@ public final class SwerveDriveConstants {
     public static final boolean backLeftTurnInverted = MetaConstants.isReal;
     public static final boolean backRightTurnInverted = MetaConstants.isReal;
 
-    public static final double frontLeftTurnEncoderOffset = MetaConstants.isReal ? 0.302490 : 0;
-    public static final double frontRightTurnEncoderOffset = MetaConstants.isReal ? 0.369629 : 0;
-    public static final double backLeftTurnEncoderOffset = MetaConstants.isReal ? 0.192383 : 0;
-    public static final double backRightTurnEncoderOffset = MetaConstants.isReal ? 0.156006 : 0;
+    public static final double frontLeftTurnEncoderOffset = MetaConstants.isReal ? 0.655518 : 0;
+    public static final double frontRightTurnEncoderOffset = MetaConstants.isReal ? 0.364258 : 0;
+    public static final double backLeftTurnEncoderOffset = MetaConstants.isReal ? 0.189941 : 0;
+    public static final double backRightTurnEncoderOffset = MetaConstants.isReal ? 0.799805 : 0;
 
     public static final int maxDriveMotorVoltage = 13;
     public static final int maxTurnMotorVoltage = 1;

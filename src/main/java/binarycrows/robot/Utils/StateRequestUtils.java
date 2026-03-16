@@ -15,7 +15,7 @@ public class StateRequestUtils {
      */
     @SuppressWarnings("rawtypes")
     public static boolean isPriorityHigher(StateRequest subject, StateRequest incoming) {
-        return subject.getPriority() < incoming.getPriority();
+        return subject.getPriority() > incoming.getPriority();
     }
 
 

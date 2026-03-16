@@ -1,5 +1,6 @@
 package binarycrows.robot.SeasonCode.SubStateManagers.Flywheel;
 
+import java.util.ArrayList;
 import java.util.function.Supplier;
 
 import binarycrows.robot.MainStateManager;
@@ -24,6 +25,14 @@ public class FlywheelSubStateManager extends SubStateManager<FlywheelStateReques
     private Supplier<Boolean> isShootingSupplier;
     private Supplier<Double> flywheelVoltageSupplier;
 
+    private ArrayList<Double> voltageToVelocityRotPerSecTable = new ArrayList<>();
+    private ArrayList<Double> voltageToVelocityVoltageTable = new ArrayList<>();
+    private double voltageIncrement = 0.2;
+    private double endVoltage = 11;
+    private int framesPerIncrement = 30;
+    private int frameCounter = 0;
+    private double voltageCounter = 0;
+
     public FlywheelSubStateManager() {
         super(new StateRequest<FlywheelStateRequest>(FlywheelStateRequest.SHOOT_ON_THE_MOVE, StateRequestPriority.NORMAL));
 
@@ -42,6 +51,15 @@ public class FlywheelSubStateManager extends SubStateManager<FlywheelStateReques
     @Override
     public void recieveStateRequest(StateRequest<FlywheelStateRequest> stateRequest) {
         super.recieveStateRequest(stateRequest);
+
+        if (activeStateRequest == stateRequest) {
+
+            if (activeStateRequest.getStateRequestType() == FlywheelStateRequest.CONSTRUCT_VOLTAGE_TABLE) {
+                frameCounter = 0;
+                voltageCounter = 0;
+            }
+
+        }
     }
 
     @Override
@@ -74,7 +92,47 @@ public class FlywheelSubStateManager extends SubStateManager<FlywheelStateReques
             case OFF:
                 flywheelIO.setRotorVoltage(0);
                 break;
+            case CONSTRUCT_VOLTAGE_TABLE:
+                
+                if (frameCounter > framesPerIncrement){
+                    voltageToVelocityRotPerSecTable.add(outputs.leftMotorVelocityRPS);
+                    voltageToVelocityVoltageTable.add(voltageCounter);
+                    frameCounter = 0;
+                    voltageCounter += voltageIncrement;
+                }
+                frameCounter++;
+                if (voltageCounter > endVoltage) {
+                    flywheelIO.setRotorVoltage(0);
+                    (new StateRequest<>(FlywheelStateRequest.OFF, StateRequestPriority.NORMAL)).dispatchSelf();
+                } else {
+                    flywheelIO.setRotorVoltage(voltageCounter);
+
+                }
+                StateTable.log("Flywheel/Table/RotVelRotPerSec", convertLogArray(voltageToVelocityRotPerSecTable));
+                StateTable.log("Flywheel/Table/RotVelVoltage", convertLogArray(voltageToVelocityVoltageTable.toArray()));
+                break;
         }
+    }
+
+    public double getVoltage() {
+        return outputs.leftMotorAppliedVoltage;
+    }
+
+    private static double[] convertLogArray(Object[] array) {
+        double[] v = new double[array.length];
+        int i = 0;
+        for(Object item : array) {
+            v[i++] = (double) item;
+        }
+        return v;
+    }
+    private static double[] convertLogArray(ArrayList<Double> array) {
+        double[] v = new double[array.size()];
+        int i = 0;
+        for(Object item : array) {
+            v[i++] = (double) item;
+        }
+        return v;
     }
 
     public static FlywheelSubStateManager getInstance() {

@@ -2,7 +2,6 @@ package binarycrows.robot;
 
 import binarycrows.robot.SeasonCode.Constants.ControlConstants;
 import binarycrows.robot.SeasonCode.SubStateManagers.Climber.ClimberStateRequest;
-import binarycrows.robot.SeasonCode.SubStateManagers.Climber.ClimberSubStateManager;
 import binarycrows.robot.SeasonCode.SubStateManagers.Flywheel.FlywheelStateRequest;
 import binarycrows.robot.SeasonCode.SubStateManagers.Flywheel.FlywheelSubStateManager;
 import binarycrows.robot.SeasonCode.SubStateManagers.Hood.HoodStateRequest;
@@ -19,12 +18,12 @@ import binarycrows.robot.SeasonCode.SubStateManagers.Turret.TurretStateRequest;
 import binarycrows.robot.SeasonCode.SubStateManagers.Turret.TurretSubStateManager;
 import binarycrows.robot.SeasonCode.Utils.ButtonBoard;
 import binarycrows.robot.SeasonCode.Utils.ButtonBoard.ButtonBoardButtons;
-import binarycrows.robot.SeasonCode.Utils.Climbing;
 import binarycrows.robot.Utils.ConversionUtils;
 import binarycrows.robot.Utils.StateRequestUtils;
 import binarycrows.robot.Utils.Gamepad.GenericGamepad;
 import binarycrows.robot.Utils.Gamepad.XboxGamepad;
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.geometry.Rotation2d;
 
 public class Keybinds {
     public static GenericGamepad driverController = new XboxGamepad(0);
@@ -37,7 +36,17 @@ public class Keybinds {
     public static void periodic() {
         driverController.periodic();
         buttonBoard1.periodic();
+        testController.periodic();
 
+    }
+
+    public static Rotation2d getTestAngle() {
+        double x = testController.getAxis(XboxGamepad.XboxGamepadID.left_stick_x);
+        double y = testController.getAxis(XboxGamepad.XboxGamepadID.left_stick_y);
+
+        if (Math.abs(x) < .5 && Math.abs(y) < .5) return null;
+
+        return Rotation2d.fromRadians(Math.atan2(x, -y));
     }
 
     public static void createKeybinds() {
@@ -99,8 +108,16 @@ public class Keybinds {
         );
 
         // Test Controller
+
+        testController.onPress(XboxGamepad.XboxGamepadID.x, 
+        StateRequestUtils.createStateRequestRunnable(ShootingStateRequest.FORCE_SHOOT),
+        StateRequestUtils.createStateRequestRunnable(ShootingStateRequest.STANDBY)
+        );
+
+        testController.onPress(XboxGamepad.XboxGamepadID.y, 
+        StateRequestUtils.createStateRequestRunnable(IntakeRollersStateRequest.INTAKING),
+        StateRequestUtils.createStateRequestRunnable(IntakeRollersStateRequest.OFF));
         
-        testController.onPress(XboxGamepad.XboxGamepadID.a, StateRequestUtils.createStateRequestRunnable(IntakeRollersStateRequest.INVERT));
 
         // Button Board
 
@@ -162,6 +179,7 @@ public class Keybinds {
         StateRequestUtils.createStateRequestRunnable(FlywheelStateRequest.SHOOT_ON_THE_MOVE));
         
         // Climber
+        /* 
         buttonBoard1.onPress(ButtonBoardButtons.BB1.climbLeft, Climbing::climbLeft, Climbing::cancelClimb);
         buttonBoard1.onPress(ButtonBoardButtons.BB1.climbRight, Climbing::climbRight, Climbing::cancelClimb);
         buttonBoard2.onPress(ButtonBoardButtons.BB2.climbCenterLeft, Climbing::climbCenterLeft, Climbing::cancelClimb);
@@ -173,7 +191,7 @@ public class Keybinds {
         ClimberSubStateManager.getInstance()::manualStop);
         buttonBoard1.onPress(ButtonBoardButtons.BB1.manualClimberDown, 
         ClimberSubStateManager.getInstance()::manualDown, 
-        ClimberSubStateManager.getInstance()::manualStop);
+        ClimberSubStateManager.getInstance()::manualStop);*/
 
         // Switches
         buttonBoard1.onPress(ButtonBoardButtons.BB1.manualIntakeSwitch,

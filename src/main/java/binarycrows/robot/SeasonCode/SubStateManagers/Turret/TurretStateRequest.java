@@ -3,5 +3,7 @@ package binarycrows.robot.SeasonCode.SubStateManagers.Turret;
 public enum TurretStateRequest {
     SHOOT_ON_THE_MOVE, 
 
-    MANUAL_OVERRIDE
+    MANUAL_OVERRIDE,
+
+    CONSTRUCT_VOLTAGE_TABLE
 }

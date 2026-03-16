@@ -7,6 +7,19 @@ import binarycrows.robot.Utils.LerpTable;
 import edu.wpi.first.math.geometry.Rotation2d;
 
 public final class TurretConstants {
+
+    public record TurretControlConstants(
+        double correctionVelocityRadPerSec,
+        Rotation2d correctionZone,
+        double decelerationBufferRad,
+        double startingVelocityRadPerSec,
+        double correctionFactorTuningDeltaThresholdRad,
+        double maxTurretVelocityRadPerSec,
+        double minTurretVelocityRadPerSec,
+        double maxAccelerationPerFrameRadPerSecPerSec,
+        double maxDecelerationPerFrameRadPerSecPerSec
+    ) {public TurretControlConstants {}}
+
     public static final double motorToTurretGearRatio = 20;
 
     public static final double turretPIDValueP = 0;
@@ -14,41 +27,63 @@ public final class TurretConstants {
     public static final double turretPIDValueD = 0;
     public static final double turretPIDValueFF = 0;
 
-    public static final double maximumVoltage = .5;
+    public static final double maximumVoltage = 4;
 
-    public static final Rotation2d turretEncoderOffset = Rotation2d.fromRotations(0.0);
+    public static final Rotation2d turretEncoderOffset = Rotation2d.fromRotations(0.501709); // Encoder reading when turret is straight forward
 
     public static final InvertedValue motorInverted = InvertedValue.Clockwise_Positive;
-    public static final NeutralModeValue motorNeutralMode = NeutralModeValue.Brake;
+    public static final NeutralModeValue motorNeutralMode = NeutralModeValue.Coast;
 
-    public static double correctionVelocityRadPerSec = MetaConstants.isReal ? 0 : 0.75;
-    public static Rotation2d correctionZone = MetaConstants.isReal ? Rotation2d.fromDegrees(0) : Rotation2d.fromDegrees(20);
+    public static final TurretControlConstants normalTurretControlConstants = new TurretControlConstants(
+        MetaConstants.isReal ? 2 : 0.75, // Correction velocity (rad/sec)
+        MetaConstants.isReal ? Rotation2d.fromDegrees(20) : Rotation2d.fromDegrees(20), // Correction zone
 
-    public static double decelerationBufferRad = MetaConstants.isReal ? 0 : 0.025;
+        MetaConstants.isReal ? 0.4 : 0.025, // Deceleration buffer rad
 
-    public static double startingVelocityRadPerSec = MetaConstants.isReal ? 0 : 0.1;
+        MetaConstants.isReal ? 4 : 0.1, // Starting velocity rad per sec
 
-    public static double correctionFactorTuningDeltaThresholdRad = MetaConstants.isReal ? 0 : 0.05;
+        MetaConstants.isReal ? 0.05 : 0.05, // Correction factor tuning delta threshold rad
 
-    public static double maxTurretVelocityRadPerSec = MetaConstants.isReal ? 0 : 12;
-    public static double minTurretVelocityRadPerSec = correctionVelocityRadPerSec;
+        MetaConstants.isReal ? 8 : 12, // Max turret velocity rad per sec
+        MetaConstants.isReal ? 2 : 0.75, // Min turret velocity rad per sec
 
-    public static double maxAccelerationPerFrameRadPerSecPerSec = MetaConstants.isReal ? 0 : 40;
-    public static double maxDecelerationPerFrameRadPerSecPerSec = MetaConstants.isReal ? 0 : 200; // Will need to be significantly higher than max
+        MetaConstants.isReal ? 10 : 40, // Max acceleration per frame (rad/s^2)
+        MetaConstants.isReal ? 20 : 200 // Max deceleration per frame (rad/s/s) (will need to be significantly higher than max)
+    );
+    public static final TurretControlConstants overextensionTurretControlConstants = new TurretControlConstants(
+        MetaConstants.isReal ? 1.25 : 0.75, // Correction velocity rad per sec
+        MetaConstants.isReal ? Rotation2d.fromDegrees(25) : Rotation2d.fromDegrees(20), // Correction zone
 
-    public static final double minimumRotationRad = -5 * Math.PI / 4; // 5pi/4 = 225 degrees, or 45 more than 180
-    public static final double maximumRotationRad = 5 * Math.PI / 4;
-    public static final double idealMinimumRotationRad = -Math.PI;
-    public static final double idealMaximumRotationRad = Math.PI;
+        MetaConstants.isReal ? 0.025 : 0.025, // Deceleration buffer rad
 
-    public static final double encoderReadingAtMaxRotation = 0.9;
-    public static final double encoderReadingAtMinRotation = 0;
+        MetaConstants.isReal ? 1.75 : 0.1, // Starting velocity rad per sec
+
+        MetaConstants.isReal ? 0.05 : 0.05, // Correction factor tuning delta threshold rad
+
+        MetaConstants.isReal ? 3 : 12, // Max turret velocity rad per sec
+        MetaConstants.isReal ? 1.75 : 0.75, // Min turret velocity rad per sec
+
+        MetaConstants.isReal ? 5 : 40, // Max acceleration per frame rad per sec
+        MetaConstants.isReal ? 50 : 200 // Max deceleration per frame rad per sec (will need to be significantly higher than max)
+    );
+
+    public static final double forwardOverextensionRad = Math.PI / 4.0 * (0.6);
+    public static final double reverseOverextensionRad = Math.PI / 4.0 * (0.8);
+
+    public static final double forwardForceNormalRangeDistanceRotations = .5 + (0.125 * (0.6));
+    public static final double reverseForceNormalRangeDistanceRotations = -.5 - (0.125 * (0.8));
+
+    public static final Rotation2d encoderHalfCircleDistance = Rotation2d.fromRotations(0.890869).minus(turretEncoderOffset);
 
     public static final double manualVoltage = .25;
 
+    public static final double velocityToVoltage(double velocityRadPerSec) {
+        return 0.483*velocityRadPerSec + 0.272;
+    }
+
     public static final LerpTable velocityToVoltageLerpTable = MetaConstants.isReal ? 
     // Real
-    new LerpTable(new double[] {}, new double[] {}, true) 
+    new LerpTable(new double[] {0, 0}, new double[] {0, 0}, true) 
     : 
     // Sim
     new LerpTable(
@@ -84,6 +119,8 @@ public final class TurretConstants {
     }, true);
 
     public static final double torqueCurrentLimit = 100;
+
+    public static final Rotation2d encoderReadingAtMinRotation =  TurretConstants.turretEncoderOffset.minus(TurretConstants.encoderHalfCircleDistance);
 
     
 }

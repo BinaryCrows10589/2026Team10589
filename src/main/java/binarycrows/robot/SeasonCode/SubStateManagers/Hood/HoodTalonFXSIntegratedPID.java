@@ -8,6 +8,7 @@ import com.ctre.phoenix6.controls.PositionDutyCycle;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFXS;
+import com.ctre.phoenix6.signals.ExternalFeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.MotorArrangementValue;
 import com.ctre.phoenix6.signals.SensorDirectionValue;
 
@@ -54,18 +55,23 @@ public class HoodTalonFXSIntegratedPID implements HoodIO {
         motorConfig.CurrentLimits.StatorCurrentLimit = HoodConstants.statorCurrentLimit;
         motorConfig.CurrentLimits.StatorCurrentLimitEnable = true;
 
+        motorConfig.ExternalFeedback.ExternalFeedbackSensorSource = ExternalFeedbackSensorSourceValue.RemoteCANcoder;
+        motorConfig.ExternalFeedback.FeedbackRemoteSensorID = CANIDs.RIO.hoodEncoder;
+        
+
         this.hoodMotor.getConfigurator().apply(motorConfig);
 
         hoodEncoder = new CANcoder(CANIDs.RIO.hoodEncoder);
         CANcoderConfiguration hoodEncoderConfig = new CANcoderConfiguration();
         MagnetSensorConfigs magnetConfigs = new MagnetSensorConfigs();
         magnetConfigs.AbsoluteSensorDiscontinuityPoint = 1;
-        magnetConfigs.MagnetOffset = 0.0;
-        magnetConfigs.SensorDirection = SensorDirectionValue.CounterClockwise_Positive;
+        magnetConfigs.MagnetOffset = -HoodConstants.hoodEncoderOffset.getRotations();
+        magnetConfigs.SensorDirection = SensorDirectionValue.Clockwise_Positive;
         hoodEncoderConfig.MagnetSensor = magnetConfigs;
         hoodEncoder.getConfigurator().apply(hoodEncoderConfig);
 
         hoodEncoderOffset = HoodConstants.hoodEncoderOffset;
+
 
         configurePID();
 
@@ -74,21 +80,23 @@ public class HoodTalonFXSIntegratedPID implements HoodIO {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        resetMotorToAbsolute();
 
     }
 
     @Override
     public void update() {
 
+        System.out.println((targetPosition.getDegrees()) - Rotation2d.fromRotations(hoodMotor.getPosition().getValueAsDouble()).getDegrees());
+
+
         outputs.motorVelocityRPS = hoodMotor.getVelocity().getValueAsDouble();
         outputs.motorAppliedVoltage = hoodMotor.getMotorVoltage().getValueAsDouble();;
         outputs.motorSupplyAmps = hoodMotor.getSupplyCurrent().getValueAsDouble();
         outputs.motorTorqueAmps = hoodMotor.getTorqueCurrent().getValueAsDouble();
 
-        outputs.motorRotation = Rotation2d.fromRotations(hoodMotor.getRotorPosition().getValueAsDouble());
+        outputs.motorRotation = Rotation2d.fromRotations(hoodMotor.getPosition().getValueAsDouble());
         outputs.encoderRotation = Rotation2d.fromRotations(hoodEncoder.getAbsolutePosition().getValueAsDouble());
-        outputs.hoodRotation = Rotation2d.fromRotations(hoodEncoder.getAbsolutePosition().getValueAsDouble()).minus(hoodEncoderOffset);
+        outputs.hoodRotation = outputs.encoderRotation;
         outputs.hoodRotationalVelocityRadPerSec = hoodEncoder.getVelocity().getValueAsDouble() * 2 * Math.PI;
         outputs.targetPosition = targetPosition;
         outputs.distanceFromSetpoint = outputs.targetPosition.minus(outputs.hoodRotation);
@@ -117,6 +125,8 @@ public class HoodTalonFXSIntegratedPID implements HoodIO {
         turretPIDConfig.kI = HoodConstants.hoodPIDValueI;
         turretPIDConfig.kD = HoodConstants.hoodPIDValueD;
         turretPIDConfig.kS = HoodConstants.hoodPIDValueFF;
+        turretPIDConfig.kG = HoodConstants.hoodPIDValueG;
+        
 
         this.hoodMotor.getConfigurator().apply(turretPIDConfig);
 
@@ -135,7 +145,7 @@ public class HoodTalonFXSIntegratedPID implements HoodIO {
     public void setTargetPosition(Rotation2d position) {
         targetPosition = position;
         hoodControlRequest = new PositionDutyCycle(targetPosition.getRotations());
-        hoodControlRequest.FeedForward = getGravityFF();
+        //hoodControlRequest.FeedForward = getGravityFF();
         hoodMotor.setControl(hoodControlRequest);
     }
 

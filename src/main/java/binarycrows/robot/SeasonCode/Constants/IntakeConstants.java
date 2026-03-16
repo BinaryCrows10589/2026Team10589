@@ -12,24 +12,24 @@ public final class IntakeConstants {
 
         public static final NeutralModeValue motorNeutralMode = NeutralModeValue.Brake;
 
-        public static final double maxMotorVoltage = .5;
+        public static final double maxMotorVoltage = 2;
 
         public static final MotorAlignmentValue isSlaveReversed = MotorAlignmentValue.Opposed;
 
-        public static final double intakingMotorVoltage = 0.25;
+        public static final double intakingMotorVoltage = 4;
     }
 
     public final class Pivot {
         public static final InvertedValue masterMotorInverted = InvertedValue.Clockwise_Positive;
 
-        public static final NeutralModeValue motorNeutralMode = NeutralModeValue.Brake;
+        public static final NeutralModeValue motorNeutralMode = NeutralModeValue.Coast;
 
         public static final double maxMotorVoltageUp = 0.5;
         public static final double maxMotorVoltageDown = -0.5;
 
         public static final MotorAlignmentValue isSlaveReversed = MotorAlignmentValue.Opposed;
 
-        public static final double gearRatio = 30;
+        public static final double gearRatio = 40;
 
         public static final Rotation2d pivotEncoderOffset = Rotation2d.kZero;
 
@@ -39,9 +39,9 @@ public final class IntakeConstants {
         public static final double pivotPIDValueFF = 0;
 
 
-        public static final Rotation2d pivotDownPosition = Rotation2d.fromDegrees(0);
-        public static final Rotation2d pivotRaisedPosition = Rotation2d.fromDegrees(20);
-        public static final Rotation2d pivotUpPosition = Rotation2d.fromDegrees(90);
+        public static final Rotation2d pivotDownPosition = Rotation2d.fromRotations(0.844971);
+        public static final Rotation2d pivotRaisedPosition = Rotation2d.fromRotations(0.689697);
+        public static final Rotation2d pivotUpPosition = Rotation2d.fromRotations(0.463379);
 
         public static final double manualVoltage = 4;
         public static final double manualVoltageFF = 1;

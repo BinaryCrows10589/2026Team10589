@@ -29,7 +29,7 @@ public class HoodSubStateManager extends SubStateManager<HoodStateRequest> {
     private Supplier<Double> hoodAngleSupplier;
 
     public HoodSubStateManager() {
-        super(new StateRequest<HoodStateRequest>(HoodStateRequest.RETRACTED, StateRequestPriority.NORMAL));
+        super(new StateRequest<HoodStateRequest>(HoodStateRequest.SHOOT_ON_THE_MOVE, StateRequestPriority.NORMAL));
 
         outputs = new HoodOutputs();
 
@@ -45,8 +45,13 @@ public class HoodSubStateManager extends SubStateManager<HoodStateRequest> {
             manualOverrideTargetRotation = outputs.hoodRotation;
         }
 
+    }
+
+    @Override
+    public void setupSuppliers() {
         closeToTrenchSupplier = ShootingSubStateManager.getInstance()::getIsCloseToTrench;
         hoodAngleSupplier = ShootingSubStateManager.getInstance()::getHoodAngleRad;
+
     }
 
     @Override
@@ -75,15 +80,25 @@ public class HoodSubStateManager extends SubStateManager<HoodStateRequest> {
     }
     private void controlVoltage() {
         double voltage = 0;
+        boolean isPID = false;
         double delta = targetPosition.getDegrees() - outputs.hoodRotation.getDegrees();
 
-        if (delta > 20) voltage = 0.02;
-        else if (delta > 5) voltage = 0.002;
-        else if (delta < -5) voltage = -0.002;
-        else if (delta < -20) voltage = -0.02;
-        else controlPID();
+        StateTable.log("/Hood/ControlDelta", delta);
 
-        if (voltage != 0) hood.setVoltage(voltage);
+        if (delta > 20) voltage = 1.5;
+        else if (delta > 10) voltage = 0.95;
+        else if (delta > 7) voltage = .9;
+        else if (delta > 4) voltage = 0.8;
+        else if (delta < -20) voltage = -.25;
+        else if (delta < -10) voltage = 0;
+        else if (delta < -7) voltage = 0.2;
+        else if (delta < -4) voltage = 0.3;
+        else {
+            controlPID();
+            isPID = true;
+        }
+
+        if (!isPID) hood.setVoltage(voltage);
     }
     private void controlLikeTurret() {
         hood.setTargetLikeTurret(targetPosition);

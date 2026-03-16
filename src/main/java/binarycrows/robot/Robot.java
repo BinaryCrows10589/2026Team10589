@@ -15,7 +15,7 @@ import org.littletonrobotics.junction.wpilog.WPILOGReader;
 import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 
 import binarycrows.robot.CrowMotion.UserSide.CMConfig;
-import binarycrows.robot.SeasonCode.Autons.StartPosition_HumanPlayerRamp_Trench_to_InitialFuelQuadrant_OwnAllianceHumanPlayer;
+import binarycrows.robot.SeasonCode.Autons.StartPosition_HumanPlayerRamp_Trench_ShootPreloads;
 import binarycrows.robot.SeasonCode.Constants.FieldConstants;
 import binarycrows.robot.SeasonCode.Constants.MetaConstants;
 import binarycrows.robot.SeasonCode.Constants.PoseEstimatorConstants;
@@ -98,7 +98,7 @@ public class Robot extends LoggedRobot {
         new PivotSubStateManager(),
         new HoodSubStateManager(),
         new FlywheelSubStateManager(),
-        new ClimberSubStateManager(),
+        //new ClimberSubStateManager(),
         new CANdleSubStateManager(),
         new ShootingSubStateManager()
       );
@@ -154,7 +154,7 @@ public class Robot extends LoggedRobot {
 
 
     // Initialize autonomous chooser
-    chooser.addDefaultOption("MainAuton", new Auton(StartPosition_HumanPlayerRamp_Trench_to_InitialFuelQuadrant_OwnAllianceHumanPlayer.startingPoint, StartPosition_HumanPlayerRamp_Trench_to_InitialFuelQuadrant_OwnAllianceHumanPlayer::getAutonomous));
+    //chooser.addDefaultOption("MainAuton", new Auton(StartPosition_HumanPlayerRamp_Trench_to_InitialFuelQuadrant_OwnAllianceHumanPlayer.startingPoint, StartPosition_HumanPlayerRamp_Trench_to_InitialFuelQuadrant_OwnAllianceHumanPlayer::getAutonomous));
 
     onAutonSelect(chooser.get()); // Initialize first autonomous that is selected
 

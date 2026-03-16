@@ -8,6 +8,7 @@ import binarycrows.robot.StateTable;
 import binarycrows.robot.SubStateManager;
 import binarycrows.robot.Enums.StateRequestPriority;
 import binarycrows.robot.SeasonCode.Constants.TransitConstants;
+import binarycrows.robot.SeasonCode.SubStateManagers.Flywheel.FlywheelSubStateManager;
 import binarycrows.robot.SeasonCode.SubStateManagers.Shooting.ShootingSubStateManager;
 import binarycrows.robot.SeasonCode.SubStateManagers.Transit.SensorsIO.SensorsOutputs;
 import binarycrows.robot.SeasonCode.SubStateManagers.Transit.TransitIO.TransitOutputs;
@@ -24,8 +25,10 @@ public class TransitSubStateManager  extends SubStateManager<TransitStateRequest
 
     private Supplier<Boolean> shooting;
 
+    private Supplier<Double> flywheelVoltageSupplier;
+
     public TransitSubStateManager() {
-        super(new StateRequest<TransitStateRequest>(TransitStateRequest.UNPOWERED, StateRequestPriority.NORMAL));
+        super(new StateRequest<TransitStateRequest>(TransitStateRequest.SHOOTER, StateRequestPriority.NORMAL));
 
         transitOutputs = new TransitOutputs();
         sensorOutputs = new SensorsOutputs();
@@ -33,12 +36,15 @@ public class TransitSubStateManager  extends SubStateManager<TransitStateRequest
         transitIO = new TransitTalonFXS(transitOutputs);
         sensorsIO = new SensorsPWF(sensorOutputs);
 
-
+        
     }
+
 
     @Override
     public void setupSuppliers() {
         shooting = ShootingSubStateManager.getInstance()::getShooting;
+        flywheelVoltageSupplier = FlywheelSubStateManager.getInstance()::getVoltage;
+
     }
 
     @Override
@@ -79,9 +85,10 @@ public class TransitSubStateManager  extends SubStateManager<TransitStateRequest
                 break;
             case SHOOTER:
                 if (shooting.get()) {
-                    transitIO.setLatitudinalVoltage(TransitConstants.standardLatitudinalMotorVoltage);
-                    transitIO.setLongitudinalVoltage(TransitConstants.standardLongitudinalMotorVoltage);
-                    transitIO.setInAndUpVoltage(TransitConstants.standardInAndUpMotorVoltage);
+                    double flywheelVoltage = flywheelVoltageSupplier.get();
+                    transitIO.setLatitudinalVoltage(TransitConstants.standardLatitudinalMotorVoltagePercent * flywheelVoltage);
+                    transitIO.setLongitudinalVoltage(TransitConstants.standardLongitudinalMotorVoltagePercent * flywheelVoltage);
+                    transitIO.setInAndUpVoltage(TransitConstants.standardInAndUpMotorVoltagePercent * flywheelVoltage);
                 } else {
                     transitIO.setLatitudinalVoltage(0);
                     transitIO.setLongitudinalVoltage(0);

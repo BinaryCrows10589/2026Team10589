@@ -29,7 +29,7 @@ public class ShootingConstants {
     public static final Rectangle2d trenchBoundsHumanPlayerOppositeSide = new Rectangle2d(new Translation2d(11.3, 1.3), new Translation2d(12.5, 0));
     public static final Rectangle2d trenchBoundsDepotOppositeSide = new Rectangle2d(new Translation2d(11.3, 8.1), new Translation2d(12.5, 6.8));
 
-    // Base table goes distance, hood angle, flywheel RPM, time of flight
+    // Base table goes distance, hood angle, flywheel RPS, time of flight
     public static final UnkeyedLerpTable baseTable = new UnkeyedLerpTable(new double[][] {
         //           |distance|hood angle|flywheel|ToF|   
         new double[] {0,       0,         0,       0}, // TO-DO: after tuning, do NOT leave 0,0,0 as a value

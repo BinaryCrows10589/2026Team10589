@@ -3,6 +3,7 @@ package binarycrows.robot.SeasonCode.SubStateManagers.Shooting;
 import java.util.Arrays;
 import java.util.function.Supplier;
 
+import binarycrows.robot.Keybinds;
 import binarycrows.robot.MainStateManager;
 import binarycrows.robot.StateRequest;
 import binarycrows.robot.SubStateManager;
@@ -17,6 +18,7 @@ import binarycrows.robot.SeasonCode.SubStateManagers.Hood.HoodSubStateManager;
 import binarycrows.robot.SeasonCode.SubStateManagers.SwerveDrive.DriveSubStateManager;
 import binarycrows.robot.SeasonCode.SubStateManagers.Transit.TransitSubStateManager;
 import binarycrows.robot.SeasonCode.SubStateManagers.Turret.TurretSubStateManager;
+import binarycrows.robot.Utils.Tuning.RuntimeTunableValue;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -48,6 +50,7 @@ public class ShootingSubStateManager extends SubStateManager<ShootingStateReques
         // Java is evil so the arrays need to be prepopulated
         for (Translation2d[] row : derivativesOfVelocity) Arrays.fill(row, Translation2d.kZero);
         Arrays.fill(valuesOfDerivatiesOfVelocity, Translation2d.kZero);
+        
     }
 
     @Override
@@ -99,7 +102,8 @@ public class ShootingSubStateManager extends SubStateManager<ShootingStateReques
     public void periodic() {
         canShoot = getCanShoot();
         double[] shootingParameters = calculate();
-        turretAngleRad = shootingParameters[0];
+        Rotation2d testAngle = Keybinds.getTestAngle();
+        if (testAngle != null) turretAngleRad = testAngle.getRadians();//shootingParameters[0];
         hoodAngleRad = shootingParameters[1];
         flywheelVoltage = FlywheelConstants.rpmToVoltage.get(shootingParameters[2]);
         flywheelRPM = shootingParameters[2];
@@ -126,12 +130,18 @@ public class ShootingSubStateManager extends SubStateManager<ShootingStateReques
         return turretAngleRad;
     }
 
+    RuntimeTunableValue hoodAngle = new RuntimeTunableValue("Tuning/Shooting/Angle", 0.0);
+    RuntimeTunableValue rpm = new RuntimeTunableValue("Tuning/Shooting/RPM", 0.0);
+
+
     public double getHoodAngleRad() {
-        return hoodAngleRad;
+        //return hoodAngleRad;
+        return (double) hoodAngle.getValue();
     }
 
     public double getFlywheelVoltage() {
-        return flywheelVoltage;
+        return FlywheelConstants.rpmToVoltage.get((double) rpm.getValue());
+        //return flywheelVoltage;
     }
 
     
