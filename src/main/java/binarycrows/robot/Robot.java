@@ -268,13 +268,13 @@ public class Robot extends LoggedRobot {
   // Modified from WPILib docs:
   // https://docs.wpilib.org/en/stable/docs/yearly-overview/2026-game-data.html
   // Returns seconds until the hub is active to allow for preshooting.
-  // Returns -1 if the hub is inactive and time is incalcuable
-  // Returns 0 if the hub is active
+  // Returns - if the hub is inactive, magnitude is time till active
+  // Returns 0 if the hub is active and/or time is incalcuable
   public double secondsUntilHubIsActive() {
     Optional<Alliance> alliance = DriverStation.getAlliance();
     // If we have no alliance, we cannot be enabled, therefore no hub.
     if (alliance.isEmpty()) {
-      return -1;
+      return 0;
     }
     // Hub is always enabled in autonomous.
     if (DriverStation.isAutonomousEnabled()) {
@@ -282,13 +282,13 @@ public class Robot extends LoggedRobot {
     }
     // At this point, if we're not teleop enabled, there is no hub.
     if (!DriverStation.isTeleopEnabled()) {
-      return -1;
+      return 0;
     }
 
     // We're teleop enabled, compute.
     double matchTime = DriverStation.getMatchTime();
     String gameData = DriverStation.getGameSpecificMessage();
-    // If we have no game data, we cannot compute, assume hub is active, as its likely early in teleop.
+    // If we have no game data, we cannot compute, assume hub is active, as it's likely early in teleop.
     if (gameData.isEmpty()) {
       return 0;
     }
@@ -310,23 +310,23 @@ public class Robot extends LoggedRobot {
 
     if (matchTime > 130) {
       // Transition shift, hub is active.
-      return 0;
+      return 130-matchTime;
     } else if (matchTime > 105) {
       // Shift 1
-      if (shift1Active) return 0;
+      if (shift1Active) return 105 - matchTime;
       else return matchTime - 105;
       return shift1Active;
     } else if (matchTime > 80) {
       // Shift 2
-      if (!shift1Active) return 0;
+      if (!shift1Active) return 80 - matchTime;
       else return matchTime - 80;
     } else if (matchTime > 55) {
       // Shift 3
-      if (shift1Active) return true;
+      if (shift1Active) return 55 - matchTime;
       else return matchTime - 55;
     } else if (matchTime > 30) {
       // Shift 4
-      if (!shift1Active) return 0;
+      if (!shift1Active) return 30 - matchTime;
       else return matchTime - 30;
     } else {
       // End game, hub always active.
