@@ -167,6 +167,8 @@ public class ShootingSubStateManager extends SubStateManager<ShootingStateReques
     private boolean distanceInBounds = true;
     private boolean distanceInLargeBounds = true;
 
+    private boolean hubActiveWhenShotLands = true;
+
     // Helpers
 
     public double getAngle(double distance) {
@@ -298,6 +300,11 @@ public class ShootingSubStateManager extends SubStateManager<ShootingStateReques
             // 5) Turret angle command
             turretAngle = V_turret.getAngle();
 
+        }
+        if (Robot.secondsUntilHubIsActive >= 0) {
+            hubActiveWhenShotLands = (timeOfFlight >= Robot.secondsUntilHubIsActive);
+        } else {
+            hubActiveWhenShotLands = (timeOfFlight < Math.abs(Robot.secondsUntilHubIsActive));
         }
         
         return new double[] {turretAngle.getRadians(), hoodAngle, flywheelRPM};
