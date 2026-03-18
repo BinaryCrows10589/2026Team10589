@@ -104,6 +104,7 @@ public class ShootingSubStateManager extends SubStateManager<ShootingStateReques
         double[] shootingParameters = calculate();
         Rotation2d testAngle = Keybinds.getTestAngle();
         if (testAngle != null) turretAngleRad = testAngle.getRadians();//shootingParameters[0];
+        //turretAngleRad = shootingParameters[0];
         hoodAngleRad = shootingParameters[1];
         flywheelVoltage = FlywheelConstants.rpmToVoltage.get(shootingParameters[2]);
         flywheelRPM = shootingParameters[2];

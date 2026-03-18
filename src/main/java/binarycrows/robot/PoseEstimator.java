@@ -60,7 +60,7 @@ public class PoseEstimator {
             SwerveDriveConstants.driveKinematics,
             yawAngle,
             modulePositions, 
-            new Pose2d(),
+            new Pose2d(0.0, 8.052, yawAngle),
             PoseEstimatorConstants.swerveDrivePoseEstimateTrust, PoseEstimatorConstants.visionPoseEstimateTrust);
         PoseEstimatorConstants.aprilTagLayout.setOrigin(PoseEstimatorConstants.originPosition);
         visionNotifier.startPeriodic(.1);

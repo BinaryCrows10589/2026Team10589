@@ -82,17 +82,19 @@ public class HoodSubStateManager extends SubStateManager<HoodStateRequest> {
         double voltage = 0;
         boolean isPID = false;
         double delta = targetPosition.getDegrees() - outputs.hoodRotation.getDegrees();
+        double velocity = Math.max(Math.abs(outputs.hoodRotationalVelocityRadPerSec), 2);
+        if (velocity == 2) velocity = 1;
 
         StateTable.log("/Hood/ControlDelta", delta);
-
-        if (delta > 20) voltage = 1.5;
-        else if (delta > 10) voltage = 0.95;
-        else if (delta > 7) voltage = .9;
-        else if (delta > 4) voltage = 0.8;
-        else if (delta < -20) voltage = -.25;
-        else if (delta < -10) voltage = 0;
-        else if (delta < -7) voltage = 0.2;
-        else if (delta < -4) voltage = 0.3;
+        if (Math.abs(delta) < 1 && targetPosition.getDegrees() == 0) voltage = 0;
+        else if (delta > 20) voltage = 1.5 / velocity;
+        else if (delta > 10) voltage = 1 / velocity;
+        else if (delta > 7) voltage = 0.9 / velocity;
+        else if (delta > 4) voltage = 0.9 / velocity / velocity;
+        else if (delta < -20) voltage = -.25 / velocity;
+        else if (delta < -10) voltage = -.1 / velocity;
+        else if (delta < -7) voltage = 0.1 * velocity/1.5;
+        else if (delta < -4) voltage = 0.2 * velocity/1.5;
         else {
             controlPID();
             isPID = true;

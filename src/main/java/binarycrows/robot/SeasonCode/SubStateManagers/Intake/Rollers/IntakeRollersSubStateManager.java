@@ -6,6 +6,8 @@ import binarycrows.robot.SubStateManager;
 import binarycrows.robot.Enums.StateRequestPriority;
 import binarycrows.robot.SeasonCode.Constants.IntakeConstants;
 import binarycrows.robot.SeasonCode.SubStateManagers.Intake.Rollers.IntakeRollersIO.IntakeRollersOutputs;
+import binarycrows.robot.SeasonCode.SubStateManagers.SwerveDrive.DriveSubStateManager;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 
 public class IntakeRollersSubStateManager extends SubStateManager<IntakeRollersStateRequest> {
     
@@ -36,7 +38,8 @@ public class IntakeRollersSubStateManager extends SubStateManager<IntakeRollersS
         intakeRollersIO.update();
         switch (activeStateRequest.getStateRequestType()) {
             case INTAKING:
-                intakeRollersIO.setRotorVoltage(IntakeConstants.Rollers.intakingMotorVoltage);
+                ChassisSpeeds speeds = DriveSubStateManager.getInstance().getChassisSpeeds();
+                intakeRollersIO.setRotorVoltage(IntakeConstants.Rollers.intakingMotorVoltage * Math.sqrt(speeds.vxMetersPerSecond * speeds.vxMetersPerSecond));
                 break;
             case OFF:
                 intakeRollersIO.setRotorVoltage(0);

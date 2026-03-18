@@ -19,7 +19,7 @@ public class PivotSubStateManager extends SubStateManager<PivotStateRequest>  {
     private int manualDirection = 0; // 1=up 0=none 2=down
 
     public PivotSubStateManager() {
-        super(new StateRequest<PivotStateRequest>(PivotStateRequest.DOWN, StateRequestPriority.NORMAL));
+        super(new StateRequest<PivotStateRequest>(PivotStateRequest.UP, StateRequestPriority.NORMAL));
 
         outputs = new PivotOutputs();
 
@@ -52,7 +52,7 @@ public class PivotSubStateManager extends SubStateManager<PivotStateRequest>  {
         boolean runRaisedPID = false;
         double delta = 0;
 
-        /*switch (this.activeStateRequest.getStateRequestType()) {
+        switch (this.activeStateRequest.getStateRequestType()) {
             case DOWN:
                 delta = IntakeConstants.Pivot.pivotDownPosition.minus(outputs.encoderRotation).getDegrees();
                 if (delta > 80) voltage = 1;
@@ -78,7 +78,7 @@ public class PivotSubStateManager extends SubStateManager<PivotStateRequest>  {
             case MANUAL_OVERRIDE:
                 voltage = manualDirection * IntakeConstants.Pivot.manualVoltage + outputs.encoderRotation.getCos() * IntakeConstants.Pivot.manualVoltageFF;
                 break;
-        }*/
+        }
 
         StateTable.log("Intake/Pivot/PositionDelta", delta);
 

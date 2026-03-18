@@ -21,9 +21,9 @@ public final class TransitConstants {
     public static final MotorAlignmentValue isLongitudinalSlaveReversed = MotorAlignmentValue.Opposed;
     public static final MotorAlignmentValue isLatitudinalSlaveReversed = MotorAlignmentValue.Opposed;
     
-    public static final double standardLongitudinalMotorVoltagePercent = .4;
-    public static final double standardLatitudinalMotorVoltagePercent = .6;
-    public static final double standardInAndUpMotorVoltagePercent = .8;
+    public static final double standardLongitudinalMotorVoltagePercent = .3;
+    public static final double standardLatitudinalMotorVoltagePercent = .5;
+    public static final double standardInAndUpMotorVoltagePercent = .7;
 
     public static final double standardLongitudinalMotorVoltage = .4;
     public static final double standardLatitudinalMotorVoltage = .6;

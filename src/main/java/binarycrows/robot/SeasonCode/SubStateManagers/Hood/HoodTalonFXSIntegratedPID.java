@@ -86,9 +86,6 @@ public class HoodTalonFXSIntegratedPID implements HoodIO {
     @Override
     public void update() {
 
-        System.out.println((targetPosition.getDegrees()) - Rotation2d.fromRotations(hoodMotor.getPosition().getValueAsDouble()).getDegrees());
-
-
         outputs.motorVelocityRPS = hoodMotor.getVelocity().getValueAsDouble();
         outputs.motorAppliedVoltage = hoodMotor.getMotorVoltage().getValueAsDouble();;
         outputs.motorSupplyAmps = hoodMotor.getSupplyCurrent().getValueAsDouble();
