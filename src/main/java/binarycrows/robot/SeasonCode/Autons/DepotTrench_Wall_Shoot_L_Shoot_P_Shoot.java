@@ -34,10 +34,18 @@ public class DepotTrench_Wall_Shoot_L_Shoot_P_Shoot {
                 Paths.startPosition_DepotTrench_Wall_L_In.pathPoints(), 
                 new CMRotation[] {Paths.startPosition_DepotTrench_Wall_L_In.getFirstRotation(1)}, // TODO: prolly want to specify accel decel whatnot (and add other constructors)
                 new CMEvent[] {}, 
-                TrajectoryPriority.SPLIT_PROPORTIONALLY, 
-                false, // TODO: Since not stopping, use all parameters of CMTrajectory
-                new double[] {0.5, 0.5}, 
+                1.5,
+                6,
+                TrajectoryPriority.SPLIT_PROPORTIONALLY,
+                3.5,
+                3.5,
+                3.5,
+                2.0,
+                false,
+                2,
                 0,
+                new double[] {0.5, 0.5}, 
+                0.04,
                 15*1000)),
 
             // L Out
@@ -46,10 +54,18 @@ public class DepotTrench_Wall_Shoot_L_Shoot_P_Shoot {
                 Paths.DepotSide_L_Out_Trench.pathPoints(), 
                 new CMRotation[] {Paths.DepotSide_L_Out_Trench.getFirstRotation(1)}, // TODO: prolly want to specify accel decel whatnot (and add other constructors)
                 new CMEvent[] {}, 
+                1.5,
+                9,
                 TrajectoryPriority.SPLIT_PROPORTIONALLY, 
+                3.5,
+                3.5,
+                3.5,
+                2.0,
                 false, // TODO: Since not stopping, use all parameters of CMTrajectory
-                new double[] {0.5, 0.5}, 
+                2,
                 0,
+                new double[] {0.5, 0.5}, 
+                0.04,
                 15*1000))
             
             // Shoot All
