@@ -5,5 +5,6 @@ public enum TransitStateRequest {
     UNPOWERED,
     REVERSE,
     MANUAL_OVERRIDE, 
-    SHOOTER
+    SHOOTER, 
+    INDEX
 }

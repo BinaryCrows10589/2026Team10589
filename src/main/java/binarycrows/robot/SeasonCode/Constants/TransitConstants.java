@@ -37,8 +37,12 @@ public final class TransitConstants {
         public static final double outgoingFuelSampleTime = 24;
 
         public static final double binFullTrippingDistance = 5;
-        public static final double outgoingFuelTrippingDistance = 5;
+        public static final double outgoingFuelTrippingDistance = 530;
 
         public static final int debounceFrames = 10;
+
+        public static final double outgoingFuelIndexingDistance = 120;
+
+
     }
 }

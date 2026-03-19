@@ -5,6 +5,7 @@ import java.util.function.Supplier;
 
 import binarycrows.robot.Keybinds;
 import binarycrows.robot.MainStateManager;
+import binarycrows.robot.Robot;
 import binarycrows.robot.StateRequest;
 import binarycrows.robot.SubStateManager;
 import binarycrows.robot.Enums.StateRequestPriority;
@@ -301,10 +302,10 @@ public class ShootingSubStateManager extends SubStateManager<ShootingStateReques
             turretAngle = V_turret.getAngle();
 
         }
-        if (Robot.secondsUntilHubIsActive >= 0) {
-            hubActiveWhenShotLands = (timeOfFlight >= Robot.secondsUntilHubIsActive);
+        if (Robot.timeUntilHubIsActive >= 0) {
+            hubActiveWhenShotLands = (timeOfFlight >= Robot.timeUntilHubIsActive);
         } else {
-            hubActiveWhenShotLands = (timeOfFlight < Math.abs(Robot.secondsUntilHubIsActive));
+            hubActiveWhenShotLands = (timeOfFlight < Math.abs(Robot.timeUntilHubIsActive));
         }
         
         return new double[] {turretAngle.getRadians(), hoodAngle, flywheelRPM};

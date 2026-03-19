@@ -124,6 +124,8 @@ public class Keybinds {
         StateRequestUtils.createStateRequestRunnable(PivotStateRequest.DOWN));
         testController.onPress(XboxGamepad.XboxGamepadID.left_bumper,
         StateRequestUtils.createStateRequestRunnable(PivotStateRequest.RAISED));
+        testController.onPress(XboxGamepad.XboxGamepadID.right_bumper,
+        StateRequestUtils.createStateRequestRunnable(TransitStateRequest.INDEX));
         
 
         // Button Board

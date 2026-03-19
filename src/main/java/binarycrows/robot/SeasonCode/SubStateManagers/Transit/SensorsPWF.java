@@ -30,8 +30,8 @@ public class SensorsPWF implements SensorsIO {
 
     @Override
     public void update() {
-        outputs.binFullReading = binFullSensor.getRangeSigma();
-        outputs.outgoingFuelReading = outgoingFuelSensor.getRangeSigma(); 
+        outputs.binFullReading = binFullSensor.getRange();
+        outputs.outgoingFuelReading = outgoingFuelSensor.getRange(); 
 
         outputs.binFullValid = binFullSensor.isRangeValid();
         outputs.outgoingFuelValid = outgoingFuelSensor.isRangeValid();

@@ -5,6 +5,7 @@
 package binarycrows.robot;
 
 import java.util.ArrayList;
+import java.util.Optional;
 
 import org.littletonrobotics.junction.LogFileUtil;
 import org.littletonrobotics.junction.LoggedRobot;
@@ -315,7 +316,6 @@ public class Robot extends LoggedRobot {
       // Shift 1
       if (shift1Active) return 105 - matchTime;
       else return matchTime - 105;
-      return shift1Active;
     } else if (matchTime > 80) {
       // Shift 2
       if (!shift1Active) return 80 - matchTime;

@@ -59,6 +59,8 @@ public class TransitSubStateManager  extends SubStateManager<TransitStateRequest
     @Override
     public void periodic() {
         StateTable.logObject("Transit/Outputs", transitOutputs);
+        StateTable.logObject("TransitSensors/Outputs", sensorOutputs);
+
         transitIO.update();
         sensorsIO.update();
 
@@ -95,6 +97,16 @@ public class TransitSubStateManager  extends SubStateManager<TransitStateRequest
                     transitIO.setInAndUpVoltage(0);
                 }
                 break;
+            case INDEX:
+                if (sensorOutputs.outgoingFuelReading >= TransitConstants.Sensors.outgoingFuelIndexingDistance) {
+                    transitIO.setLatitudinalVoltage(2);
+                    transitIO.setLongitudinalVoltage(4);
+                    transitIO.setInAndUpVoltage(4);
+                } else {
+                    transitIO.setLatitudinalVoltage(0);
+                    transitIO.setLongitudinalVoltage(0);
+                    transitIO.setInAndUpVoltage(0);
+                }
         }
         
     }
