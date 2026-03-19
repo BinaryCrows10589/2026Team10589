@@ -103,9 +103,9 @@ public class ShootingSubStateManager extends SubStateManager<ShootingStateReques
     public void periodic() {
         canShoot = getCanShoot();
         double[] shootingParameters = calculate();
-        Rotation2d testAngle = Keybinds.getTestAngle();
-        if (testAngle != null) turretAngleRad = testAngle.getRadians();//shootingParameters[0];
-        //turretAngleRad = shootingParameters[0];
+        //Rotation2d testAngle = Keybinds.getTestAngle();
+        //if (testAngle != null) turretAngleRad = testAngle.getRadians();//shootingParameters[0];
+        turretAngleRad = shootingParameters[0];
         hoodAngleRad = shootingParameters[1];
         flywheelVoltage = FlywheelConstants.rpmToVoltage.get(shootingParameters[2]);
         flywheelRPM = shootingParameters[2];
@@ -226,7 +226,7 @@ public class ShootingSubStateManager extends SubStateManager<ShootingStateReques
             extraVelocity = extraVelocity.plus(valuesOfDerivatiesOfVelocity[derivative].times(nextShotTime - currentTime));
         }
 
-        velocity = velocity.plus(extraVelocity);
+        //velocity = velocity.plus(extraVelocity);
 
         if (nextShotTime < currentTime)
         {

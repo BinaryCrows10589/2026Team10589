@@ -101,11 +101,12 @@ public class TransitSubStateManager  extends SubStateManager<TransitStateRequest
                 if (sensorOutputs.outgoingFuelReading >= TransitConstants.Sensors.outgoingFuelIndexingDistance) {
                     transitIO.setLatitudinalVoltage(2);
                     transitIO.setLongitudinalVoltage(4);
-                    transitIO.setInAndUpVoltage(4);
+                    transitIO.setInAndUpVoltage(4); // TODO: Make constants somewhere...
                 } else {
                     transitIO.setLatitudinalVoltage(0);
                     transitIO.setLongitudinalVoltage(0);
                     transitIO.setInAndUpVoltage(0);
+                    new StateRequest<>(TransitStateRequest.SHOOTER, StateRequestPriority.NORMAL).dispatchSelf();
                 }
         }
         

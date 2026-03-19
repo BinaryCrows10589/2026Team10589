@@ -33,7 +33,7 @@ public class ShootingConstants {
     public static final UnkeyedLerpTable baseTable = new UnkeyedLerpTable(new double[][] {
         //           |distance|hood angle|flywheel|ToF|   
         new double[] {0,       0,         0,       0}, // TO-DO: after tuning, do NOT leave 0,0,0 as a value
-        new double[] {9999,    9999,      9999,    9999}, // Will crash if there are not at least 2 values
+        new double[] {25,    1,      1,    1}, // Will crash if there are not at least 2 values
     }, 
     false);
 }
