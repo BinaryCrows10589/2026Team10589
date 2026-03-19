@@ -224,6 +224,8 @@ public class DriveSubStateManager extends SubStateManager<DriveStateRequest> {
         StateTable.logObject("SwerveModule/BackLeft", backLeftOutputs);
         StateTable.logObject("SwerveModule/BackRight", backRightOutputs);
 
+        StateTable.logObject("Gyro/Outputs", gyroOutputs);
+
 
         
         if (swerveModuleStates != null)

@@ -5,6 +5,7 @@ import java.util.function.Supplier;
 
 import binarycrows.robot.Keybinds;
 import binarycrows.robot.MainStateManager;
+import binarycrows.robot.Robot;
 import binarycrows.robot.StateRequest;
 import binarycrows.robot.SubStateManager;
 import binarycrows.robot.Enums.StateRequestPriority;
@@ -104,6 +105,7 @@ public class ShootingSubStateManager extends SubStateManager<ShootingStateReques
         double[] shootingParameters = calculate();
         Rotation2d testAngle = Keybinds.getTestAngle();
         if (testAngle != null) turretAngleRad = testAngle.getRadians();//shootingParameters[0];
+        //turretAngleRad = shootingParameters[0];
         hoodAngleRad = shootingParameters[1];
         flywheelVoltage = FlywheelConstants.rpmToVoltage.get(shootingParameters[2]);
         flywheelRPM = shootingParameters[2];
@@ -165,6 +167,8 @@ public class ShootingSubStateManager extends SubStateManager<ShootingStateReques
 
     private boolean distanceInBounds = true;
     private boolean distanceInLargeBounds = true;
+
+    private boolean hubActiveWhenShotLands = true;
 
     // Helpers
 
@@ -297,6 +301,11 @@ public class ShootingSubStateManager extends SubStateManager<ShootingStateReques
             // 5) Turret angle command
             turretAngle = V_turret.getAngle();
 
+        }
+        if (Robot.timeUntilHubIsActive >= 0) {
+            hubActiveWhenShotLands = (timeOfFlight >= Robot.timeUntilHubIsActive);
+        } else {
+            hubActiveWhenShotLands = (timeOfFlight < Math.abs(Robot.timeUntilHubIsActive));
         }
         
         return new double[] {turretAngle.getRadians(), hoodAngle, flywheelRPM};

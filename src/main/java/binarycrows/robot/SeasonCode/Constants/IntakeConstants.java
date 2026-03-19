@@ -12,11 +12,11 @@ public final class IntakeConstants {
 
         public static final NeutralModeValue motorNeutralMode = NeutralModeValue.Brake;
 
-        public static final double maxMotorVoltage = 2;
+        public static final double maxMotorVoltage = 12;
 
         public static final MotorAlignmentValue isSlaveReversed = MotorAlignmentValue.Opposed;
 
-        public static final double intakingMotorVoltage = 4;
+        public static final double intakingMotorVoltage = 2.5;
     }
 
     public final class Pivot {
@@ -39,9 +39,9 @@ public final class IntakeConstants {
         public static final double pivotPIDValueFF = 0;
 
 
-        public static final Rotation2d pivotDownPosition = Rotation2d.fromRotations(0.844971);
-        public static final Rotation2d pivotRaisedPosition = Rotation2d.fromRotations(0.689697);
-        public static final Rotation2d pivotUpPosition = Rotation2d.fromRotations(0.463379);
+        public static final Rotation2d pivotDownPosition = Rotation2d.fromRotations(0.643555);
+        public static final Rotation2d pivotRaisedPosition = Rotation2d.fromRotations(0.562500 );
+        public static final Rotation2d pivotUpPosition = Rotation2d.fromRotations(0.309326 );
 
         public static final double manualVoltage = 4;
         public static final double manualVoltageFF = 1;
