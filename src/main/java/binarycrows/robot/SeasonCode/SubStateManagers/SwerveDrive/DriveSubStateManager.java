@@ -350,9 +350,14 @@ public class DriveSubStateManager extends SubStateManager<DriveStateRequest> {
                     case DRIVE_CROWMOTION:
                         CrowMotionConstants.currentTrajectory.runTrajectoryFrame();
                         drivePeriodic();
+                        System.out.println("-- CM --");
+                        System.out.println(CrowMotionConstants.currentTrajectory.isCompleted());
+                        System.out.println(CrowMotionConstants.currentTrajectory.toString());
+                        System.out.println(this.activeStateRequest.getStatus());
                         if (CrowMotionConstants.currentTrajectory.isCompleted() && this.activeStateRequest.getStatus() != StateRequestStatus.FULFILLED) {
                             this.activeStateRequest.updateStatus(StateRequestStatus.FULFILLED);
                             StateTable.log("DriveSubsystem/LastTrajectoryTimeSec", (System.currentTimeMillis() - trajectoryStartTime) / 1000.0);
+                            this.returnToDefaultState();
                         }
                         break;
                     case DRIVE_CROWMOTION_ARRAY:
@@ -360,6 +365,7 @@ public class DriveSubStateManager extends SubStateManager<DriveStateRequest> {
 
                         CrowMotionConstants.currentTrajectory.runTrajectoryFrame();
                         drivePeriodic();
+                        
                         if (CrowMotionConstants.currentTrajectory.isCompleted() && this.activeStateRequest.getStatus() != StateRequestStatus.FULFILLED) {
                             trajectoryArrayIndex++;
                             if (trajectoryArrayIndex >= CrowMotionConstants.currentTrajectoryArray.length) {

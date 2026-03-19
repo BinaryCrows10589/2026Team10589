@@ -15,6 +15,7 @@ import org.littletonrobotics.junction.wpilog.WPILOGReader;
 import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 
 import binarycrows.robot.CrowMotion.UserSide.CMConfig;
+import binarycrows.robot.SeasonCode.Autons.DepotTrench_Wall_Shoot_L_Shoot_P_Shoot;
 import binarycrows.robot.SeasonCode.Autons.StartPosition_HumanPlayerRamp_Trench_ShootPreloads;
 import binarycrows.robot.SeasonCode.Constants.FieldConstants;
 import binarycrows.robot.SeasonCode.Constants.MetaConstants;
@@ -154,7 +155,7 @@ public class Robot extends LoggedRobot {
 
 
     // Initialize autonomous chooser
-    //chooser.addDefaultOption("MainAuton", new Auton(StartPosition_HumanPlayerRamp_Trench_to_InitialFuelQuadrant_OwnAllianceHumanPlayer.startingPoint, StartPosition_HumanPlayerRamp_Trench_to_InitialFuelQuadrant_OwnAllianceHumanPlayer::getAutonomous));
+    chooser.addDefaultOption("Depot Trench Wall: Shoot, L, Shoot, P, Shoot", new Auton(DepotTrench_Wall_Shoot_L_Shoot_P_Shoot.startingPoint, DepotTrench_Wall_Shoot_L_Shoot_P_Shoot::getAutonomous));
 
     onAutonSelect(chooser.get()); // Initialize first autonomous that is selected
 
