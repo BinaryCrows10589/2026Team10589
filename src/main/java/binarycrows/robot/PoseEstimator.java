@@ -1,5 +1,6 @@
 package binarycrows.robot;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
@@ -16,6 +17,7 @@ import binarycrows.robot.SeasonCode.Constants.PoseEstimatorConstants;
 import binarycrows.robot.SeasonCode.Constants.SwerveDriveConstants;
 import binarycrows.robot.SeasonCode.SubStateManagers.SwerveDrive.DriveSubStateManager;
 import binarycrows.robot.Utils.ConversionUtils;
+import binarycrows.robot.Utils.QuestADBWrapper;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
@@ -36,6 +38,10 @@ public class PoseEstimator {
     private Notifier visionNotifier = new Notifier(this::addVisionMeasurments);
 
     private Pose3d lastQuestNavPose;
+
+    public static boolean isQuestNavActive;
+
+    private boolean isADBConnected = false;
 
     // These are for Eli and David's gyro acceleration algorithm
     // It did not increase accuracy so it has been disabled
@@ -60,6 +66,7 @@ public class PoseEstimator {
 
     }
 
+
     public void periodic() {
 
         /*if(this.lastFrameStart != -1) {
@@ -72,6 +79,24 @@ public class PoseEstimator {
 
         try {
             questNav.commandPeriodic();
+            PoseEstimator.isQuestNavActive = questNav.isConnected();// && questNav.isTracking();
+
+            if (!isQuestNavActive) {
+                
+                if (QuestADBWrapper.getIsConnected()) { // QuestNav is not active but Quest ADB is connected, so try to restart QuestNav.
+                    isADBConnected = true;
+                    QuestADBWrapper.tryRestartQuestNav();
+                } else {
+                    isADBConnected = false; // QuestNav is not active and Quest ADB is not connected, try connecting anyway
+                    QuestADBWrapper.lazyTryConnect();
+                }
+            } else {
+                if (!isADBConnected) { // QuestNav is 
+                    if (QuestADBWrapper.getIsConnected()) isADBConnected = true;
+                    else QuestADBWrapper.tryConnect();
+                }
+            }
+            
             this.swerveDrivePoseEstimator.update(DriveSubStateManager.getInstance().gyroOutputs.yawAngle,
                 DriveSubStateManager.getInstance().getModulePositions());
 
@@ -111,12 +136,6 @@ public class PoseEstimator {
 
         
     }
-
-    // TODO: Quest ADB reset stuff!
-    // ./adb tcpip 5555
-    // ./adb connect 10.105.89.21:5555
-    // ./adb shell am start -n gg.QuestNav.QuestNav/com.unity3d.player.UnityPlayerGameActivity
-
 
     public void updateAlliance() {
         

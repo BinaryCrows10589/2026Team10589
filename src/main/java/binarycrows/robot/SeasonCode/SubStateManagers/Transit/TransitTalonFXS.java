@@ -70,7 +70,7 @@ public class TransitTalonFXS implements TransitIO {
 
         this.rightLatitudinalMotor.getConfigurator().apply(latitudinalMasterMotorConfig);
 
-        rightLatitudinalMotor.setControl(new Follower(leftLatitudinalMotor.getDeviceID(), TransitConstants.isLatitudinalSlaveReversed));
+        //rightLatitudinalMotor.setControl(new Follower(leftLatitudinalMotor.getDeviceID(), TransitConstants.isLatitudinalSlaveReversed));
 
         // In & Up Motor
         inAndUpMotor = new TalonFXS(CANIDs.RIO.inAndUpMotor);
