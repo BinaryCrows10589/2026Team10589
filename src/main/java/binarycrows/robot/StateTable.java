@@ -120,15 +120,16 @@ public class StateTable {
         return stateTableObjects.get(path);
     }
 
+    // TODO: FIX THIS WHOLE SYSTEM TO ONLY USE NETWORKTABLES
     public static void updateAdvantageKit() { // Possible inefficiency point
-        Set<Entry<String, Object>> entries = new HashSet<Entry<String, Object>>(stateTableObjects.entrySet());
+        /*Set<Entry<String, Object>> entries = new HashSet<Entry<String, Object>>(stateTableObjects.entrySet());
         entries.removeAll(advantageKitStateTable.entrySet());
         if (entries.isEmpty()) return;
 
         for (Entry<String, Object> entry : entries) {
             advantageKitStateTable.put(entry.getKey(), entry.getValue());
             logToAdvantageKit(entry.getValue(), entry.getKey());
-        }
+        }*/
     }
 
     @SuppressWarnings("rawtypes")

@@ -36,7 +36,8 @@ public class Keybinds {
     public static void periodic() {
         driverController.periodic();
         buttonBoard1.periodic();
-        testController.periodic();
+        buttonBoard2.periodic();
+        //testController.periodic();
 
     }
 
@@ -134,7 +135,7 @@ public class Keybinds {
         buttonBoard1.onPress(ButtonBoardButtons.BB1.intakeDown, 
         StateRequestUtils.createDualStateRequestRunnable(PivotStateRequest.DOWN, IntakeRollersStateRequest.INTAKING));
         buttonBoard2.onPress(ButtonBoardButtons.BB2.intakeRaised, 
-        StateRequestUtils.createDualStateRequestRunnable(PivotStateRequest.RAISED, IntakeRollersStateRequest.REVERSE));
+        StateRequestUtils.createDualStateRequestRunnable(PivotStateRequest.RAISED, IntakeRollersStateRequest.INTAKING));
         buttonBoard2.onPress(ButtonBoardButtons.BB2.intakeUp, 
         StateRequestUtils.createDualStateRequestRunnable(PivotStateRequest.UP, IntakeRollersStateRequest.OFF));
 

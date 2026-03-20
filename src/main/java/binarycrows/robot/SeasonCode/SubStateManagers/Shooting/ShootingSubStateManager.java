@@ -3,7 +3,6 @@ package binarycrows.robot.SeasonCode.SubStateManagers.Shooting;
 import java.util.Arrays;
 import java.util.function.Supplier;
 
-import binarycrows.robot.Keybinds;
 import binarycrows.robot.MainStateManager;
 import binarycrows.robot.Robot;
 import binarycrows.robot.StateRequest;
@@ -237,6 +236,7 @@ public class ShootingSubStateManager extends SubStateManager<ShootingStateReques
             hasShotInCurrentPhase = true;
         }
         Pose2d turretPose = turretPoseSupplier.get();
+        turretPose = new Pose2d(turretPose.getX(), turretPose.getY(), turretPose.getRotation().times(-1));
         robotOnCorrectSide = turretPose.getX() > ShootingConstants.maxTurretX;
         Translation2d turretPoseTranslation = turretPose.getTranslation();
         closeToTrench = 
@@ -299,7 +299,7 @@ public class ShootingSubStateManager extends SubStateManager<ShootingStateReques
             );
 
             // 5) Turret angle command
-            turretAngle = V_turret.getAngle();
+            turretAngle = V_turret.getAngle().times(-1);
 
         }
         if (Robot.timeUntilHubIsActive >= 0) {

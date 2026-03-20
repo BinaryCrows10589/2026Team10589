@@ -111,7 +111,7 @@ public class PoseEstimator {
     public void resetRobotPose() {
         DriveSubStateManager.getInstance().resetGyro(new Rotation2d());
         swerveDrivePoseEstimator.resetPosition(DriveSubStateManager.getInstance().getGyroAngleRotation2d(),
-            DriveSubStateManager.getInstance().getModulePositions(), new Pose2d());
+            DriveSubStateManager.getInstance().getModulePositions(), new Pose2d(0, 8.052, new Rotation2d()));
 
         
         if (MetaConstants.updateQuestNav && questNav.isConnected()) PoseEstimatorConstants.questToWorldTransform = new Transform3d(lastQuestNavPose, new Pose3d());

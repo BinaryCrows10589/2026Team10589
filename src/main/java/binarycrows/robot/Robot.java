@@ -59,6 +59,8 @@ public class Robot extends LoggedRobot {
   private final LoggedDashboardChooser<Auton> chooser = new LoggedDashboardChooser<>("AutonPath");
 
   public static double timeUntilHubIsActive = -1;
+
+  private boolean shift1Active = false;
   
   /**
    * This function is run when the robot is first started up and should be used for any
@@ -201,6 +203,9 @@ public class Robot extends LoggedRobot {
 
     timeUntilHubIsActive = secondsUntilHubIsActive();
 
+    StateTable.log("SecondsUntilHubIsActive", timeUntilHubIsActive);
+    StateTable.log("ActiveInShift1", shift1Active);
+
   }
 
   public void onAutonSelect(Auton auton) {
@@ -305,14 +310,15 @@ public class Robot extends LoggedRobot {
     }
 
     // Shift was is active for blue if red won auto, or red if blue won auto.
-    boolean shift1Active = switch (alliance.get()) {
+    shift1Active = switch (alliance.get()) {
       case Red -> !redInactiveFirst;
       case Blue -> redInactiveFirst;
     };
 
     if (matchTime > 130) {
       // Transition shift, hub is active.
-      return 130-matchTime;
+      if (shift1Active) return 105 - matchTime;
+      else return 130 - matchTime;
     } else if (matchTime > 105) {
       // Shift 1
       if (shift1Active) return 105 - matchTime;
