@@ -119,6 +119,12 @@ public class PoseEstimator {
         
     }
 
+    // TODO: Quest ADB reset stuff!
+    // ./adb tcpip 5555
+    // ./adb connect 10.105.89.21:5555
+    // ./adb shell am start -n gg.QuestNav.QuestNav/com.unity3d.player.UnityPlayerGameActivity
+
+
     public void updateAlliance() {
         
         setRobotPose(getRobotPose());
