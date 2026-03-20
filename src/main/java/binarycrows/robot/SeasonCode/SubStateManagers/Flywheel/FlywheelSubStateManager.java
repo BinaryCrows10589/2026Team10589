@@ -3,15 +3,17 @@ package binarycrows.robot.SeasonCode.SubStateManagers.Flywheel;
 import java.util.ArrayList;
 import java.util.function.Supplier;
 
+import org.littletonrobotics.junction.Logger;
+
 import binarycrows.robot.MainStateManager;
 import binarycrows.robot.StateRequest;
-import binarycrows.robot.StateTable;
 import binarycrows.robot.SubStateManager;
 import binarycrows.robot.Enums.StateRequestPriority;
 import binarycrows.robot.SeasonCode.Constants.FlywheelConstants;
 import binarycrows.robot.SeasonCode.Constants.MetaConstants;
 import binarycrows.robot.SeasonCode.SubStateManagers.Flywheel.FlywheelIO.FlywheelOutputs;
 import binarycrows.robot.SeasonCode.SubStateManagers.Shooting.ShootingSubStateManager;
+import binarycrows.robot.Utils.LoggingUtils;
 import edu.wpi.first.math.MathUtil;
 
 public class FlywheelSubStateManager extends SubStateManager<FlywheelStateRequest> {
@@ -64,7 +66,7 @@ public class FlywheelSubStateManager extends SubStateManager<FlywheelStateReques
 
     @Override
     public void periodic() {
-        StateTable.logObject("Flywheel/Outputs", outputs);
+        LoggingUtils.logObject("Flywheel/Outputs", outputs);
         flywheelIO.update();
 
         switch (activeStateRequest.getStateRequestType()) {
@@ -108,8 +110,8 @@ public class FlywheelSubStateManager extends SubStateManager<FlywheelStateReques
                     flywheelIO.setRotorVoltage(voltageCounter);
 
                 }
-                StateTable.log("Flywheel/Table/RotVelRotPerSec", convertLogArray(voltageToVelocityRotPerSecTable));
-                StateTable.log("Flywheel/Table/RotVelVoltage", convertLogArray(voltageToVelocityVoltageTable.toArray()));
+                Logger.recordOutput("Flywheel/Table/RotVelRotPerSec", convertLogArray(voltageToVelocityRotPerSecTable));
+                Logger.recordOutput("Flywheel/Table/RotVelVoltage", convertLogArray(voltageToVelocityVoltageTable.toArray()));
                 break;
         }
     }

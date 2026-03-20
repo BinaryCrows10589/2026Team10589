@@ -17,13 +17,11 @@ import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 
 import binarycrows.robot.CrowMotion.UserSide.CMConfig;
 import binarycrows.robot.SeasonCode.Autons.DepotTrench_Wall_Shoot_L_Shoot_P_Shoot;
-import binarycrows.robot.SeasonCode.Autons.StartPosition_HumanPlayerRamp_Trench_ShootPreloads;
 import binarycrows.robot.SeasonCode.Constants.FieldConstants;
 import binarycrows.robot.SeasonCode.Constants.MetaConstants;
 import binarycrows.robot.SeasonCode.Constants.PoseEstimatorConstants;
 import binarycrows.robot.SeasonCode.Constants.SwerveDriveConstants;
 import binarycrows.robot.SeasonCode.SubStateManagers.CANdle.CANdleSubStateManager;
-import binarycrows.robot.SeasonCode.SubStateManagers.Climber.ClimberSubStateManager;
 import binarycrows.robot.SeasonCode.SubStateManagers.Flywheel.FlywheelSubStateManager;
 import binarycrows.robot.SeasonCode.SubStateManagers.Hood.HoodSubStateManager;
 import binarycrows.robot.SeasonCode.SubStateManagers.Intake.Pivot.PivotSubStateManager;
@@ -59,6 +57,12 @@ public class Robot extends LoggedRobot {
   private final LoggedDashboardChooser<Auton> chooser = new LoggedDashboardChooser<>("AutonPath");
 
   public static double timeUntilHubIsActive = -1;
+
+  public static boolean isDriverControlled;
+
+public static boolean isSlowMode;
+
+public static boolean forceRobotRelative;
 
   private boolean shift1Active = false;
   
@@ -112,13 +116,11 @@ public class Robot extends LoggedRobot {
       MainStateManager.getInstance().start();
 
 
-      StateTable.log("SlowMode", false);
-
-      StateTable.log("AxisLock", false);
+      isSlowMode= false;
       
-      StateTable.log("IsDriverControlled", true);
+      isDriverControlled = true;
 
-      StateTable.log("ForceRobotRelative", false);
+      forceRobotRelative = false;
       
 
       subStateManagers = MainStateManager.getInstance().getSubStateManagers();
@@ -189,8 +191,8 @@ public class Robot extends LoggedRobot {
         }
         subStateManager.periodic();
 
-        StateTable.log(subStateManager.toString() + "/ActiveStateRequest", subStateManager.activeStateRequest);
-        StateTable.log(subStateManager.toString() + "/ActiveStateRequest/Name", subStateManager.activeStateRequest.getStateRequestType().name());
+        Logger.recordOutput(subStateManager.toString() + "/ActiveStateRequest", subStateManager.activeStateRequest.getAsLoggable());
+        Logger.recordOutput(subStateManager.toString() + "/ActiveStateRequest/Name", subStateManager.activeStateRequest.getStateRequestType().name());
     });
 
     long currentTime = System.currentTimeMillis();
@@ -203,8 +205,8 @@ public class Robot extends LoggedRobot {
 
     timeUntilHubIsActive = secondsUntilHubIsActive();
 
-    StateTable.log("SecondsUntilHubIsActive", timeUntilHubIsActive);
-    StateTable.log("ActiveInShift1", shift1Active);
+    Logger.recordOutput("SecondsUntilHubIsActive", timeUntilHubIsActive);
+    Logger.recordOutput("ActiveInShift1", shift1Active);
 
   }
 
@@ -214,7 +216,7 @@ public class Robot extends LoggedRobot {
 
   @Override
   public void autonomousInit() {
-    StateTable.log("IsDriverControlled", false);
+    isDriverControlled = false;
     MetaConstants.startedAutonomous = false;
   }
 
@@ -231,7 +233,7 @@ public class Robot extends LoggedRobot {
 
   @Override
   public void teleopInit() {
-    StateTable.log("IsDriverControlled", true);
+    isDriverControlled = true;
     Climbing.climbRight(); // Sim testing
   }
 
@@ -243,7 +245,7 @@ public class Robot extends LoggedRobot {
 
   @Override
   public void disabledInit() {
-    StateTable.log("IsDriverControlled", false);
+    isDriverControlled = false;
   }
 
   @Override

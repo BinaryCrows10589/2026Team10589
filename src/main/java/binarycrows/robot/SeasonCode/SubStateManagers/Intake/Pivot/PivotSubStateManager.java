@@ -1,12 +1,14 @@
 package binarycrows.robot.SeasonCode.SubStateManagers.Intake.Pivot;
 
+import org.littletonrobotics.junction.Logger;
+
 import binarycrows.robot.MainStateManager;
 import binarycrows.robot.StateRequest;
-import binarycrows.robot.StateTable;
 import binarycrows.robot.SubStateManager;
 import binarycrows.robot.Enums.StateRequestPriority;
 import binarycrows.robot.SeasonCode.Constants.IntakeConstants;
 import binarycrows.robot.SeasonCode.SubStateManagers.Intake.Pivot.PivotIO.PivotOutputs;
+import binarycrows.robot.Utils.LoggingUtils;
 import binarycrows.robot.Utils.Tuning.RuntimeTunableValue;
 
 public class PivotSubStateManager extends SubStateManager<PivotStateRequest>  {
@@ -46,7 +48,7 @@ public class PivotSubStateManager extends SubStateManager<PivotStateRequest>  {
 
         pivot.update();
 
-        StateTable.logObject("Pivot/Outputs", outputs);
+        LoggingUtils.logObject("Pivot/Outputs", outputs);
         // Yes, this is probably the best way to control the pivot...
         double voltage = 0;
         boolean runRaisedPID = false;
@@ -80,7 +82,7 @@ public class PivotSubStateManager extends SubStateManager<PivotStateRequest>  {
                 break;
         }
 
-        StateTable.log("Intake/Pivot/PositionDelta", delta);
+        Logger.recordOutput("Intake/Pivot/PositionDelta", delta);
 
         if (runRaisedPID) pivot.setPIDTarget(IntakeConstants.Pivot.pivotRaisedPosition);
         else pivot.setVoltage(voltage);

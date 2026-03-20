@@ -1,5 +1,7 @@
 package binarycrows.robot.SeasonCode.SubStateManagers.SwerveDrive;
 
+import org.littletonrobotics.junction.Logger;
+
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.configs.MagnetSensorConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
@@ -12,7 +14,6 @@ import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.signals.SensorDirectionValue;
 
-import binarycrows.robot.StateTable;
 import binarycrows.robot.SeasonCode.Constants.CANIDs;
 import binarycrows.robot.SeasonCode.Constants.MetaConstants;
 import binarycrows.robot.SeasonCode.Constants.SwerveDriveConstants;
@@ -261,8 +262,8 @@ public class SwerveModuleTalonFX implements SwerveModuleIO {
             this.turnMotor.getConfigurator().apply(turnMotorPIDConstantTuner.generatePIDFFConfigs());
         }
 
-        StateTable.log(swerveModuleName + "/DesiredRotation", this.turnControlRequest.Position);
-        StateTable.log(swerveModuleName + "/ActualRotation", this.turnMotor.getPosition().getValueAsDouble());
+        Logger.recordOutput(swerveModuleName + "/DesiredRotation", this.turnControlRequest.Position);
+        Logger.recordOutput(swerveModuleName + "/ActualRotation", this.turnMotor.getPosition().getValueAsDouble());
 
     }
 

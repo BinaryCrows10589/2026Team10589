@@ -1,7 +1,8 @@
 package binarycrows.robot.SeasonCode.SubStateManagers.SwerveDrive;
 
 
-import binarycrows.robot.StateTable;
+import org.littletonrobotics.junction.Logger;
+
 import binarycrows.robot.SeasonCode.Constants.SwerveDriveConstants;
 import binarycrows.robot.Utils.ConversionUtils;
 import edu.wpi.first.math.MathUtil;
@@ -38,9 +39,9 @@ public class SwerveModule {
      * @param desiredState SwerveModuleState: The desired state for the module
      */
     public void setDesiredModuleState(SwerveModuleState desiredState) {
-        StateTable.log(swerveModuleName + "/DesiredSpeedMPS", desiredState.speedMetersPerSecond);
+        Logger.recordOutput(swerveModuleName + "/DesiredSpeedMPS", desiredState.speedMetersPerSecond);
 
-        StateTable.log(swerveModuleName + "/SpeedMPS", getDriveMotorSpeedInMetersPerSecond());
+        Logger.recordOutput(swerveModuleName + "/SpeedMPS", getDriveMotorSpeedInMetersPerSecond());
 
 
         SwerveModuleState optimizedState = ConversionUtils.optimizeSwerveModuleState(desiredState, getModuleState().angle); 

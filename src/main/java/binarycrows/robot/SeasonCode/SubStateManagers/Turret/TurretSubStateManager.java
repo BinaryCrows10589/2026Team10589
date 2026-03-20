@@ -3,15 +3,17 @@ package binarycrows.robot.SeasonCode.SubStateManagers.Turret;
 import java.util.ArrayList;
 import java.util.function.Supplier;
 
+import org.littletonrobotics.junction.Logger;
+
 import binarycrows.robot.MainStateManager;
 import binarycrows.robot.StateRequest;
-import binarycrows.robot.StateTable;
 import binarycrows.robot.SubStateManager;
 import binarycrows.robot.Enums.StateRequestPriority;
 import binarycrows.robot.SeasonCode.Constants.MetaConstants;
 import binarycrows.robot.SeasonCode.Constants.TurretConstants;
 import binarycrows.robot.SeasonCode.SubStateManagers.Shooting.ShootingSubStateManager;
 import binarycrows.robot.SeasonCode.SubStateManagers.Turret.TurretIO.TurretOutputs;
+import binarycrows.robot.Utils.LoggingUtils;
 import edu.wpi.first.math.geometry.Rotation2d;
 
 public class TurretSubStateManager extends SubStateManager<TurretStateRequest> {
@@ -70,7 +72,7 @@ public class TurretSubStateManager extends SubStateManager<TurretStateRequest> {
     @Override
     public void periodic() {
         
-        StateTable.logObject("Turret/Outputs", outputs);
+        LoggingUtils.logObject("Turret/Outputs", outputs);
         turret.update();
         if (targetPosition == null) targetPosition = outputs.encoderRotation;
 
@@ -80,7 +82,7 @@ public class TurretSubStateManager extends SubStateManager<TurretStateRequest> {
                 break;
             case SHOOT_ON_THE_MOVE:
                 turret.setTargetAngle(Rotation2d.fromRadians(shootingTurretAngleRad.get()), shooting.get() && !turret.getHasWrapped());
-                StateTable.log("Turret/ShootOnTheMoveTargetAngleRad", shootingTurretAngleRad.get());
+                Logger.recordOutput("Turret/ShootOnTheMoveTargetAngleRad", shootingTurretAngleRad.get());
                 break;
             case CONSTRUCT_VOLTAGE_TABLE:
                 
@@ -97,8 +99,8 @@ public class TurretSubStateManager extends SubStateManager<TurretStateRequest> {
                     turret.setTurretVoltage(voltageCounter);
 
                 }
-                StateTable.log("Turret/Table/RotVelRadPerSec", convertLogArray(voltageToVelocityRadPerSecTable));
-                StateTable.log("Turret/Table/RotVelVoltage", convertLogArray(voltageToVelocityVoltageTable.toArray()));
+                Logger.recordOutput("Turret/Table/RotVelRadPerSec", convertLogArray(voltageToVelocityRadPerSecTable));
+                Logger.recordOutput("Turret/Table/RotVelVoltage", convertLogArray(voltageToVelocityVoltageTable.toArray()));
                 break;
         }
          

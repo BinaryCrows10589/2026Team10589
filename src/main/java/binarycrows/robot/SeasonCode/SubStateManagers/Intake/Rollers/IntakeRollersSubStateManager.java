@@ -1,12 +1,12 @@
 package binarycrows.robot.SeasonCode.SubStateManagers.Intake.Rollers;
 
 import binarycrows.robot.StateRequest;
-import binarycrows.robot.StateTable;
 import binarycrows.robot.SubStateManager;
 import binarycrows.robot.Enums.StateRequestPriority;
 import binarycrows.robot.SeasonCode.Constants.IntakeConstants;
 import binarycrows.robot.SeasonCode.SubStateManagers.Intake.Rollers.IntakeRollersIO.IntakeRollersOutputs;
 import binarycrows.robot.SeasonCode.SubStateManagers.SwerveDrive.DriveSubStateManager;
+import binarycrows.robot.Utils.LoggingUtils;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 
 public class IntakeRollersSubStateManager extends SubStateManager<IntakeRollersStateRequest> {
@@ -34,7 +34,7 @@ public class IntakeRollersSubStateManager extends SubStateManager<IntakeRollersS
 
     @Override
     public void periodic() {
-        StateTable.logObject("Intake/Rollers/Outputs", outputs);
+        LoggingUtils.logObject("Intake/Rollers/Outputs", outputs);
         intakeRollersIO.update();
         switch (activeStateRequest.getStateRequestType()) {
             case INTAKING:
