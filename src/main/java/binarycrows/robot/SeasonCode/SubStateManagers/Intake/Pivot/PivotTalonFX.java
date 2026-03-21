@@ -68,7 +68,7 @@ public class PivotTalonFX implements PivotIO {
 
         this.rightMotor.getConfigurator().apply(masterMotorConfig);
 
-        rightMotor.setControl(new Follower(leftMotor.getDeviceID(), IntakeConstants.Pivot.isSlaveReversed));
+        //rightMotor.setControl(new Follower(leftMotor.getDeviceID(), IntakeConstants.Pivot.isSlaveReversed));
 
         pivotEncoder = new CANcoder(CANIDs.RIO.pivotEncoder);
         CANcoderConfiguration pivotEncoderConfig = new CANcoderConfiguration();

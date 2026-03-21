@@ -1,6 +1,5 @@
 package binarycrows.robot;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
@@ -40,6 +39,8 @@ public class PoseEstimator {
     private Pose3d lastQuestNavPose;
 
     public static boolean isQuestNavActive;
+    public static boolean isTrackingActive;
+
 
     private boolean isADBConnected = false;
 
@@ -66,8 +67,16 @@ public class PoseEstimator {
 
     }
 
+    public int lastFrameNum;
+    public int robotFramesSinceLastQuestFrame = 50;
+
+    public int questNavRestartAttempts = 0;
 
     public void periodic() {
+
+        // Make it so that when we are disconnected, we only try to restart QuestNav a couple of times.
+        // Also as soon as adb reports we have a connection, never check again since it will lie from that point on.
+        // After we retry a couple of times, stop trying until we see QuestNav frames come back again
 
         /*if(this.lastFrameStart != -1) {
             this.dt = (System.currentTimeMillis() - this.lastFrameStart) / 1000.0;
@@ -78,21 +87,38 @@ public class PoseEstimator {
         */
 
         try {
+            
             questNav.commandPeriodic();
-            PoseEstimator.isQuestNavActive = questNav.isConnected();// && questNav.isTracking();
+            int newFrameCount = questNav.getFrameCount().getAsInt();
+            if (newFrameCount != lastFrameNum) {
+                lastFrameNum = newFrameCount;
+                robotFramesSinceLastQuestFrame = 0;
+            } else robotFramesSinceLastQuestFrame++;
+            //System.out.println(robotFramesSinceLastQuestFrame);
+            PoseEstimator.isQuestNavActive = robotFramesSinceLastQuestFrame < 25;//questNav.isConnected();// && questNav.isTracking();
+            PoseEstimator.isTrackingActive = questNav.isTracking();
 
-            if (!isQuestNavActive) {
-                
-                if (QuestADBWrapper.getIsConnected()) { // QuestNav is not active but Quest ADB is connected, so try to restart QuestNav.
-                    isADBConnected = true;
-                    QuestADBWrapper.tryRestartQuestNav();
-                } else {
-                    isADBConnected = false; // QuestNav is not active and Quest ADB is not connected, try connecting anyway
-                    QuestADBWrapper.lazyTryConnect();
+            Logger.recordOutput("QuestNavADB/QuestNavActive", isQuestNavActive);
+            Logger.recordOutput("QuestNavADB/QuestNavFramesSinceLastActive", robotFramesSinceLastQuestFrame);
+            Logger.recordOutput("QuestNavADB/QuestNavRestartAttempts", questNavRestartAttempts);
+
+            if (!PoseEstimator.isQuestNavActive) {
+                if (questNavRestartAttempts < 25) {
+                    if (QuestADBWrapper.updateIsConnected()) { // QuestNav is not active but Quest ADB is connected, so try to restart QuestNav.
+                        System.out.println("Connected, running restart...");
+                        isADBConnected = true;
+                        QuestADBWrapper.tryRestartQuestNav();
+                        questNavRestartAttempts++;
+                    } else {
+                        System.out.println("Disconnected, trying to reconnect lazily...");
+                        isADBConnected = false; // QuestNav is not active and Quest ADB is not connected, try connecting anyway
+                        QuestADBWrapper.lazyTryConnect();
+                    }
                 }
             } else {
+                questNavRestartAttempts = 0;
                 if (!isADBConnected) { // QuestNav is 
-                    if (QuestADBWrapper.getIsConnected()) isADBConnected = true;
+                    if (QuestADBWrapper.updateIsConnected()) isADBConnected = true;
                     else QuestADBWrapper.tryConnect();
                 }
             }

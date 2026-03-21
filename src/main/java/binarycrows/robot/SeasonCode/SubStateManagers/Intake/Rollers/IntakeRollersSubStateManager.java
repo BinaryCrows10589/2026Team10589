@@ -39,7 +39,13 @@ public class IntakeRollersSubStateManager extends SubStateManager<IntakeRollersS
         switch (activeStateRequest.getStateRequestType()) {
             case INTAKING:
                 ChassisSpeeds speeds = DriveSubStateManager.getInstance().getChassisSpeeds();
-                intakeRollersIO.setRotorVoltage(IntakeConstants.Rollers.intakingMotorVoltage * Math.sqrt(speeds.vxMetersPerSecond * speeds.vxMetersPerSecond));
+                intakeRollersIO.setRotorVoltage(
+                    Math.min(
+                        Math.max(
+                            IntakeConstants.Rollers.intakingMotorVoltage 
+                                * Math.sqrt(speeds.vxMetersPerSecond * speeds.vxMetersPerSecond),
+                            IntakeConstants.Rollers.intakeWheelMinVoltage),
+                    IntakeConstants.Rollers.intakeWheelMaxVoltage));
                 break;
             case OFF:
                 intakeRollersIO.setRotorVoltage(0);

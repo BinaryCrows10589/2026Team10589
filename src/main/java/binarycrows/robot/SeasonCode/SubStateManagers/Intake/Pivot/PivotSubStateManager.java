@@ -54,33 +54,38 @@ public class PivotSubStateManager extends SubStateManager<PivotStateRequest>  {
         boolean runRaisedPID = false;
         double delta = 0;
 
-        /*switch (this.activeStateRequest.getStateRequestType()) {
+        switch (this.activeStateRequest.getStateRequestType()) {
             case DOWN:
                 delta = IntakeConstants.Pivot.pivotDownPosition.minus(outputs.encoderRotation).getDegrees();
-                if (delta > 80) voltage = 1;
-                else if (delta > 45) voltage = 0.5;
-                else if (delta > 20) voltage = 0.25;
-                else if (delta > 5) voltage = 0.15;
+                if (delta > 80) voltage = 1.5;
+                else if (delta > 45) voltage = 0.75;
+                else if (delta > 20) voltage = 0.1;
+                else if (delta > 5) voltage = 0.05;
                 else voltage = 0;
                 break;
             case RAISED:
                 delta = IntakeConstants.Pivot.pivotRaisedPosition.minus(outputs.encoderRotation).getDegrees();
-                if (delta > 25) voltage = .15;
-                else if (delta < 25) voltage = -.25;
-                else runRaisedPID = true;
+                if (delta > 25) voltage = 0.5;
+                else if (delta > 10) voltage = 0.15;
+                else if (delta > 5) voltage = 0.01;
+                else if (delta < -25) voltage = -1.5;
+                else if (delta < -10) voltage = -.9;
+                else if (delta < -5) voltage = -.85;
+                else voltage = -.8;
+                //else runRaisedPID = true;
                 break;
             case UP:
                 delta = IntakeConstants.Pivot.pivotUpPosition.minus(outputs.encoderRotation).getDegrees();
-                if (delta < -80) voltage = -1;
+                if (delta < -80) voltage = -1.5;
                 else if (delta < -45) voltage = -0.75;
-                else if (delta < -25) voltage = -0.5;
-                else if (delta < -5) voltage = -0.25;
+                else if (delta < -25) voltage = -0.3;
+                else if (delta < -5) voltage = -0.1;
                 else voltage = 0;
                 break;
             case MANUAL_OVERRIDE:
                 voltage = manualDirection * IntakeConstants.Pivot.manualVoltage + outputs.encoderRotation.getCos() * IntakeConstants.Pivot.manualVoltageFF;
                 break;
-        }*/
+        }
 
         Logger.recordOutput("Intake/Pivot/PositionDelta", delta);
 
