@@ -18,7 +18,7 @@ public final class IntakeConstants {
 
         public static final double intakingMotorVoltage = 2.5;
 
-        public static final double intakeWheelMinVoltage = 2;
+        public static final double intakeWheelMinVoltage = 2.5;
         public static final double intakeWheelMaxVoltage = 6;
     }
 

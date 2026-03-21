@@ -100,16 +100,17 @@ public class PoseEstimator {
 
             if (!PoseEstimator.isQuestNavActive) {
                 if (questNavRestartAttempts < 25) {
+                    questNavRestartAttempts++;
+
                     if (QuestADBWrapper.updateIsConnected()) { // QuestNav is not active but Quest ADB is connected, so try to restart QuestNav.
                         System.out.println("Connected, running restart...");
                         isADBConnected = true;
                         QuestADBWrapper.tryRestartQuestNav();
-                        questNavRestartAttempts++;
-                    } else {
+                    } /*else {
                         System.out.println("Disconnected, trying to reconnect lazily...");
                         isADBConnected = false; // QuestNav is not active and Quest ADB is not connected, try connecting anyway
                         QuestADBWrapper.lazyTryConnect();
-                    }
+                    }*/
                 }
             } else {
                 questNavRestartAttempts = 0;
