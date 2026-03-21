@@ -15,10 +15,6 @@ public class QuestADBWrapper {
         COMMAND_FAILED
     }
 
-    // TODO: Quest ADB reset stuff!
-    // ./adb tcpip 5555
-    // ./adb connect 10.105.89.21:5555
-    // ./adb shell am start -n gg.QuestNav.QuestNav/com.unity3d.player.UnityPlayerGameActivity
     public static Process currentADBCommand;
 
     public static final String adbExecPath = "~/adb";
@@ -68,33 +64,11 @@ public class QuestADBWrapper {
         String lastLine = "[no output]";
         try {
             while ((line = outputStream.readLine()) != null) {lastLine = line;}
-            printOutput();
         } catch (IOException e) {
             e.printStackTrace();
         }
         
         return lastLine;
-    }
-
-    public static void printOutput() throws IOException {
-        BufferedReader stdInput = new BufferedReader(new 
-            InputStreamReader(currentADBCommand.getInputStream()));
-
-        BufferedReader stdError = new BufferedReader(new 
-            InputStreamReader(currentADBCommand.getErrorStream()));
-
-        // Read the output from the command
-        System.out.println("Here is the standard output of the command:\n");
-        String s = null;
-        while ((s = stdInput.readLine()) != null) {
-            System.out.println(s);
-        }
-
-        // Read any errors from the attempted command
-        System.out.println("Here is the standard error of the command (if any):\n");
-        while ((s = stdError.readLine()) != null) {
-            System.out.println(s);
-        }
     }
 
     public static boolean updateIsConnected() {
@@ -104,9 +78,6 @@ public class QuestADBWrapper {
         if (result == QuestNavADBCommandResult.SUCCESS) {
             waitForCurrentADBCommand();
             String output = getCurrentADBCommandOutput();
-            System.out.println("hmm:");
-            System.out.println(output);
-            System.out.println(output.equals("device"));
             QuestADBWrapper.isConnected = output.equals("device");
         }
         return QuestADBWrapper.isConnected;

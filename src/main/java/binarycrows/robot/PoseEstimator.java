@@ -74,10 +74,6 @@ public class PoseEstimator {
 
     public void periodic() {
 
-        // Make it so that when we are disconnected, we only try to restart QuestNav a couple of times.
-        // Also as soon as adb reports we have a connection, never check again since it will lie from that point on.
-        // After we retry a couple of times, stop trying until we see QuestNav frames come back again
-
         /*if(this.lastFrameStart != -1) {
             this.dt = (System.currentTimeMillis() - this.lastFrameStart) / 1000.0;
         } else {
