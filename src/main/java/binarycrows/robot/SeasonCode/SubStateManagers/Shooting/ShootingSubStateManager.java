@@ -74,27 +74,40 @@ public class ShootingSubStateManager extends SubStateManager<ShootingStateReques
 
     // TODO: Put reason on dashboard, maybe make Isaac's controller vibrate when we know a mechanism is screwed up (CAN stale, not moving, outside of mechanical range)
     public boolean getCanShoot() { // TODO: LED Suggestion is to have color for: has balls, full; can't shoot shown by flashing; 
-        if (!robotOnCorrectSide || closeToTrench) {
+        if ((!robotOnCorrectSide && !robotInDepotThird && !robotInHumanPlayerThird) || closeToTrench) {
             CANdleSubStateManager.setLEDs(CANdleStateRequest.SHOOT_BAD_WRONG_SIDE_OF_FIELD);
+            Logger.recordOutput("Shooting/CanShoot", "BAD POSITION");
         } else if (!velocityInLargeBounds) {
+            Logger.recordOutput("Shooting/CanShoot", "VERY BAD VELOCITY");
             CANdleSubStateManager.setLEDs(CANdleStateRequest.SHOOT_BAD_VELOCITY_WAY_TOO_HIGH);
         } else if (!velocityInBounds) {
+            Logger.recordOutput("Shooting/CanShoot", "BAD VELOCITY");
             CANdleSubStateManager.setLEDs(CANdleStateRequest.SHOOT_BAD_VELOCITY_TOO_HIGH);
         } else if (!accelerationInBounds) {
+            Logger.recordOutput("Shooting/CanShoot", "BAD ACCELERATION");
             CANdleSubStateManager.setLEDs(CANdleStateRequest.SHOOT_BAD_ACCELERATION_TOO_HIGH);
         } else if (!jerkInBounds) {
+            Logger.recordOutput("Shooting/CanShoot", "BAD JERK");
             CANdleSubStateManager.setLEDs(CANdleStateRequest.SHOOT_BAD_JERK_TOO_HIGH);
         } else if (!distanceInLargeBounds) {
+            Logger.recordOutput("Shooting/CanShoot", "VERY BAD DISTANCE");
             CANdleSubStateManager.setLEDs(CANdleStateRequest.SHOOT_BAD_DISTANCE_WAY_TOO_HIGH);
         } else if (!distanceInBounds) {
+            Logger.recordOutput("Shooting/CanShoot", "BAD DISTANCE");
             CANdleSubStateManager.setLEDs(CANdleStateRequest.SHOOT_BAD_DISTANCE_TOO_HIGH);
         } else if (Math.abs(turretDeltaSupplierRad.get()) > ShootingConstants.maxTurretDeltaRad) {
+            Logger.recordOutput("Shooting/CanShoot", "BAD TURRET ANGLE");
             CANdleSubStateManager.setLEDs(CANdleStateRequest.SHOOT_BAD_TURRET_DELTA_TOO_HIGH);
         } else if (Math.abs(hoodDeltaSupplierRad.get()) > ShootingConstants.maxHoodDeltaRad) {
+            Logger.recordOutput("Shooting/CanShoot", "BAD HOOD ANGLE");
             CANdleSubStateManager.setLEDs(CANdleStateRequest.SHOOT_BAD_HOOD_DELTA_TOO_HIGH);
         } else if (Math.abs(flywheelDeltaSupplierRPM.get()) > ShootingConstants.maxFlywheelDelta) {
+            Logger.recordOutput("Shooting/CanShoot", "BAD FLYWHEEL DELTA");
             CANdleSubStateManager.setLEDs(CANdleStateRequest.SHOOT_BAD_FLYWHEEL_DELTA_TOO_HIGH);
+        //} else if (!hubActiveWhenShotLands) {
+
         } else {
+            Logger.recordOutput("Shooting/CanShoot", "GOOD");
             CANdleSubStateManager.setLEDs(CANdleStateRequest.SHOOT_GOOD);
             return true;
         }
@@ -129,6 +142,11 @@ public class ShootingSubStateManager extends SubStateManager<ShootingStateReques
         }
     }
 
+    public boolean getShootingIntent() {
+        ShootingStateRequest stateRequestType = activeStateRequest.getStateRequestType();
+        return stateRequestType == ShootingStateRequest.SHOOT || stateRequestType == ShootingStateRequest.FORCE_SHOOT;
+    }
+
     public double getTurretAngleRad() {
         return turretAngleRad;
     }
@@ -150,6 +168,8 @@ public class ShootingSubStateManager extends SubStateManager<ShootingStateReques
     
     // Calculation runtime variables
     public Translation2d targetPosition = new Translation2d(4.625594, 4.034536);
+    public Translation2d depotBackPosition = new Translation2d(2.784, 6.357);
+    public Translation2d humanPlayerBackPosition = new Translation2d(2.784, 1.894);
 
     private Translation2d[][] derivativesOfVelocity =  new Translation2d[3][2];
     private Translation2d[] valuesOfDerivatiesOfVelocity = new Translation2d[2];
@@ -165,6 +185,8 @@ public class ShootingSubStateManager extends SubStateManager<ShootingStateReques
     private boolean accelerationInBounds = true;
     private boolean jerkInBounds = true;
     private boolean robotOnCorrectSide = true;
+    private boolean robotInDepotThird = false;
+    private boolean robotInHumanPlayerThird = false;
 
     private boolean distanceInBounds = true;
     private boolean distanceInLargeBounds = true;
@@ -181,6 +203,10 @@ public class ShootingSubStateManager extends SubStateManager<ShootingStateReques
     }
     public double getRPM(double distance) {
         return ShootingConstants.baseTable.get(distance, 2, 0);
+    }
+
+    public boolean getDoAim() {
+        return robotOnCorrectSide || ((robotInDepotThird || robotInHumanPlayerThird) && getShootingIntent());
     }
 
     /**
@@ -240,6 +266,8 @@ public class ShootingSubStateManager extends SubStateManager<ShootingStateReques
         Pose2d turretPose = turretPoseSupplier.get();
         turretPose = new Pose2d(turretPose.getX(), turretPose.getY(), turretPose.getRotation().times(-1));
         robotOnCorrectSide = turretPose.getX() > ShootingConstants.maxTurretX;
+        robotInDepotThird = turretPose.getY() > 4.75;
+        robotInHumanPlayerThird = turretPose.getY() < 3.5;
         Translation2d turretPoseTranslation = turretPose.getTranslation();
         closeToTrench = 
             ShootingConstants.trenchBoundsHumanPlayerOwnSide.contains(turretPoseTranslation) ||
@@ -249,6 +277,9 @@ public class ShootingSubStateManager extends SubStateManager<ShootingStateReques
 
         Translation2d lookaheadDelta = velocity.times(nextShotTime-currentTime);
         turretPose = new Pose2d(turretPoseTranslation.plus(lookaheadDelta),turretPose.getRotation());
+
+        Translation2d targetPosition = robotOnCorrectSide ? this.targetPosition : 
+        (robotInDepotThird ? this.depotBackPosition : this.humanPlayerBackPosition);
 
         Translation2d targetDifference = targetPosition.minus(turretPoseTranslation);
         
@@ -308,7 +339,8 @@ public class ShootingSubStateManager extends SubStateManager<ShootingStateReques
         if (Robot.timeUntilHubIsActive >= 0) {
             hubActiveWhenShotLands = (timeOfFlight >= Robot.timeUntilHubIsActive);
         } else {
-            hubActiveWhenShotLands = (timeOfFlight < Math.abs(Robot.timeUntilHubIsActive));
+            // Don't evaluate if we'll make it in time
+            hubActiveWhenShotLands = true;//(timeOfFlight < Math.abs(Robot.timeUntilHubIsActive));
         }
         
         return new double[] {turretAngle.getRadians(), hoodAngle, flywheelRPM};

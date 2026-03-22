@@ -28,6 +28,7 @@ public class TurretSubStateManager extends SubStateManager<TurretStateRequest> {
 
     private Supplier<Boolean> shooting;
     private Supplier<Double> shootingTurretAngleRad;
+    private Supplier<Boolean> doAim;
 
     private ArrayList<Double> voltageToVelocityRadPerSecTable = new ArrayList<>();
     private ArrayList<Double> voltageToVelocityVoltageTable = new ArrayList<>();
@@ -53,6 +54,7 @@ public class TurretSubStateManager extends SubStateManager<TurretStateRequest> {
     public void setupSuppliers() {
         shooting = ShootingSubStateManager.getInstance()::getShooting;
         shootingTurretAngleRad = ShootingSubStateManager.getInstance()::getTurretAngleRad;
+        doAim = ShootingSubStateManager.getInstance()::getDoAim;
     }
 
     @Override
@@ -81,7 +83,7 @@ public class TurretSubStateManager extends SubStateManager<TurretStateRequest> {
                 turret.setTurretVoltage(TurretConstants.manualVoltage * (manualDirection));
                 break;
             case SHOOT_ON_THE_MOVE:
-                turret.setTargetAngle(Rotation2d.fromRadians(shootingTurretAngleRad.get()), shooting.get() && !turret.getHasWrapped());
+                if (doAim.get()) turret.setTargetAngle(Rotation2d.fromRadians(shootingTurretAngleRad.get()), shooting.get() && !turret.getHasWrapped());
                 Logger.recordOutput("Turret/ShootOnTheMoveTargetAngleRad", shootingTurretAngleRad.get());
                 break;
             case CONSTRUCT_VOLTAGE_TABLE:

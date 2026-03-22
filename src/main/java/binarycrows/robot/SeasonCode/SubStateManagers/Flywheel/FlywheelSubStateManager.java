@@ -46,7 +46,7 @@ public class FlywheelSubStateManager extends SubStateManager<FlywheelStateReques
     }
 
     public void setupSuppliers() {
-        isShootingSupplier = ShootingSubStateManager.getInstance()::getShooting;
+        isShootingSupplier = ShootingSubStateManager.getInstance()::getShootingIntent;
         flywheelVoltageSupplier = ShootingSubStateManager.getInstance()::getFlywheelVoltage;
     }
 
