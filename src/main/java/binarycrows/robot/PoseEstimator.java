@@ -21,6 +21,7 @@ import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -72,6 +73,8 @@ public class PoseEstimator {
 
     public int questNavRestartAttempts = 0;
 
+    private boolean hasSetQuestNavPose = false;
+
     public void periodic() {
 
         /*if(this.lastFrameStart != -1) {
@@ -99,6 +102,7 @@ public class PoseEstimator {
             Logger.recordOutput("QuestNavADB/QuestNavRestartAttempts", questNavRestartAttempts);
 
             if (!PoseEstimator.isQuestNavActive) {
+                MetaConstants.updateQuestNav = false;
                 if (questNavRestartAttempts < 25) {
                     questNavRestartAttempts++;
 
@@ -113,6 +117,7 @@ public class PoseEstimator {
                     }*/
                 }
             } else {
+                MetaConstants.updateQuestNav = true;
                 questNavRestartAttempts = 0;
                 if (!isADBConnected) { // QuestNav is 
                     if (QuestADBWrapper.updateIsConnected()) isADBConnected = true;
@@ -146,16 +151,17 @@ public class PoseEstimator {
         this.swerveDrivePoseEstimator.resetPosition(DriveSubStateManager.getInstance().getGyroAngleRotation2d(),
         DriveSubStateManager.getInstance().getModulePositions(), newRobotPose);
 
-        if (MetaConstants.updateQuestNav && questNav.isConnected()) PoseEstimatorConstants.questToWorldTransform = new Transform3d(lastQuestNavPose, new Pose3d(newRobotPose));
+        if (MetaConstants.updateQuestNav) /*PoseEstimatorConstants.questToWorldTransform = new Transform3d(lastQuestNavPose, */questNav.setPose((new Pose3d(newRobotPose)).transformBy(PoseEstimatorConstants.robotToQuestOffset));
     }
 
     public void resetRobotPose() {
+        Pose2d zeroPose = new Pose2d(0, 8.052, new Rotation2d());
         DriveSubStateManager.getInstance().resetGyro(new Rotation2d());
         swerveDrivePoseEstimator.resetPosition(DriveSubStateManager.getInstance().getGyroAngleRotation2d(),
-            DriveSubStateManager.getInstance().getModulePositions(), new Pose2d(0, 8.052, new Rotation2d()));
+            DriveSubStateManager.getInstance().getModulePositions(), zeroPose);
 
         
-        if (MetaConstants.updateQuestNav && questNav.isConnected()) PoseEstimatorConstants.questToWorldTransform = new Transform3d(lastQuestNavPose, new Pose3d());
+        if (MetaConstants.updateQuestNav) /*PoseEstimatorConstants.questToWorldTransform = new Transform3d(lastQuestNavPose, */questNav.setPose((new Pose3d(zeroPose.getX(), zeroPose.getY(), 0, new Rotation3d(zeroPose.getRotation()))).transformBy(PoseEstimatorConstants.robotToQuestOffset));
 
         
     }
@@ -233,6 +239,7 @@ public class PoseEstimator {
             
         }
         if(MetaConstants.updateQuestNav) {
+            Logger.recordOutput("Tuning/QuestToWorldTransform", PoseEstimatorConstants.questToWorldTransform);
             // Get the latest pose data frames from the Quest
             try {
             PoseFrame[] questFrames = questNav.getAllUnreadPoseFrames();

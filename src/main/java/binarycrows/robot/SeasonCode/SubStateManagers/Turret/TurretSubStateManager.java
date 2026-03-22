@@ -99,7 +99,7 @@ public class TurretSubStateManager extends SubStateManager<TurretStateRequest> {
                     turret.setTurretVoltage(voltageCounter);
 
                 }
-                Logger.recordOutput("Turret/Table/RotVelRadPerSec", convertLogArray(voltageToVelocityRadPerSecTable));
+                Logger.recordOutput("Turret/Table/RotVelRadPerSec", convertLogArray(voltageToVelocityRadPerSecTable.toArray()));
                 Logger.recordOutput("Turret/Table/RotVelVoltage", convertLogArray(voltageToVelocityVoltageTable.toArray()));
                 break;
         }

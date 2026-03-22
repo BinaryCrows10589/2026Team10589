@@ -20,7 +20,7 @@ public class SubStateManager<TYPE extends Enum<TYPE>> {
 
 
     public void periodic() {
-        if (activeStateRequest == null) activeStateRequest = defaultState;
+        if (activeStateRequest == null) this.recieveStateRequest(defaultState);
     }
 
     public void setupSuppliers() {}

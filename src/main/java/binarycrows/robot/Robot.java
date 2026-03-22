@@ -53,16 +53,15 @@ public class Robot extends LoggedRobot {
 
   public static double averageFrameTime = MetaConstants.loopPeriodSeconds;
 
-
   private final LoggedDashboardChooser<Auton> chooser = new LoggedDashboardChooser<>("AutonPath");
 
   public static double timeUntilHubIsActive = -1;
 
-  public static boolean isDriverControlled;
+  public static boolean isDriverControlled = true;
 
-public static boolean isSlowMode;
+  public static boolean isSlowMode;
 
-public static boolean forceRobotRelative;
+  public static boolean forceRobotRelative;
 
   private boolean shift1Active = false;
   
@@ -234,7 +233,7 @@ public static boolean forceRobotRelative;
   @Override
   public void teleopInit() {
     isDriverControlled = true;
-    Climbing.climbRight(); // Sim testing
+    //Climbing.climbRight(); // Sim testing
   }
 
   @Override

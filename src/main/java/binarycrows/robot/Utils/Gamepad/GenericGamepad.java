@@ -30,9 +30,7 @@ public class GenericGamepad {
         for(int i = 0; i < buttonMap.length; i++) {
             if(this.gamepad.getRawButtonPressed(i+1)) {
                 
-                if(this.buttonMap[i][0] != null && !this.lastFrameReadings[i])
-                System.out.println(i);
-                    this.buttonMap[i][0].run();
+                if(this.buttonMap[i][0] != null && !this.lastFrameReadings[i]) this.buttonMap[i][0].run();
 
                 this.lastFrameReadings[i] = true;
             }

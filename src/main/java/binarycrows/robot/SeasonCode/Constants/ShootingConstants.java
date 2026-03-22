@@ -6,9 +6,10 @@ import edu.wpi.first.math.geometry.Rectangle2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.util.Units;
 
 public class ShootingConstants {
-    public static final Transform2d robotToTurret = new Transform2d(new Translation2d(0, 0), Rotation2d.kZero); //TO-DO: Set to correct translation
+    public static final Transform2d robotToTurret = new Transform2d(new Translation2d(Units.inchesToMeters(6.5), 0), Rotation2d.kZero); //TO-DO: Set to correct translation
     public static final int numberOfAlgorithmIterations = 20; //TO-DO: This can certainly be much lower...
     public static final double dragCoefficient = 0.2; //TO-DO: tune... ...a lot
 
@@ -32,8 +33,11 @@ public class ShootingConstants {
     // Base table goes distance, hood angle, flywheel RPS, time of flight
     public static final UnkeyedLerpTable baseTable = new UnkeyedLerpTable(new double[][] {
         //           |distance|hood angle|flywheel|ToF|   
-        new double[] {0,       0,         0,       0}, // TO-DO: after tuning, do NOT leave 0,0,0 as a value
-        new double[] {25,    1,      1,    1}, // Will crash if there are not at least 2 values
+        //new double[] {0,       0,         0,       0}, // TO-DO: after tuning, do NOT leave 0,0,0 as a value
+        new double[] {1.614,   0,         55,      .71}, // Will crash if there are not at least 2 values
+        new double[] {2.613,   0.165,     55,      .99},
+        new double[] {3.669,   0.25,     55,      1.08},
+        new double[] {4.901,   0.38,     57,      1}
     }, 
     false);
 }

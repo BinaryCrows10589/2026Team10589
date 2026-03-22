@@ -3,6 +3,8 @@ package binarycrows.robot.SeasonCode.SubStateManagers.Shooting;
 import java.util.Arrays;
 import java.util.function.Supplier;
 
+import org.littletonrobotics.junction.Logger;
+
 import binarycrows.robot.MainStateManager;
 import binarycrows.robot.Robot;
 import binarycrows.robot.StateRequest;
@@ -136,13 +138,13 @@ public class ShootingSubStateManager extends SubStateManager<ShootingStateReques
 
 
     public double getHoodAngleRad() {
-        //return hoodAngleRad;
-        return (double) hoodAngle.getValue();
+        return hoodAngleRad;
+        //return (double) hoodAngle.getValue();
     }
 
     public double getFlywheelVoltage() {
-        return FlywheelConstants.rpmToVoltage.get((double) rpm.getValue());
-        //return flywheelVoltage;
+        //return FlywheelConstants.rpmToVoltage.get((double) rpm.getValue());
+        return flywheelVoltage;
     }
 
     
@@ -251,6 +253,7 @@ public class ShootingSubStateManager extends SubStateManager<ShootingStateReques
         Translation2d targetDifference = targetPosition.minus(turretPoseTranslation);
         
         double offsetDistance = targetDifference.getNorm();
+        Logger.recordOutput("Tuning/Distance", offsetDistance);
 
         distanceInBounds = (offsetDistance < ShootingConstants.maxDistanceFromGoal);
         distanceInLargeBounds = (offsetDistance < ShootingConstants.maxDistanceFromGoalLarge);
