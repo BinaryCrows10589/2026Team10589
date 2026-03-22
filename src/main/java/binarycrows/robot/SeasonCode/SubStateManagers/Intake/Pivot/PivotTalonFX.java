@@ -24,7 +24,7 @@ public class PivotTalonFX implements PivotIO {
     private Rotation2d targetPosition = Rotation2d.kZero;
     
     private TalonFX leftMotor;
-    private TalonFX rightMotor;
+    //private TalonFX rightMotor;
 
     private CANcoder pivotEncoder;
 
@@ -59,14 +59,14 @@ public class PivotTalonFX implements PivotIO {
         this.leftMotor.getConfigurator().apply(masterMotorConfig);
         
         // Right Motor
-        rightMotor = new TalonFX(CANIDs.RIO.rightPivotMotor);
+        /*rightMotor = new TalonFX(CANIDs.RIO.rightPivotMotor);
 
         this.rightMotor.getVelocity().setUpdateFrequency(20);
         this.rightMotor.getAcceleration().setUpdateFrequency(20);
         this.rightMotor.getPosition().setUpdateFrequency(20);
         this.rightMotor.getTorqueCurrent().setUpdateFrequency(50);
 
-        this.rightMotor.getConfigurator().apply(masterMotorConfig);
+        this.rightMotor.getConfigurator().apply(masterMotorConfig);*/
 
         //rightMotor.setControl(new Follower(leftMotor.getDeviceID(), IntakeConstants.Pivot.isSlaveReversed));
 
@@ -104,10 +104,10 @@ public class PivotTalonFX implements PivotIO {
         outputs.leftMotorSupplyAmps = leftMotor.getSupplyCurrent().getValueAsDouble();
         outputs.leftMotorTorqueAmps = leftMotor.getTorqueCurrent().getValueAsDouble();
 
-        outputs.rightMotorVelocityRPS = rightMotor.getVelocity().getValueAsDouble();
-        outputs.rightMotorAppliedVoltage = rightMotor.getMotorVoltage().getValueAsDouble();
-        outputs.rightMotorSupplyAmps = rightMotor.getSupplyCurrent().getValueAsDouble();
-        outputs.rightMotorTorqueAmps = rightMotor.getTorqueCurrent().getValueAsDouble();
+        //outputs.rightMotorVelocityRPS = rightMotor.getVelocity().getValueAsDouble();
+        //outputs.rightMotorAppliedVoltage = rightMotor.getMotorVoltage().getValueAsDouble();
+        //outputs.rightMotorSupplyAmps = rightMotor.getSupplyCurrent().getValueAsDouble();
+        //outputs.rightMotorTorqueAmps = rightMotor.getTorqueCurrent().getValueAsDouble();
 
         outputs.motorRotation = Rotation2d.fromRotations(leftMotor.getRotorPosition().getValueAsDouble());
         outputs.encoderRotation = Rotation2d.fromRotations(pivotEncoder.getAbsolutePosition().getValueAsDouble());

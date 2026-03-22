@@ -6,6 +6,7 @@ package binarycrows.robot;
 
 import java.util.ArrayList;
 import java.util.Optional;
+import java.util.function.Supplier;
 
 import org.littletonrobotics.junction.LogFileUtil;
 import org.littletonrobotics.junction.LoggedRobot;
@@ -33,11 +34,14 @@ import binarycrows.robot.SeasonCode.SubStateManagers.Turret.TurretSubStateManage
 import binarycrows.robot.SeasonCode.Utils.Climbing;
 import binarycrows.robot.Utils.Auton.Auton;
 import edu.wpi.first.apriltag.AprilTagFieldLayout.OriginPosition;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj.RobotBase;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /**
  * The methods in this class are called automatically corresponding to each mode, as described in
@@ -64,6 +68,9 @@ public class Robot extends LoggedRobot {
   public static boolean forceRobotRelative;
 
   private boolean shift1Active = false;
+
+  private Field2d dashboardField;
+  private Supplier<Pose2d> robotPoseSupplier;
   
   /**
    * This function is run when the robot is first started up and should be used for any
@@ -171,6 +178,9 @@ public class Robot extends LoggedRobot {
     updateAlliance();
     DriveSubStateManager.getInstance().resetRobotPose();
 
+    dashboardField = new Field2d();
+    robotPoseSupplier = DriveSubStateManager.getInstance()::getRobotPose;
+
   }
 
   
@@ -206,6 +216,9 @@ public class Robot extends LoggedRobot {
 
     Logger.recordOutput("SecondsUntilHubIsActive", timeUntilHubIsActive);
     Logger.recordOutput("ActiveInShift1", shift1Active);
+
+    dashboardField.setRobotPose(robotPoseSupplier.get());
+    SmartDashboard.putData("Field", dashboardField);
 
   }
 
