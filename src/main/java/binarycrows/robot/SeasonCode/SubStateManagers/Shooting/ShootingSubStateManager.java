@@ -278,8 +278,8 @@ public class ShootingSubStateManager extends SubStateManager<ShootingStateReques
         Translation2d lookaheadDelta = velocity.times(nextShotTime-currentTime);
         turretPose = new Pose2d(turretPoseTranslation.plus(lookaheadDelta),turretPose.getRotation());
 
-        Translation2d targetPosition = robotOnCorrectSide ? this.targetPosition : 
-        (robotInDepotThird ? this.depotBackPosition : this.humanPlayerBackPosition);
+        Translation2d targetPosition = this.targetPosition;/* = robotOnCorrectSide ? this.targetPosition : 
+        (robotInDepotThird ? this.depotBackPosition : this.humanPlayerBackPosition);*/ // TODO: This is part of it
 
         Translation2d targetDifference = targetPosition.minus(turretPoseTranslation);
         

@@ -45,6 +45,7 @@ public final class IntakeConstants {
         public static final Rotation2d pivotDownPosition = Rotation2d.fromRotations(0.475342);
         public static final Rotation2d pivotRaisedPosition = Rotation2d.fromRotations(0.352295);
         public static final Rotation2d pivotUpPosition = Rotation2d.fromRotations(0.144775);
+        public static final Rotation2d intakeRollerActivateThreshold = Rotation2d.fromRotations(0.416992);
 
         public static final double manualVoltage = 4;
         public static final double manualVoltageFF = 1;

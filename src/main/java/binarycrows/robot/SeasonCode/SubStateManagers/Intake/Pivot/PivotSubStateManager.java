@@ -8,6 +8,7 @@ import binarycrows.robot.SubStateManager;
 import binarycrows.robot.Enums.StateRequestPriority;
 import binarycrows.robot.SeasonCode.Constants.IntakeConstants;
 import binarycrows.robot.SeasonCode.SubStateManagers.Intake.Pivot.PivotIO.PivotOutputs;
+import binarycrows.robot.SeasonCode.SubStateManagers.Intake.Rollers.IntakeRollersStateRequest;
 import binarycrows.robot.Utils.LoggingUtils;
 import binarycrows.robot.Utils.Tuning.RuntimeTunableValue;
 
@@ -19,6 +20,8 @@ public class PivotSubStateManager extends SubStateManager<PivotStateRequest>  {
     private RuntimeTunableValue pivotTargetPosition;
 
     private int manualDirection = 0; // 1=up 0=none 2=down
+
+    private boolean needsToStartRollers = false;
 
     public PivotSubStateManager() {
         super(new StateRequest<PivotStateRequest>(PivotStateRequest.UP, StateRequestPriority.NORMAL));
@@ -40,7 +43,20 @@ public class PivotSubStateManager extends SubStateManager<PivotStateRequest>  {
                 (distanceToUpPositionRad < distanceToDownPositionRad) ? PivotStateRequest.UP : PivotStateRequest.DOWN, 
             stateRequest.getPriority());
         }
+
         super.recieveStateRequest(stateRequest);
+
+        if (stateRequest == this.activeStateRequest) {
+            switch (this.activeStateRequest.getStateRequestType()) {
+                case DOWN:
+                    System.out.println("NEEDS TO START ROLLERS");
+                    needsToStartRollers = true;
+                    break;
+                default:
+                    needsToStartRollers = false;
+                    break;
+            }
+        }
     }
 
     @Override
@@ -56,6 +72,13 @@ public class PivotSubStateManager extends SubStateManager<PivotStateRequest>  {
 
         switch (this.activeStateRequest.getStateRequestType()) {
             case DOWN:
+            System.out.println(outputs.encoderRotation.minus(IntakeConstants.Pivot.intakeRollerActivateThreshold).getDegrees());
+            System.out.println(needsToStartRollers);
+                if (needsToStartRollers && outputs.encoderRotation.getRotations() > IntakeConstants.Pivot.intakeRollerActivateThreshold.getRotations()) {
+                    needsToStartRollers = false;
+                    System.out.println("START ROLLERS");
+                    new StateRequest<>(IntakeRollersStateRequest.INTAKING, StateRequestPriority.NORMAL).dispatchSelf();;
+                }
                 delta = IntakeConstants.Pivot.pivotDownPosition.minus(outputs.encoderRotation).getDegrees();
                 if (delta > 80) voltage = 1.5;
                 else if (delta > 45) voltage = 0.75;
