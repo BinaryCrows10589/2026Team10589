@@ -67,8 +67,14 @@ public class Paths {
     public static final Path startPosition_DepotTrench_Wall_L_In =
         new Path(new Path.PathRotation[] {new Path.PathRotation(100, 0, 1)},
         Points.startPosition_DepotTrench_Wall,
-        Points.InitialFuelQuadrant_OwnAllianceDepot,
+        new CMAutonPoint(7.775+0.5, 7.554+0.5, 0, 0, 0, 0),
         Points.CenterFuelQuadrant_OwnAllianceDepot);
+    
+        public static final Path startPosition_DepotTrench_Wall_L_Arch =
+        new Path(new Path.PathRotation[] {new Path.PathRotation(0, 0, 0.5)},
+        Points.CenterFuelQuadrant_OwnAllianceDepot,
+        new CMAutonPoint(7.690, 3.371-2),
+        new CMAutonPoint(5.714, 6.455));
     
     public static final Path DepotSide_L_Out_Trench =
         new Path(new Path.PathRotation[] {new Path.PathRotation(0, 0, 1)},
@@ -90,9 +96,6 @@ public class Paths {
     public static final Path startPosition_DepotTrench_Wall_P_Arc =
         new Path(new Path.PathRotation[] {new Path.PathRotation(0, 0, 0.5)},
         Points.InitialFuelQuadrant_OwnAllianceDepot,
-        Points.Depot_P_In_ControlPoints[0],
-        Points.Depot_P_In_ControlPoints[1],
-        Points.Depot_P_In_ControlPoints[2],
         Points.PEnd_OwnAllianceDepot);
     
     public static final Path DepotSide_P_Out_Trench =
@@ -112,9 +115,6 @@ public class Paths {
         Points.ShootPosition_DepotTrench_Wall,
         Points.ShootPosition_DepotRamp_Center_to_InitialFuelQuadrant_OwnAllianceDepot_ControlPoint,
         Points.InitialFuelQuadrant_OwnAllianceDepot,
-        Points.Depot_P_In_ControlPoints[0],
-        Points.Depot_P_In_ControlPoints[1],
-        Points.Depot_P_In_ControlPoints[2],
         Points.PEnd_OwnAllianceDepot);
     
     public static final Path DepotSide_L_In_Ramp =

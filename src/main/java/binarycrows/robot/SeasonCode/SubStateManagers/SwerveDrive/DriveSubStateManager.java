@@ -1,11 +1,6 @@
 package binarycrows.robot.SeasonCode.SubStateManagers.SwerveDrive;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-
-import org.photonvision.PhotonPoseEstimator;
-
-import com.ctre.phoenix6.swerve.SwerveModuleConstants;
 
 import binarycrows.robot.Keybinds;
 import binarycrows.robot.MainStateManager;
@@ -23,12 +18,8 @@ import binarycrows.robot.Enums.StateRequestStatus;
 import binarycrows.robot.SeasonCode.Constants.CrowMotionConstants;
 import binarycrows.robot.SeasonCode.Constants.MetaConstants;
 import binarycrows.robot.SeasonCode.Constants.SwerveDriveConstants;
-import binarycrows.robot.SeasonCode.Constants.PoseEstimatorConstants;
 import binarycrows.robot.SeasonCode.SubStateManagers.SwerveDrive.GyroIO.GyroOutputs;
 import binarycrows.robot.SeasonCode.SubStateManagers.SwerveDrive.SwerveModuleIO.SwerveModuleOutputs;
-import binarycrows.robot.SeasonCode.SubStateManagers.Turret.TurretSubStateManager;
-import edu.wpi.first.apriltag.AprilTagFieldLayout;
-import edu.wpi.first.apriltag.AprilTagFieldLayout.OriginPosition;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -359,7 +350,7 @@ public class DriveSubStateManager extends SubStateManager<DriveStateRequest> {
                         if (CrowMotionConstants.currentTrajectory.isCompleted() && this.activeStateRequest.getStatus() != StateRequestStatus.FULFILLED) {
                             this.activeStateRequest.updateStatus(StateRequestStatus.FULFILLED);
                             StateTable.log("DriveSubsystem/LastTrajectoryTimeSec", (System.currentTimeMillis() - trajectoryStartTime) / 1000.0);
-                            this.returnToDefaultState();
+                            //this.returnToDefaultState();
                         }
                         break;
                     case DRIVE_CROWMOTION_ARRAY:
@@ -412,6 +403,13 @@ public class DriveSubStateManager extends SubStateManager<DriveStateRequest> {
     }
     private double getDriveDistance() {
         return poseEstimator.getRobotPose().getY();
+    }
+
+    public void setSimSwerveTurnRotations(Rotation2d rotation) {
+        this.backLeftSwerveModule.setSimAngle(rotation);
+        this.backRightSwerveModule.setSimAngle(rotation);
+        this.frontLeftSwerveModule.setSimAngle(rotation);
+        this.frontRightSwerveModule.setSimAngle(rotation);
     }
 
     private double translationMax = SwerveDriveConstants.maxSpeedMPS;

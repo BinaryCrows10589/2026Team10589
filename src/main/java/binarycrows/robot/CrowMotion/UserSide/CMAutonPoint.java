@@ -95,7 +95,7 @@ public class CMAutonPoint {
             (CMConfig.isBlueAlliance() ? blueYFudge : redYFudge);
     }
 
-    public Translation2d geTranslation2d() {
+    public Translation2d getTranslation2d() {
         return new Translation2d(getX(), getY());
     }
 

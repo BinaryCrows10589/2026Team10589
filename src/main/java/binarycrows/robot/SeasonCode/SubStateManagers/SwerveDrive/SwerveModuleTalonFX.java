@@ -267,6 +267,9 @@ public class SwerveModuleTalonFX implements SwerveModuleIO {
     }
 
     @Override
+    public void setSimAngle(Rotation2d angle) {}
+
+    @Override
     public void setDesiredModuleDriveVoltage(double desiredVoltage) {
 
 

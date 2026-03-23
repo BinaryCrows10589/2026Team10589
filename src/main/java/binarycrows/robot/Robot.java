@@ -17,13 +17,11 @@ import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 
 import binarycrows.robot.CrowMotion.UserSide.CMConfig;
 import binarycrows.robot.SeasonCode.Autons.DepotTrench_Wall_Shoot_L_Shoot_P_Shoot;
-import binarycrows.robot.SeasonCode.Autons.StartPosition_HumanPlayerRamp_Trench_ShootPreloads;
 import binarycrows.robot.SeasonCode.Constants.FieldConstants;
 import binarycrows.robot.SeasonCode.Constants.MetaConstants;
 import binarycrows.robot.SeasonCode.Constants.PoseEstimatorConstants;
 import binarycrows.robot.SeasonCode.Constants.SwerveDriveConstants;
 import binarycrows.robot.SeasonCode.SubStateManagers.CANdle.CANdleSubStateManager;
-import binarycrows.robot.SeasonCode.SubStateManagers.Climber.ClimberSubStateManager;
 import binarycrows.robot.SeasonCode.SubStateManagers.Flywheel.FlywheelSubStateManager;
 import binarycrows.robot.SeasonCode.SubStateManagers.Hood.HoodSubStateManager;
 import binarycrows.robot.SeasonCode.SubStateManagers.Intake.Pivot.PivotSubStateManager;
@@ -157,9 +155,10 @@ public class Robot extends LoggedRobot {
 
 
     // Initialize autonomous chooser
-    chooser.addDefaultOption("Depot Trench Wall: Shoot, L, Shoot, P, Shoot", new Auton(DepotTrench_Wall_Shoot_L_Shoot_P_Shoot.startingPoint, DepotTrench_Wall_Shoot_L_Shoot_P_Shoot::getAutonomous));
-
-    onAutonSelect(chooser.get()); // Initialize first autonomous that is selected
+    Auton defaultAuton = new Auton(DepotTrench_Wall_Shoot_L_Shoot_P_Shoot.startingPoint, DepotTrench_Wall_Shoot_L_Shoot_P_Shoot::getAutonomous);
+    chooser.addDefaultOption("Depot Trench Wall: Shoot, L, Shoot, P, Shoot", defaultAuton);
+    
+    onAutonSelect(defaultAuton); // Initialize first autonomous that is selected
 
     chooser.onChange(this::onAutonSelect);
 
@@ -204,7 +203,9 @@ public class Robot extends LoggedRobot {
   }
 
   public void onAutonSelect(Auton auton) {
-    if (auton != null) auton.buildAuton();
+    if (auton != null) {
+      auton.buildAuton();
+    }
   }
 
   @Override
@@ -217,8 +218,13 @@ public class Robot extends LoggedRobot {
   public void autonomousPeriodic() {
     if (!MetaConstants.startedAutonomous) {
       Auton auton = chooser.get();
-      if (auton.builtAuton == null) auton.buildAuton(); // In case it wasn't built for some reason (should NEVER be necessary!)
+      if (auton.builtAuton == null) {
+        System.out.println("NOT BUILT!");
+        auton.buildAuton(); // In case it wasn't built for some reason (should NEVER be necessary!)
+      }
       DriveSubStateManager.getInstance().setRobotPose(auton.startingPoint);
+      DriveSubStateManager.getInstance().setSimSwerveTurnRotations(auton.startingPoint.getRotation());
+
       auton.builtAuton.dispatchSelf();
       MetaConstants.startedAutonomous = true;
     }

@@ -91,6 +91,10 @@ public class SwerveModule {
     public void stopModuleDrive() {
         this.swerveModuleIO.setDesiredModuleDriveVoltage(0);
     }
+
+    public void setSimAngle(Rotation2d angle) {
+        swerveModuleIO.setSimAngle(angle);
+    }
     
     /**
      * Gets the position of the module

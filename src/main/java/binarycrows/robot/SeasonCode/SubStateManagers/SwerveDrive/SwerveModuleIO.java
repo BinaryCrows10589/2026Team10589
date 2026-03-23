@@ -33,5 +33,7 @@ public interface SwerveModuleIO {
 
     public SwerveModuleOutputs getOutputs();
 
+    public void setSimAngle(Rotation2d angle);
+
     public void update();
 }

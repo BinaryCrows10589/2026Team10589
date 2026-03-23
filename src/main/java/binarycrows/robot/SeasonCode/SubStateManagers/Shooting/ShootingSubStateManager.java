@@ -3,7 +3,8 @@ package binarycrows.robot.SeasonCode.SubStateManagers.Shooting;
 import java.util.Arrays;
 import java.util.function.Supplier;
 
-import binarycrows.robot.Keybinds;
+import org.littletonrobotics.junction.Logger;
+
 import binarycrows.robot.MainStateManager;
 import binarycrows.robot.Robot;
 import binarycrows.robot.StateRequest;
@@ -49,8 +50,10 @@ public class ShootingSubStateManager extends SubStateManager<ShootingStateReques
     public ShootingSubStateManager() {
         super(new StateRequest<>(ShootingStateRequest.STANDBY, StateRequestPriority.NORMAL));
         // Java is evil so the arrays need to be prepopulated
-        for (Translation2d[] row : derivativesOfVelocity) Arrays.fill(row, Translation2d.kZero);
-        Arrays.fill(valuesOfDerivatiesOfVelocity, Translation2d.kZero);
+        Arrays.fill(velocityFrames, Translation2d.kZero);
+        Arrays.fill(accelerationFrames, Translation2d.kZero);
+        Arrays.fill(jerkFrames, Translation2d.kZero);
+        Arrays.fill(timeFrames, System.currentTimeMillis());
         
     }
 
@@ -150,8 +153,12 @@ public class ShootingSubStateManager extends SubStateManager<ShootingStateReques
     // Calculation runtime variables
     public Translation2d targetPosition = new Translation2d(4.625594, 4.034536);
 
-    private Translation2d[][] derivativesOfVelocity =  new Translation2d[3][2];
-    private Translation2d[] valuesOfDerivatiesOfVelocity = new Translation2d[2];
+    private final int framesOfVelocityMeasurement = 6;
+
+    private Translation2d[] velocityFrames =  new Translation2d[framesOfVelocityMeasurement];
+    private Translation2d[] accelerationFrames =  new Translation2d[framesOfVelocityMeasurement];
+    private Translation2d[] jerkFrames =  new Translation2d[framesOfVelocityMeasurement];
+    private long[] timeFrames = new long[framesOfVelocityMeasurement];
 
     private double lookaheadTimeSeconds = 0.2f;
     private double phaseTimeSeconds = 0.03f;
@@ -191,42 +198,42 @@ public class ShootingSubStateManager extends SubStateManager<ShootingStateReques
         Translation2d velocity = linearVelocitySupplier.get(); 
         double velocityNorm = velocity.getNorm();
 
-        int numFrames = derivativesOfVelocity[0].length;
-        int numDerivatives = derivativesOfVelocity.length-1;
-        for (int derivative = 0; derivative < numDerivatives; derivative++) {
-            
-            for (int frame = 0; frame < numFrames-1; frame++)
-            {
-                derivativesOfVelocity[derivative][frame] = derivativesOfVelocity[derivative][frame + 1];
-            }
+        
+        for (int frame = framesOfVelocityMeasurement-2; frame >= 0; frame++)
+        {
+            velocityFrames[frame + 1] = velocityFrames[frame];
+            accelerationFrames[frame + 1] = accelerationFrames[frame];
+            jerkFrames[frame + 1] = jerkFrames[frame];
+            timeFrames[frame + 1] = timeFrames[frame];
         }
 
-        derivativesOfVelocity[0][numFrames-1] = velocity;
+        timeFrames[0] = System.currentTimeMillis();
+        velocityFrames[0] = new Translation2d(velocity.getX(), velocity.getY());
 
-        for (int derivative = 0; derivative < numDerivatives; derivative++)
-        {   
-            valuesOfDerivatiesOfVelocity[derivative] = 
-            (derivativesOfVelocity[derivative][numFrames-1].minus(derivativesOfVelocity[derivative][0]))
-            .div(0.02)
-            .div(numFrames);
-            derivativesOfVelocity[derivative+1][numFrames-1] = valuesOfDerivatiesOfVelocity[derivative];
-        }
+        double deltaTimeSec = (timeFrames[0] - timeFrames[framesOfVelocityMeasurement-1]) / 1000.0;
+
+        accelerationFrames[0] = velocityFrames[0].minus(velocityFrames[framesOfVelocityMeasurement-1]).div(deltaTimeSec);
+
+        jerkFrames[0] = accelerationFrames[0].minus(accelerationFrames[framesOfVelocityMeasurement-1]).div(deltaTimeSec);
 
         velocityInBounds = velocityNorm < ShootingConstants.maxVelocity;
-        accelerationInBounds = valuesOfDerivatiesOfVelocity[0].getNorm() < ShootingConstants.maxAcceleration;
-        jerkInBounds = valuesOfDerivatiesOfVelocity[1].getNorm() < ShootingConstants.maxJerk;
+        accelerationInBounds = accelerationFrames[0].getNorm() < ShootingConstants.maxAcceleration;
+        jerkInBounds = jerkFrames[0].getNorm() < ShootingConstants.maxJerk;
         velocityInLargeBounds = velocityNorm < ShootingConstants.maxVelocityLarge;
 
         Translation2d extraVelocity = Translation2d.kZero;
 
-        double currentTime = System.currentTimeMillis() * 1000;
+        double currentTime = System.currentTimeMillis() / 1000.0;
 
-        for (int derivative = numDerivatives - 1; derivative >= 0; derivative--)
-        {
-            extraVelocity = extraVelocity.plus(valuesOfDerivatiesOfVelocity[derivative].times(nextShotTime - currentTime));
-        }
+        double lookaheadTime = nextShotTime - currentTime;
 
-        //velocity = velocity.plus(extraVelocity);
+        extraVelocity = extraVelocity.plus(accelerationFrames[0].times(lookaheadTime)).plus(jerkFrames[0].times(0.5 * lookaheadTime * lookaheadTime));
+
+        if (!Double.isNaN(extraVelocity.getX()) && !Double.isNaN(extraVelocity.getY())) velocity = velocity.plus(extraVelocity);
+        Logger.recordOutput("/Turret/Control/ExtraVelocity", extraVelocity);
+        Logger.recordOutput("/Turret/Control/Velocity", velocityFrames[0]);
+        Logger.recordOutput("/Turret/Control/Acceleration", accelerationFrames[0]);
+        Logger.recordOutput("/Turret/Control/Jerk", jerkFrames[0]);
 
         if (nextShotTime < currentTime)
         {

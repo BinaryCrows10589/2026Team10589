@@ -85,6 +85,11 @@ public class SwerveModuleSim implements SwerveModuleIO {
     }
 
     @Override
+    public void setSimAngle(Rotation2d angle) {
+        turnMotor.setAngle(angle.getRadians());
+    }
+
+    @Override
     public SwerveModuleOutputs getOutputs() {
         return outputs;
     }
