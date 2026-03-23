@@ -78,7 +78,7 @@ public class ShootingSubStateManager extends SubStateManager<ShootingStateReques
     public boolean getCanShoot() { // TODO: LED Suggestion is to have color for: has balls, full; can't shoot shown by flashing; 
         if ((!robotOnCorrectSide && !robotInDepotThird && !robotInHumanPlayerThird) || closeToTrench) {
             CANdleSubStateManager.setLEDs(CANdleStateRequest.SHOOT_BAD_WRONG_SIDE_OF_FIELD);
-            Logger.recordOutput("Shooting/CanShoot", "BAD POSITION");
+            Logger.recordOutput("Shooting/CanShoot", "BAD POSITION: " + robotOnCorrectSide + " " + robotInDepotThird + " " + robotInHumanPlayerThird + " " + closeToTrench);
         } else if (!velocityInLargeBounds) {
             Logger.recordOutput("Shooting/CanShoot", "VERY BAD VELOCITY");
             CANdleSubStateManager.setLEDs(CANdleStateRequest.SHOOT_BAD_VELOCITY_WAY_TOO_HIGH);
@@ -225,7 +225,7 @@ public class ShootingSubStateManager extends SubStateManager<ShootingStateReques
         double velocityNorm = velocity.getNorm();
 
         
-        for (int frame = framesOfVelocityMeasurement-2; frame >= 0; frame++)
+        for (int frame = framesOfVelocityMeasurement-2; frame >= 0; frame--)
         {
             velocityFrames[frame + 1] = velocityFrames[frame];
             accelerationFrames[frame + 1] = accelerationFrames[frame];
@@ -271,7 +271,7 @@ public class ShootingSubStateManager extends SubStateManager<ShootingStateReques
         }
         Pose2d turretPose = turretPoseSupplier.get();
         turretPose = new Pose2d(turretPose.getX(), turretPose.getY(), turretPose.getRotation().times(-1));
-        robotOnCorrectSide = turretPose.getX() > ShootingConstants.maxTurretX;
+        robotOnCorrectSide = turretPose.getX() < ShootingConstants.maxTurretX;
         robotInDepotThird = turretPose.getY() > 4.75;
         robotInHumanPlayerThird = turretPose.getY() < 3.5;
         Translation2d turretPoseTranslation = turretPose.getTranslation();
@@ -284,8 +284,9 @@ public class ShootingSubStateManager extends SubStateManager<ShootingStateReques
         Translation2d lookaheadDelta = velocity.times(nextShotTime-currentTime);
         turretPose = new Pose2d(turretPoseTranslation.plus(lookaheadDelta),turretPose.getRotation());
 
-        Translation2d targetPosition = this.targetPosition;/* = robotOnCorrectSide ? this.targetPosition : 
-        (robotInDepotThird ? this.depotBackPosition : this.humanPlayerBackPosition);*/ // TODO: This is part of it
+        Translation2d targetPosition = robotOnCorrectSide ? this.targetPosition : 
+        (robotInDepotThird ? this.depotBackPosition : this.humanPlayerBackPosition);
+        Logger.recordOutput("Tuning/TargetPosition", targetPosition);
 
         Translation2d targetDifference = targetPosition.minus(turretPoseTranslation);
         

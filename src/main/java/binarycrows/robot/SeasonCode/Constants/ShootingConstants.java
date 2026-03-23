@@ -20,7 +20,7 @@ public class ShootingConstants {
     public static final double maxAcceleration = 4.4;
     public static final double maxJerk = 4.4;
     public static final double maxVelocityLarge = 4.4;
-    public static final double maxTurretX = ConversionUtils.inchesToMeters(182.11);
+    public static final double maxTurretX = 4.6;
     public static final double maxDistanceFromGoal = 5;
     public static final double maxDistanceFromGoalLarge = 6;
 

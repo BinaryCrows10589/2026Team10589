@@ -14,8 +14,9 @@ public class SubStateManager<TYPE extends Enum<TYPE>> {
 
     protected SubStateManager(StateRequest<TYPE> defaultState)
     {
-        this.activeStateRequest = defaultState;
+        
         this.defaultState = defaultState;
+        this.recieveStateRequest(defaultState);
     }
 
 
@@ -39,7 +40,7 @@ public class SubStateManager<TYPE extends Enum<TYPE>> {
                 request.updateStatus(StateRequestStatus.REJECTED);
         } else {
             // Otherwise, override the old state request with the new one.
-            this.activeStateRequest.updateStatus(StateRequestStatus.OVERRIDDEN);
+            if (this.activeStateRequest != null) this.activeStateRequest.updateStatus(StateRequestStatus.OVERRIDDEN);
             this.activeStateRequest = request;
             request.updateStatus(StateRequestStatus.PENDING);
 

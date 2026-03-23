@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
+import binarycrows.robot.SeasonCode.Constants.MetaConstants;
 
 public class QuestADBWrapper {
 
@@ -35,6 +36,7 @@ public class QuestADBWrapper {
 
 
     public static QuestNavADBCommandResult sendQuestNavADBCommand(String command) {
+        if (!MetaConstants.isReal) return QuestNavADBCommandResult.SUCCESS;
         if (currentADBCommand != null) {
             if (currentADBCommand.isAlive()) return QuestNavADBCommandResult.PREVIOUS_COMMAND_NOT_DONE;
         }
@@ -48,6 +50,7 @@ public class QuestADBWrapper {
     }
 
     public static void waitForCurrentADBCommand() {
+        if (currentADBCommand == null) return;
         try {
             if (!currentADBCommand.waitFor(500, TimeUnit.MILLISECONDS)) {
                 System.out.println("Timed out");
@@ -59,6 +62,7 @@ public class QuestADBWrapper {
     }
 
     public static String getCurrentADBCommandOutput() {
+        if (currentADBCommand == null) return "[command is null]";
         BufferedReader outputStream = new BufferedReader(new InputStreamReader(currentADBCommand.getInputStream()));
         String line = null;
         String lastLine = "[no output]";
@@ -74,7 +78,7 @@ public class QuestADBWrapper {
     public static boolean updateIsConnected() {
         if (isConnected) return true;
         QuestNavADBCommandResult result = sendQuestNavADBCommand("get-state");
-        System.out.println(result.name());
+        //System.out.println(result.name());
         if (result == QuestNavADBCommandResult.SUCCESS) {
             waitForCurrentADBCommand();
             String output = getCurrentADBCommandOutput();

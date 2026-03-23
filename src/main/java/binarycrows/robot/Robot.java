@@ -72,167 +72,178 @@ public class Robot extends LoggedRobot {
   private Field2d dashboardField;
   private Supplier<Pose2d> robotPoseSupplier;
   
-  /**
-   * This function is run when the robot is first started up and should be used for any
-   * initialization code.
-   */
-  public Robot() {
+    private boolean autonDirty = false;
     
-    MainStateManager.getInstance(); // Initialize the MainStateManager
-  }
-
-  @SuppressWarnings("resource")
-  @Override
-  public void robotInit() {
-      // Set up data receivers & replay source
-      if (RobotBase.isReal()) {
-          // Running on a real robot, log to a USB stick ("/U/logs")
-          Logger.addDataReceiver(new WPILOGWriter());
-          Logger.addDataReceiver(new NT4Publisher());
-          new PowerDistribution(1, ModuleType.kRev); // Enables power distribution logging
-      } else {
-        if (RobotBase.isSimulation()) {
-          // Running a physics simulator, log to NT
-          Logger.addDataReceiver(new NT4Publisher());
-        } else {
-          // Replaying a log, set up replay source
-          //setUseTiming(true); // Run as fast as possible
-          String logPath = LogFileUtil.findReplayLog();
-          Logger.setReplaySource(new WPILOGReader(logPath));
-          Logger.addDataReceiver(new WPILOGWriter(LogFileUtil.addPathSuffix(logPath, "_sim")));
-        }
-      }
-      Logger.start();
-
-      // Place your robot's substate managers in this call!
-      MainStateManager.getInstance().registerSubStateManagers(
-        new DriveSubStateManager(),
-        new TurretSubStateManager(),
-        new TransitSubStateManager(),
-        new IntakeRollersSubStateManager(),
-        new PivotSubStateManager(),
-        new HoodSubStateManager(),
-        new FlywheelSubStateManager(),
-        //new ClimberSubStateManager(),
-        new CANdleSubStateManager(),
-        new ShootingSubStateManager()
-      );
-
-    
-      MainStateManager.getInstance().start();
-
-
-      isSlowMode= false;
+    /**
+     * This function is run when the robot is first started up and should be used for any
+     * initialization code.
+     */
+    public Robot() {
       
-      isDriverControlled = true;
-
-      forceRobotRelative = false;
-      
-
-      subStateManagers = MainStateManager.getInstance().getSubStateManagers();
-
-      Keybinds.createKeybinds();
-
-      DriveSubStateManager driveSubStateManager = DriveSubStateManager.getInstance();
-      CMConfig.init(
-        driveSubStateManager::getRobotPoseCM,
-        driveSubStateManager::getRobotVelocityCM,
-        driveSubStateManager::driveCM,
-        SwerveDriveConstants.distanceBetweenCentersOfRightAndLeftWheels,
-        SwerveDriveConstants.distanceBetweenCentersOfFrontAndBackWheels,
-        MetaConstants.isBlueAlliance,
-        ()->false,
-        FieldConstants.fieldWidthMeters,
-        FieldConstants.fieldLengthMeters,
-        1.5,
-        10,
-        4.3,
-        3.5,
-        4,
-        2,
-        .08,
-        .05,
-        SwerveDriveConstants.maxSpeedMPS,
-        240,
-        480,
-        480,
-        1,
-        5,
-        .5,
-        1.5,
-        10
-        );
-
-
-
-
-    // Initialize autonomous chooser
-    Auton defaultAuton = new Auton(DepotTrench_Wall_Shoot_L_Shoot_P_Shoot.startingPoint, DepotTrench_Wall_Shoot_L_Shoot_P_Shoot::getAutonomous);
-    chooser.addDefaultOption("Depot Trench Wall: Shoot, L, Shoot, P, Shoot", defaultAuton);
-    
-    onAutonSelect(defaultAuton); // Initialize first autonomous that is selected
-
-    chooser.onChange(this::onAutonSelect);
-
-
-    // Final updates
-    updateAlliance();
-    DriveSubStateManager.getInstance().resetRobotPose();
-
-    dashboardField = new Field2d();
-    robotPoseSupplier = DriveSubStateManager.getInstance()::getRobotPose;
-
-  }
-
+      MainStateManager.getInstance(); // Initialize the MainStateManager
+    }
   
-
-
-  @SuppressWarnings("unchecked")
-  @Override
-  public void robotPeriodic() {
-    updateAlliance();
-    subStateManagers.forEach(subStateManager -> {
-        if (subStateManager.activeStateRequest == null) {
-          if (subStateManager.defaultState != null) {
-            subStateManager.activeStateRequest = subStateManager.defaultState;
+    @SuppressWarnings("resource")
+    @Override
+    public void robotInit() {
+        // Set up data receivers & replay source
+        if (RobotBase.isReal()) {
+            // Running on a real robot, log to a USB stick ("/U/logs")
+            Logger.addDataReceiver(new WPILOGWriter());
+            Logger.addDataReceiver(new NT4Publisher());
+            new PowerDistribution(1, ModuleType.kRev); // Enables power distribution logging
+        } else {
+          if (RobotBase.isSimulation()) {
+            // Running a physics simulator, log to NT
+            Logger.addDataReceiver(new NT4Publisher());
           } else {
-            return;
+            // Replaying a log, set up replay source
+            //setUseTiming(true); // Run as fast as possible
+            String logPath = LogFileUtil.findReplayLog();
+            Logger.setReplaySource(new WPILOGReader(logPath));
+            Logger.addDataReceiver(new WPILOGWriter(LogFileUtil.addPathSuffix(logPath, "_sim")));
           }
         }
-        subStateManager.periodic();
-
-        Logger.recordOutput(subStateManager.toString() + "/ActiveStateRequest", subStateManager.activeStateRequest.getAsLoggable());
-        Logger.recordOutput(subStateManager.toString() + "/ActiveStateRequest/Name", subStateManager.activeStateRequest.getStateRequestType().name());
-    });
-
-    long currentTime = System.currentTimeMillis();
-    if (frameStartTime != -1) {
-        double frameTime = (currentTime - frameStartTime) / 1000.0;
+        Logger.start();
+  
+        // Place your robot's substate managers in this call!
+        MainStateManager.getInstance().registerSubStateManagers(
+          new DriveSubStateManager(),
+          new TurretSubStateManager(),
+          new TransitSubStateManager(),
+          new IntakeRollersSubStateManager(),
+          new PivotSubStateManager(),
+          new HoodSubStateManager(),
+          new FlywheelSubStateManager(),
+          //new ClimberSubStateManager(),
+          new CANdleSubStateManager(),
+          new ShootingSubStateManager()
+        );
+  
+      
+        MainStateManager.getInstance().start();
+  
+  
+        isSlowMode= false;
         
-        averageFrameTime = (averageFrameTime * .9) + (frameTime * .1);
+        isDriverControlled = true;
+  
+        forceRobotRelative = false;
+        
+  
+        subStateManagers = MainStateManager.getInstance().getSubStateManagers();
+  
+        Keybinds.createKeybinds();
+  
+        DriveSubStateManager driveSubStateManager = DriveSubStateManager.getInstance();
+        CMConfig.init(
+          driveSubStateManager::getRobotPoseCM,
+          driveSubStateManager::getRobotVelocityCM,
+          driveSubStateManager::driveCM,
+          SwerveDriveConstants.distanceBetweenCentersOfRightAndLeftWheels,
+          SwerveDriveConstants.distanceBetweenCentersOfFrontAndBackWheels,
+          MetaConstants.isBlueAlliance,
+          ()->false,
+          FieldConstants.fieldWidthMeters,
+          FieldConstants.fieldLengthMeters,
+          1.5,
+          10,
+          4.3,
+          3.5,
+          4,
+          2,
+          .08,
+          .05,
+          SwerveDriveConstants.maxSpeedMPS,
+          240,
+          480,
+          480,
+          1,
+          5,
+          .5,
+          1.5,
+          10
+          );
+  
+  
+  
+  
+      // Initialize autonomous chooser
+      Auton defaultAuton = new Auton(DepotTrench_Wall_Shoot_L_Shoot_P_Shoot.startingPoint, DepotTrench_Wall_Shoot_L_Shoot_P_Shoot::getAutonomous);
+      chooser.addDefaultOption("Depot Trench Wall: Shoot, L, Shoot, P, Shoot", defaultAuton);
+      
+      //onAutonSelect(defaultAuton); // Initialize first autonomous that is selected
+  
+      chooser.onChange(this::onAutonSelect);
+  
+  
+      // Final updates
+      updateAlliance();
+      DriveSubStateManager.getInstance().resetRobotPose();
+  
+      dashboardField = new Field2d();
+      robotPoseSupplier = DriveSubStateManager.getInstance()::getRobotPose;
+  
     }
-    frameStartTime = currentTime;
-
-    timeUntilHubIsActive = secondsUntilHubIsActive();
-
-    Logger.recordOutput("SecondsUntilHubIsActive", timeUntilHubIsActive);
-    Logger.recordOutput("ActiveInShift1", shift1Active);
-
-    dashboardField.setRobotPose(robotPoseSupplier.get());
-    SmartDashboard.putData("Field", dashboardField);
-
-  }
-
-  public void onAutonSelect(Auton auton) {
-    if (auton != null) {
-      auton.buildAuton();
+  
+    
+  
+  
+    @SuppressWarnings("unchecked")
+    @Override
+    public void robotPeriodic() {
+      updateAlliance();
+      subStateManagers.forEach(subStateManager -> {
+          if (subStateManager.activeStateRequest == null) {
+            if (subStateManager.defaultState != null) {
+              subStateManager.activeStateRequest = subStateManager.defaultState;
+            } else {
+              return;
+            }
+          }
+          subStateManager.periodic();
+  
+          Logger.recordOutput(subStateManager.toString() + "/ActiveStateRequest", subStateManager.activeStateRequest.getAsLoggable());
+          Logger.recordOutput(subStateManager.toString() + "/ActiveStateRequest/Name", subStateManager.activeStateRequest.getStateRequestType().name());
+      });
+  
+      long currentTime = System.currentTimeMillis();
+      if (frameStartTime != -1) {
+          double frameTime = (currentTime - frameStartTime) / 1000.0;
+          
+          averageFrameTime = (averageFrameTime * .9) + (frameTime * .1);
+      }
+      frameStartTime = currentTime;
+  
+      timeUntilHubIsActive = secondsUntilHubIsActive();
+  
+      Logger.recordOutput("SecondsUntilHubIsActive", timeUntilHubIsActive);
+      Logger.recordOutput("ActiveInShift1", shift1Active);
+  
+      dashboardField.setRobotPose(robotPoseSupplier.get());
+      SmartDashboard.putData("Field", dashboardField);
+  
     }
-  }
-
-  @Override
-  public void autonomousInit() {
-    isDriverControlled = false;
-    MetaConstants.startedAutonomous = false;
+  
+    public void onAutonSelect(Auton auton) {
+      if (auton != null) {
+        auton.buildAuton();
+        System.out.println("Built auton.");
+      }
+    }
+  
+    @Override
+    public void autonomousInit() {
+      isDriverControlled = false;
+      MetaConstants.startedAutonomous = false;
+      if (autonDirty) {
+        Auton auton = chooser.get();
+        if (auton.builtAuton != null) {
+          auton.rebuildAuton();
+        }
+      
+      }
+      autonDirty = true;
   }
 
   @Override

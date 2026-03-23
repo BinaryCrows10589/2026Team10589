@@ -21,6 +21,7 @@ public class StateRequestUtils {
 
     @SuppressWarnings("rawtypes")
     public static boolean isStateRequestStillActive(StateRequest subject) {
+        if (subject == null) return false;
         switch (subject.getStatus()) {
             case PENDING:
                 return true;

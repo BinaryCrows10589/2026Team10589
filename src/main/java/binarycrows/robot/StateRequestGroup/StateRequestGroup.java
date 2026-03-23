@@ -23,7 +23,7 @@ public abstract class StateRequestGroup extends StateRequest<NullStateRequestTyp
         this.faultyStateRequest = faultyStateRequest;
     }
 
-
+    public StateRequest[] getStateRequests() {return children;}
     
 
 }

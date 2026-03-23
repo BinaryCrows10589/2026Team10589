@@ -12,5 +12,9 @@ public class CMStateRequest extends StateRequest<DriveStateRequest> {
         super(DriveStateRequest.DRIVE_CROWMOTION, StateRequestPriority.NORMAL);
         this.trajectory = trajectory;
     }
+
+    public CMTrajectory getTrajectory() {
+        return trajectory;
+    }
     
 }

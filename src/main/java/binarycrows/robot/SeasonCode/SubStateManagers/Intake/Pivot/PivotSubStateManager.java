@@ -6,6 +6,7 @@ import binarycrows.robot.MainStateManager;
 import binarycrows.robot.StateRequest;
 import binarycrows.robot.SubStateManager;
 import binarycrows.robot.Enums.StateRequestPriority;
+import binarycrows.robot.Enums.StateRequestStatus;
 import binarycrows.robot.SeasonCode.Constants.IntakeConstants;
 import binarycrows.robot.SeasonCode.SubStateManagers.Intake.Pivot.PivotIO.PivotOutputs;
 import binarycrows.robot.SeasonCode.SubStateManagers.Intake.Rollers.IntakeRollersStateRequest;
@@ -85,6 +86,7 @@ public class PivotSubStateManager extends SubStateManager<PivotStateRequest>  {
                 else if (delta > 20) voltage = 0.1;
                 else if (delta > 5) voltage = 0.05;
                 else voltage = 0;
+                this.activeStateRequest.updateStatus(StateRequestStatus.FULFILLED);
                 break;
             case RAISED:
                 delta = IntakeConstants.Pivot.pivotRaisedPosition.minus(outputs.encoderRotation).getDegrees();
@@ -95,6 +97,7 @@ public class PivotSubStateManager extends SubStateManager<PivotStateRequest>  {
                 else if (delta < -10) voltage = -.9;
                 else if (delta < -5) voltage = -.85;
                 else voltage = -.8;
+                this.activeStateRequest.updateStatus(StateRequestStatus.FULFILLED);
                 //else runRaisedPID = true;
                 break;
             case UP:
@@ -104,6 +107,7 @@ public class PivotSubStateManager extends SubStateManager<PivotStateRequest>  {
                 else if (delta < -25) voltage = -0.3;
                 else if (delta < -5) voltage = -0.1;
                 else voltage = 0;
+                this.activeStateRequest.updateStatus(StateRequestStatus.FULFILLED);
                 break;
             case MANUAL_OVERRIDE:
                 voltage = manualDirection * IntakeConstants.Pivot.manualVoltage + outputs.encoderRotation.getCos() * IntakeConstants.Pivot.manualVoltageFF;
