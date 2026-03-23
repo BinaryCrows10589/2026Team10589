@@ -46,13 +46,13 @@ public class CANdleSubStateManager extends SubStateManager<CANdleStateRequest> {
      * This configures the CANdle
      */
     public void init() {
-        this.candle = new CANdle(CANIDs.RIO.CANdle);
+        /*this.candle = new CANdle(CANIDs.RIO.CANdle);
         this.candleConfiguration = new CANdleConfiguration();
         this.candleConfiguration.CANdleFeatures.StatusLedWhenActive = StatusLedWhenActiveValue.Enabled;
         this.candleConfiguration.LED.LossOfSignalBehavior = LossOfSignalBehaviorValue.KeepRunning;
         this.candleConfiguration.LED.StripType = StripTypeValue.RGB;
         this.candleConfiguration.CANdleFeatures.VBatOutputMode = VBatOutputModeValue.Modulated;
-        this.candle.getConfigurator().apply(candleConfiguration);
+        this.candle.getConfigurator().apply(candleConfiguration);*/
     }
 
     @Override
@@ -114,20 +114,20 @@ public class CANdleSubStateManager extends SubStateManager<CANdleStateRequest> {
     }
 
     public void setColor(RGBWColor color) {
-        candle.setControl(new SolidColor(0, CANdleConstants.numberOfLEDs).withColor(color));
+        //candle.setControl(new SolidColor(0, CANdleConstants.numberOfLEDs).withColor(color));
 
     }
 
     public void setColorRange(int start, int end, RGBWColor color) {
-        candle.setControl(new SolidColor(start, end).withColor(color));
+        //candle.setControl(new SolidColor(start, end).withColor(color));
     }
 
     public void setStrobeRange(int start, int end, RGBWColor color) {
-        candle.setControl(new StrobeAnimation(start, end).withColor(color).withFrameRate(15));
+        //candle.setControl(new StrobeAnimation(start, end).withColor(color).withFrameRate(15));
     }
 
     public void setRainbowRange(int start, int end) {
-        candle.setControl(new RainbowAnimation(start, end).withFrameRate(30));
+        //candle.setControl(new RainbowAnimation(start, end).withFrameRate(30));
     }
 
     @Override

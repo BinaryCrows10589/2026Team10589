@@ -22,6 +22,8 @@ public class TransitTalonFXS implements TransitIO {
     private VoltageOut latitudinalMasterMotorVoltageRequest = new VoltageOut(0);
     private VoltageOut inAndUpMotorVoltageRequest = new VoltageOut(0);
 
+    private int transitStalledFrameCounter = 0;
+
     public TransitTalonFXS(TransitOutputs outputs) {
         this.outputs = outputs;
         // Left Longitudinal Motor
@@ -70,7 +72,7 @@ public class TransitTalonFXS implements TransitIO {
 
         this.rightLatitudinalMotor.getConfigurator().apply(latitudinalMasterMotorConfig);
 
-        rightLatitudinalMotor.setControl(new Follower(leftLatitudinalMotor.getDeviceID(), TransitConstants.isLatitudinalSlaveReversed));
+        //rightLatitudinalMotor.setControl(new Follower(leftLatitudinalMotor.getDeviceID(), TransitConstants.isLatitudinalSlaveReversed));
 
         // In & Up Motor
         inAndUpMotor = new TalonFXS(CANIDs.RIO.inAndUpMotor);
@@ -135,5 +137,29 @@ public class TransitTalonFXS implements TransitIO {
         outputs.inAndUpMotorSupplyAmps =  inAndUpMotor.getSupplyCurrent().getValueAsDouble();
         outputs.inAndUpMotorTorqueAmps =  inAndUpMotor.getTorqueCurrent().getValueAsDouble();
 
+        if (outputs.leftLatitudinalMotorAppliedVoltage != 0 && outputs.leftLatitudinalMotorVelocityRPS < 0.1) { // TODO: Make constant thresholds
+            System.out.println("Left latitudinal motor stalled for " + transitStalledFrameCounter + " frames");
+            transitStalledFrameCounter++;
+            if (transitStalledFrameCounter == 25) {
+                System.out.println("Stalled for 25 frames, inverting transit");
+                invertVoltages(); // Invert on the 25th frame only
+            } else if (transitStalledFrameCounter >= 50) {
+                System.out.println("Stalled for >=50 frames, resetting counter and uninverting");
+                invertVoltages(); // Uninvert if we are still stalled
+                transitStalledFrameCounter = 0;
+            }
+        } else {
+            if (transitStalledFrameCounter > 25 && transitStalledFrameCounter < 50) {
+                System.out.println("Unstalled at frame " + transitStalledFrameCounter + ", uninverting");
+                invertVoltages(); // We must have inverted on a previous frame, uninvert
+            }
+            transitStalledFrameCounter = 0;
+        }
+
+    }
+
+    private void invertVoltages() {
+        setInAndUpVoltage(-outputs.inAndUpMotorRequestedVoltage);
+        setLatitudinalVoltage(-outputs.leftLatitudinalMotorRequestedVoltage);
     }
 }

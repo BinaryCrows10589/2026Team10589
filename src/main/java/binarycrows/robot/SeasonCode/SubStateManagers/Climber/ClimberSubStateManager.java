@@ -2,17 +2,12 @@ package binarycrows.robot.SeasonCode.SubStateManagers.Climber;
 
 import binarycrows.robot.MainStateManager;
 import binarycrows.robot.StateRequest;
-import binarycrows.robot.StateTable;
 import binarycrows.robot.SubStateManager;
 import binarycrows.robot.Enums.StateRequestPriority;
 import binarycrows.robot.Enums.StateRequestStatus;
 import binarycrows.robot.SeasonCode.Constants.ClimberConstants;
-import binarycrows.robot.SeasonCode.Constants.FlywheelConstants;
-import binarycrows.robot.SeasonCode.Constants.MetaConstants;
 import binarycrows.robot.SeasonCode.SubStateManagers.Climber.ClimberIO.ClimberOutputs;
-import binarycrows.robot.SeasonCode.SubStateManagers.Hood.HoodStateRequest;
-import binarycrows.robot.SeasonCode.SubStateManagers.Hood.HoodSubStateManager;
-import edu.wpi.first.math.MathUtil;
+import binarycrows.robot.Utils.LoggingUtils;
 import edu.wpi.first.math.geometry.Rotation2d;
 
 public class ClimberSubStateManager extends SubStateManager<ClimberStateRequest> {
@@ -44,7 +39,7 @@ public class ClimberSubStateManager extends SubStateManager<ClimberStateRequest>
 
     @Override
     public void periodic() {
-        StateTable.logObject("Climber/Outputs", outputs);
+        LoggingUtils.logObject("Climber/Outputs", outputs);
         climberIO.update();
         switch (activeStateRequest.getStateRequestType()) {
             case UP:

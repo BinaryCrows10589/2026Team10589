@@ -17,6 +17,9 @@ public final class IntakeConstants {
         public static final MotorAlignmentValue isSlaveReversed = MotorAlignmentValue.Opposed;
 
         public static final double intakingMotorVoltage = 2.5;
+
+        public static final double intakeWheelMinVoltage = 2.5;
+        public static final double intakeWheelMaxVoltage = 6;
     }
 
     public final class Pivot {
@@ -24,8 +27,8 @@ public final class IntakeConstants {
 
         public static final NeutralModeValue motorNeutralMode = NeutralModeValue.Coast;
 
-        public static final double maxMotorVoltageUp = 0.5;
-        public static final double maxMotorVoltageDown = -0.5;
+        public static final double maxMotorVoltageUp = 8;
+        public static final double maxMotorVoltageDown = -8;
 
         public static final MotorAlignmentValue isSlaveReversed = MotorAlignmentValue.Opposed;
 
@@ -39,13 +42,16 @@ public final class IntakeConstants {
         public static final double pivotPIDValueFF = 0;
 
 
-        public static final Rotation2d pivotDownPosition = Rotation2d.fromRotations(0.643555);
-        public static final Rotation2d pivotRaisedPosition = Rotation2d.fromRotations(0.562500 );
-        public static final Rotation2d pivotUpPosition = Rotation2d.fromRotations(0.309326 );
+        public static final Rotation2d pivotDownPosition = Rotation2d.fromRotations(0.475342);
+        public static final Rotation2d pivotRaisedPosition = Rotation2d.fromRotations(0.352295);
+        public static final Rotation2d pivotUpPosition = Rotation2d.fromRotations(0.144775);
+        public static final Rotation2d intakeRollerActivateThreshold = Rotation2d.fromRotations(0.416992);
 
         public static final double manualVoltage = 4;
         public static final double manualVoltageFF = 1;
 
         public static final double torqueCurrentLimit = 60;
+
+        
 }
 }

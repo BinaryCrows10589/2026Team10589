@@ -1,9 +1,9 @@
 package binarycrows.robot;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 
+import org.littletonrobotics.junction.Logger;
 import org.photonvision.EstimatedRobotPose;
 import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonPoseEstimator;
@@ -11,26 +11,21 @@ import org.photonvision.PhotonPoseEstimator.PoseStrategy;
 import org.photonvision.targeting.PhotonPipelineResult;
 import org.photonvision.targeting.PhotonTrackedTarget;
 
-import binarycrows.robot.CrowMotion.UserSide.CMAutonPoint;
 import binarycrows.robot.SeasonCode.Constants.MetaConstants;
-import binarycrows.robot.SeasonCode.Constants.SwerveDriveConstants;
 import binarycrows.robot.SeasonCode.Constants.PoseEstimatorConstants;
+import binarycrows.robot.SeasonCode.Constants.SwerveDriveConstants;
 import binarycrows.robot.SeasonCode.SubStateManagers.SwerveDrive.DriveSubStateManager;
 import binarycrows.robot.Utils.ConversionUtils;
-import edu.wpi.first.apriltag.AprilTagFieldLayout;
+import binarycrows.robot.Utils.QuestADBWrapper;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
-import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
-import edu.wpi.first.math.numbers.N1;
-import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Notifier;
-import edu.wpi.first.wpilibj.Timer;
 import gg.questnav.questnav.PoseFrame;
 import gg.questnav.questnav.QuestNav;
 
@@ -43,6 +38,12 @@ public class PoseEstimator {
     private Notifier visionNotifier = new Notifier(this::addVisionMeasurments);
 
     private Pose3d lastQuestNavPose;
+
+    public static boolean isQuestNavActive;
+    public static boolean isTrackingActive;
+
+
+    private boolean isADBConnected = false;
 
     // These are for Eli and David's gyro acceleration algorithm
     // It did not increase accuracy so it has been disabled
@@ -67,6 +68,13 @@ public class PoseEstimator {
 
     }
 
+    public int lastFrameNum;
+    public int robotFramesSinceLastQuestFrame = 50;
+
+    public int questNavRestartAttempts = 0;
+
+    private boolean hasSetQuestNavPose = false;
+
     public void periodic() {
 
         /*if(this.lastFrameStart != -1) {
@@ -78,7 +86,45 @@ public class PoseEstimator {
         */
 
         try {
+            
             questNav.commandPeriodic();
+            int newFrameCount = questNav.getFrameCount().getAsInt();
+            if (newFrameCount != lastFrameNum) {
+                lastFrameNum = newFrameCount;
+                robotFramesSinceLastQuestFrame = 0;
+            } else robotFramesSinceLastQuestFrame++;
+            //System.out.println(robotFramesSinceLastQuestFrame);
+            PoseEstimator.isQuestNavActive = robotFramesSinceLastQuestFrame < 25;//questNav.isConnected();// && questNav.isTracking();
+            PoseEstimator.isTrackingActive = questNav.isTracking();
+
+            Logger.recordOutput("QuestNavADB/QuestNavActive", isQuestNavActive);
+            Logger.recordOutput("QuestNavADB/QuestNavFramesSinceLastActive", robotFramesSinceLastQuestFrame);
+            Logger.recordOutput("QuestNavADB/QuestNavRestartAttempts", questNavRestartAttempts);
+
+            if (!PoseEstimator.isQuestNavActive) {
+                MetaConstants.updateQuestNav = false;
+                if (questNavRestartAttempts < 25) {
+                    questNavRestartAttempts++;
+
+                    if (QuestADBWrapper.updateIsConnected()) { // QuestNav is not active but Quest ADB is connected, so try to restart QuestNav.
+                        System.out.println("Connected, running restart...");
+                        isADBConnected = true;
+                        QuestADBWrapper.tryRestartQuestNav();
+                    } /*else {
+                        System.out.println("Disconnected, trying to reconnect lazily...");
+                        isADBConnected = false; // QuestNav is not active and Quest ADB is not connected, try connecting anyway
+                        QuestADBWrapper.lazyTryConnect();
+                    }*/
+                }
+            } else {
+                MetaConstants.updateQuestNav = true;
+                questNavRestartAttempts = 0;
+                if (!isADBConnected) { // QuestNav is 
+                    if (QuestADBWrapper.updateIsConnected()) isADBConnected = true;
+                    else QuestADBWrapper.tryConnect();
+                }
+            }
+            
             this.swerveDrivePoseEstimator.update(DriveSubStateManager.getInstance().gyroOutputs.yawAngle,
                 DriveSubStateManager.getInstance().getModulePositions());
 
@@ -89,7 +135,7 @@ public class PoseEstimator {
                 double timestamp = Timer.getFPGATimestamp();
                swerveDrivePoseEstimator.addVisionMeasurement(new Pose2d(xPose, yPose, this.swerveDrivePoseEstimator.getEstimatedPosition().getRotation()), timestamp, PoseEstimatorConstants.visionPoseEstimateTrust);
             }*/
-            StateTable.log("PoseEstimator/EstimatedPosition", this.swerveDrivePoseEstimator.getEstimatedPosition());
+            Logger.recordOutput("PoseEstimator/EstimatedPosition", this.swerveDrivePoseEstimator.getEstimatedPosition());
 
         } catch(Exception E) {
            System.err.println("FAILED TO UPDATE POSE ESTIMATOR: " + E.getMessage());
@@ -105,16 +151,17 @@ public class PoseEstimator {
         this.swerveDrivePoseEstimator.resetPosition(DriveSubStateManager.getInstance().getGyroAngleRotation2d(),
         DriveSubStateManager.getInstance().getModulePositions(), newRobotPose);
 
-        if (MetaConstants.updateQuestNav && questNav.isConnected()) PoseEstimatorConstants.questToWorldTransform = new Transform3d(lastQuestNavPose, new Pose3d(newRobotPose));
+        if (MetaConstants.updateQuestNav) /*PoseEstimatorConstants.questToWorldTransform = new Transform3d(lastQuestNavPose, */questNav.setPose((new Pose3d(newRobotPose)).transformBy(PoseEstimatorConstants.robotToQuestOffset));
     }
 
     public void resetRobotPose() {
+        Pose2d zeroPose = new Pose2d(0, 8.052, new Rotation2d());
         DriveSubStateManager.getInstance().resetGyro(new Rotation2d());
         swerveDrivePoseEstimator.resetPosition(DriveSubStateManager.getInstance().getGyroAngleRotation2d(),
-            DriveSubStateManager.getInstance().getModulePositions(), new Pose2d());
+            DriveSubStateManager.getInstance().getModulePositions(), zeroPose);
 
         
-        if (MetaConstants.updateQuestNav && questNav.isConnected()) PoseEstimatorConstants.questToWorldTransform = new Transform3d(lastQuestNavPose, new Pose3d());
+        if (MetaConstants.updateQuestNav) /*PoseEstimatorConstants.questToWorldTransform = new Transform3d(lastQuestNavPose, */questNav.setPose((new Pose3d(zeroPose.getX(), zeroPose.getY(), 0, new Rotation3d(zeroPose.getRotation()))).transformBy(PoseEstimatorConstants.robotToQuestOffset));
 
         
     }
@@ -125,7 +172,7 @@ public class PoseEstimator {
         for(PhotonPoseEstimator photonPoseEstimator : this.photonPoseEstimators) {
             photonPoseEstimator.getFieldTags().setOrigin(PoseEstimatorConstants.originPosition);
         }
-        StateTable.log("Vision/OrginPosition", photonPoseEstimators[0].getFieldTags().getOrigin());
+        Logger.recordOutput("Vision/OrginPosition", photonPoseEstimators[0].getFieldTags().getOrigin());
     }
 
     private void configPhotonPoseEstimators() {
@@ -192,17 +239,18 @@ public class PoseEstimator {
             
         }
         if(MetaConstants.updateQuestNav) {
+            Logger.recordOutput("Tuning/QuestToWorldTransform", PoseEstimatorConstants.questToWorldTransform);
             // Get the latest pose data frames from the Quest
             try {
             PoseFrame[] questFrames = questNav.getAllUnreadPoseFrames();
-            StateTable.log("QuestNav/HasFrames", questFrames.length > 0);
-            StateTable.log("QuestNav/Battery", questNav.getBatteryPercent());
+            Logger.recordOutput("QuestNav/HasFrames", questFrames.length > 0);
+            Logger.recordOutput("QuestNav/Battery", questNav.getBatteryPercent().orElse(-1));
 
 
             // Loop over the pose data frames and send them to the pose estimator
             for (PoseFrame questFrame : questFrames) {
                 if (!questFrame.isTracking()) continue; // Skip frame if untracked
-                StateTable.log("QuestNav/HasFrames", questFrames.length > 0);
+                Logger.recordOutput("QuestNav/HasFrames", questFrames.length > 0);
 
                     Pose3d questPose = questFrame.questPose3d();
 
@@ -214,8 +262,8 @@ public class PoseEstimator {
                     Pose3d robotPose = questPose.transformBy(PoseEstimatorConstants.robotToQuestOffset.inverse()).transformBy(PoseEstimatorConstants.questToWorldTransform);
 
                     // Add the measurement to our estimator
-                    StateTable.log("QuestNav/RobotPose", robotPose);
-                    StateTable.log("QuestNav/LastUpdateTimestamp", timestamp);
+                    Logger.recordOutput("QuestNav/RobotPose", robotPose);
+                    Logger.recordOutput("QuestNav/LastUpdateTimestamp", timestamp);
                     
             if (Double.isNaN(swerveDrivePoseEstimator.getEstimatedPosition().getX())) {
                 swerveDrivePoseEstimator.resetPosition(DriveSubStateManager.getInstance().getGyroAngleRotation2d(),
@@ -224,13 +272,13 @@ public class PoseEstimator {
                     // TODO: Add fudge factors here
                     swerveDrivePoseEstimator.addVisionMeasurement(robotPose.toPose2d(), timestamp, PoseEstimatorConstants.questNavPoseEstimateTrust);
                 }
-                StateTable.log("QuestNav/Updating", true);
+                Logger.recordOutput("QuestNav/Updating", true);
             } catch (Exception e) {
                 System.err.println(e.getMessage());
             }
         } else {
-            StateTable.log("QuestNav/HasFrames", false);
-            StateTable.log("QuestNav/Updating", false);
+            Logger.recordOutput("QuestNav/HasFrames", false);
+            Logger.recordOutput("QuestNav/Updating", false);
         }
         
     

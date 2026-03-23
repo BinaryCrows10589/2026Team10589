@@ -4,7 +4,6 @@ import java.util.function.Supplier;
 
 import binarycrows.robot.MainStateManager;
 import binarycrows.robot.StateRequest;
-import binarycrows.robot.StateTable;
 import binarycrows.robot.SubStateManager;
 import binarycrows.robot.Enums.StateRequestPriority;
 import binarycrows.robot.SeasonCode.Constants.TransitConstants;
@@ -12,6 +11,7 @@ import binarycrows.robot.SeasonCode.SubStateManagers.Flywheel.FlywheelSubStateMa
 import binarycrows.robot.SeasonCode.SubStateManagers.Shooting.ShootingSubStateManager;
 import binarycrows.robot.SeasonCode.SubStateManagers.Transit.SensorsIO.SensorsOutputs;
 import binarycrows.robot.SeasonCode.SubStateManagers.Transit.TransitIO.TransitOutputs;
+import binarycrows.robot.Utils.LoggingUtils;
 
 public class TransitSubStateManager  extends SubStateManager<TransitStateRequest> {
     
@@ -58,8 +58,8 @@ public class TransitSubStateManager  extends SubStateManager<TransitStateRequest
 
     @Override
     public void periodic() {
-        StateTable.logObject("Transit/Outputs", transitOutputs);
-        StateTable.logObject("TransitSensors/Outputs", sensorOutputs);
+        LoggingUtils.logObject("Transit/Outputs", transitOutputs);
+        LoggingUtils.logObject("TransitSensors/Outputs", sensorOutputs);
 
         transitIO.update();
         sensorsIO.update();
@@ -100,7 +100,7 @@ public class TransitSubStateManager  extends SubStateManager<TransitStateRequest
             case INDEX:
                 if (sensorOutputs.outgoingFuelReading >= TransitConstants.Sensors.outgoingFuelIndexingDistance) {
                     transitIO.setLatitudinalVoltage(2);
-                    transitIO.setLongitudinalVoltage(4);
+                    transitIO.setLongitudinalVoltage(0);//4);
                     transitIO.setInAndUpVoltage(4); // TODO: Make constants somewhere...
                 } else {
                     transitIO.setLatitudinalVoltage(0);

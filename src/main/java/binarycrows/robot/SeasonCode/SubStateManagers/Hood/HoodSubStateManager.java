@@ -2,15 +2,17 @@ package binarycrows.robot.SeasonCode.SubStateManagers.Hood;
 
 import java.util.function.Supplier;
 
+import org.littletonrobotics.junction.Logger;
+
 import binarycrows.robot.MainStateManager;
 import binarycrows.robot.StateRequest;
-import binarycrows.robot.StateTable;
 import binarycrows.robot.SubStateManager;
 import binarycrows.robot.Enums.StateRequestPriority;
 import binarycrows.robot.SeasonCode.Constants.HoodConstants;
 import binarycrows.robot.SeasonCode.Constants.MetaConstants;
 import binarycrows.robot.SeasonCode.SubStateManagers.Hood.HoodIO.HoodOutputs;
 import binarycrows.robot.SeasonCode.SubStateManagers.Shooting.ShootingSubStateManager;
+import binarycrows.robot.Utils.LoggingUtils;
 import edu.wpi.first.math.geometry.Rotation2d;
 
 public class HoodSubStateManager extends SubStateManager<HoodStateRequest> {
@@ -56,7 +58,7 @@ public class HoodSubStateManager extends SubStateManager<HoodStateRequest> {
 
     @Override
     public void periodic() {
-        StateTable.logObject("Hood/Outputs", outputs);
+        LoggingUtils.logObject("Hood/Outputs", outputs);
         switch (activeStateRequest.getStateRequestType()) {
             case MANUAL_OVERRIDE:
                 manualOverrideTargetRotation = manualOverrideTargetRotation.plus(HoodConstants.manualAngleIncrement.times(manualDirection));
@@ -85,7 +87,7 @@ public class HoodSubStateManager extends SubStateManager<HoodStateRequest> {
         double velocity = Math.max(Math.abs(outputs.hoodRotationalVelocityRadPerSec), 2);
         if (velocity == 2) velocity = 1;
 
-        StateTable.log("/Hood/ControlDelta", delta);
+        Logger.recordOutput("/Hood/ControlDelta", delta);
         if (Math.abs(delta) < 1 && targetPosition.getDegrees() == 0) voltage = 0;
         else if (delta > 20) voltage = 1.5 / velocity;
         else if (delta > 10) voltage = 1 / velocity;

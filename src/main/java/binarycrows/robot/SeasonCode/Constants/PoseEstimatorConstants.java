@@ -12,6 +12,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.numbers.N3;
+import edu.wpi.first.math.util.Units;
 
 public final class PoseEstimatorConstants {
     public static final Vector<N3> swerveDrivePoseEstimateTrust = VecBuilder.fill(0.05, 0.05, 0.1);
@@ -104,7 +105,7 @@ public final class PoseEstimatorConstants {
     Pitch (Y): Rotation -> Counter-clockwise (right-handed) rotation around the Y axis
     Roll (X): Rotation -> Counter-clockwise (right-handed) rotation around the X axis
  */
-    public static final Transform3d robotToQuestOffset = new Transform3d(.34, 0, 0, Rotation3d.kZero);
+    public static final Transform3d robotToQuestOffset = new Transform3d(Units.inchesToMeters(11.765), Units.inchesToMeters(-10.092), Units.inchesToMeters(12.09), new Rotation3d(0, 0, 0));
 
     public static Transform3d questToWorldTransform = new Transform3d(0, 0, 0, Rotation3d.kZero);
 

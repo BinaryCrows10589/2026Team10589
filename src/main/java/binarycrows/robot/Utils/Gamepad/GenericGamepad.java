@@ -1,8 +1,9 @@
 package binarycrows.robot.Utils.Gamepad;
 
+import org.littletonrobotics.junction.Logger;
+
 import binarycrows.robot.MainStateManager;
 import binarycrows.robot.StateRequest;
-import binarycrows.robot.StateTable;
 import edu.wpi.first.wpilibj.GenericHID;
 
 @SuppressWarnings("rawtypes")
@@ -29,8 +30,7 @@ public class GenericGamepad {
         for(int i = 0; i < buttonMap.length; i++) {
             if(this.gamepad.getRawButtonPressed(i+1)) {
                 
-                if(this.buttonMap[i][0] != null && !this.lastFrameReadings[i])
-                    this.buttonMap[i][0].run();
+                if(this.buttonMap[i][0] != null && !this.lastFrameReadings[i]) this.buttonMap[i][0].run();
 
                 this.lastFrameReadings[i] = true;
             }
@@ -81,7 +81,7 @@ public class GenericGamepad {
 
     public double getAxis(int axis) {
         double value = this.gamepad.getRawAxis(axis);
-        StateTable.log("Gamepad/" + gamepad.getPort() + "/Axis/" + axis, value);
+        Logger.recordOutput("Gamepad/" + gamepad.getPort() + "/Axis/" + axis, value);
         return value;
     }
     public int getPOV(int pov) {

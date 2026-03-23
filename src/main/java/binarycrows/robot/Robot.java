@@ -6,6 +6,7 @@ package binarycrows.robot;
 
 import java.util.ArrayList;
 import java.util.Optional;
+import java.util.function.Supplier;
 
 import org.littletonrobotics.junction.LogFileUtil;
 import org.littletonrobotics.junction.LoggedRobot;
@@ -33,11 +34,14 @@ import binarycrows.robot.SeasonCode.SubStateManagers.Turret.TurretSubStateManage
 import binarycrows.robot.SeasonCode.Utils.Climbing;
 import binarycrows.robot.Utils.Auton.Auton;
 import edu.wpi.first.apriltag.AprilTagFieldLayout.OriginPosition;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj.RobotBase;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /**
  * The methods in this class are called automatically corresponding to each mode, as described in
@@ -53,10 +57,20 @@ public class Robot extends LoggedRobot {
 
   public static double averageFrameTime = MetaConstants.loopPeriodSeconds;
 
-
   private final LoggedDashboardChooser<Auton> chooser = new LoggedDashboardChooser<>("AutonPath");
 
   public static double timeUntilHubIsActive = -1;
+
+  public static boolean isDriverControlled = true;
+
+  public static boolean isSlowMode;
+
+  public static boolean forceRobotRelative;
+
+  private boolean shift1Active = false;
+
+  private Field2d dashboardField;
+  private Supplier<Pose2d> robotPoseSupplier;
   
   /**
    * This function is run when the robot is first started up and should be used for any
@@ -108,13 +122,11 @@ public class Robot extends LoggedRobot {
       MainStateManager.getInstance().start();
 
 
-      StateTable.log("SlowMode", false);
-
-      StateTable.log("AxisLock", false);
+      isSlowMode= false;
       
-      StateTable.log("IsDriverControlled", true);
+      isDriverControlled = true;
 
-      StateTable.log("ForceRobotRelative", false);
+      forceRobotRelative = false;
       
 
       subStateManagers = MainStateManager.getInstance().getSubStateManagers();
@@ -167,6 +179,9 @@ public class Robot extends LoggedRobot {
     updateAlliance();
     DriveSubStateManager.getInstance().resetRobotPose();
 
+    dashboardField = new Field2d();
+    robotPoseSupplier = DriveSubStateManager.getInstance()::getRobotPose;
+
   }
 
   
@@ -186,8 +201,8 @@ public class Robot extends LoggedRobot {
         }
         subStateManager.periodic();
 
-        StateTable.log(subStateManager.toString() + "/ActiveStateRequest", subStateManager.activeStateRequest);
-        StateTable.log(subStateManager.toString() + "/ActiveStateRequest/Name", subStateManager.activeStateRequest.getStateRequestType().name());
+        Logger.recordOutput(subStateManager.toString() + "/ActiveStateRequest", subStateManager.activeStateRequest.getAsLoggable());
+        Logger.recordOutput(subStateManager.toString() + "/ActiveStateRequest/Name", subStateManager.activeStateRequest.getStateRequestType().name());
     });
 
     long currentTime = System.currentTimeMillis();
@@ -200,6 +215,12 @@ public class Robot extends LoggedRobot {
 
     timeUntilHubIsActive = secondsUntilHubIsActive();
 
+    Logger.recordOutput("SecondsUntilHubIsActive", timeUntilHubIsActive);
+    Logger.recordOutput("ActiveInShift1", shift1Active);
+
+    dashboardField.setRobotPose(robotPoseSupplier.get());
+    SmartDashboard.putData("Field", dashboardField);
+
   }
 
   public void onAutonSelect(Auton auton) {
@@ -210,7 +231,7 @@ public class Robot extends LoggedRobot {
 
   @Override
   public void autonomousInit() {
-    StateTable.log("IsDriverControlled", false);
+    isDriverControlled = false;
     MetaConstants.startedAutonomous = false;
   }
 
@@ -232,8 +253,8 @@ public class Robot extends LoggedRobot {
 
   @Override
   public void teleopInit() {
-    StateTable.log("IsDriverControlled", true);
-    Climbing.climbRight(); // Sim testing
+    isDriverControlled = true;
+    //Climbing.climbRight(); // Sim testing
   }
 
   @Override
@@ -244,7 +265,7 @@ public class Robot extends LoggedRobot {
 
   @Override
   public void disabledInit() {
-    StateTable.log("IsDriverControlled", false);
+    isDriverControlled = false;
   }
 
   @Override
@@ -311,14 +332,15 @@ public class Robot extends LoggedRobot {
     }
 
     // Shift was is active for blue if red won auto, or red if blue won auto.
-    boolean shift1Active = switch (alliance.get()) {
+    shift1Active = switch (alliance.get()) {
       case Red -> !redInactiveFirst;
       case Blue -> redInactiveFirst;
     };
 
     if (matchTime > 130) {
       // Transition shift, hub is active.
-      return 130-matchTime;
+      if (shift1Active) return 105 - matchTime;
+      else return 130 - matchTime;
     } else if (matchTime > 105) {
       // Shift 1
       if (shift1Active) return 105 - matchTime;
