@@ -99,9 +99,9 @@ public class TransitSubStateManager  extends SubStateManager<TransitStateRequest
                 break;
             case INDEX:
                 if (sensorOutputs.outgoingFuelReading >= TransitConstants.Sensors.outgoingFuelIndexingDistance) {
-                    transitIO.setLatitudinalVoltage(2);
-                    transitIO.setLongitudinalVoltage(0);//4);
-                    transitIO.setInAndUpVoltage(4); // TODO: Make constants somewhere...
+                    transitIO.setLatitudinalVoltage(TransitConstants.indexingLatitudinalVoltage);
+                    transitIO.setLongitudinalVoltage(TransitConstants.indexingLongitudinalVoltage);
+                    transitIO.setInAndUpVoltage(TransitConstants.indexingInAndUpVoltage);
                 } else {
                     transitIO.setLatitudinalVoltage(0);
                     transitIO.setLongitudinalVoltage(0);

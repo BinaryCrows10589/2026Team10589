@@ -9,9 +9,9 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
 
 public class ShootingConstants {
-    public static final Transform2d robotToTurret = new Transform2d(new Translation2d(Units.inchesToMeters(6.5), 0), Rotation2d.kZero); //TO-DO: Set to correct translation
-    public static final int numberOfAlgorithmIterations = 20; //TO-DO: This can certainly be much lower...
-    public static final double dragCoefficient = 0;//0.2; //TO-DO: tune... ...a lot
+    public static final Transform2d robotToTurret = new Transform2d(new Translation2d(Units.inchesToMeters(6.5), 0), Rotation2d.kZero);
+    public static final int numberOfAlgorithmIterations = 20;
+    public static final double dragCoefficient = 0;
 
     public static final double maxTurretDeltaRad = 10;
     public static final double maxHoodDeltaRad = 10;
@@ -33,7 +33,7 @@ public class ShootingConstants {
     // Base table goes distance, hood angle, flywheel RPS, time of flight
     public static final UnkeyedLerpTable baseTable = new UnkeyedLerpTable(new double[][] {
         //           |distance|hood angle|flywheel|ToF|   
-        //new double[] {0,       0,         0,       0}, // TO-DO: after tuning, do NOT leave 0,0,0 as a value
+        //new double[] {0,       0,         0,       0}, 
         //new double[] {1.614,   0,         55,      .71}, // Will crash if there are not at least 2 values
         //new double[] {2.613,   0.165,     55,      .99},
         //new double[] {3.669,   0.25,     55,      1.08},

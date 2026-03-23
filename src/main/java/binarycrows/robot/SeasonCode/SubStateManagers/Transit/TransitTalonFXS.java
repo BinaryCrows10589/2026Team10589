@@ -137,19 +137,19 @@ public class TransitTalonFXS implements TransitIO {
         outputs.inAndUpMotorSupplyAmps =  inAndUpMotor.getSupplyCurrent().getValueAsDouble();
         outputs.inAndUpMotorTorqueAmps =  inAndUpMotor.getTorqueCurrent().getValueAsDouble();
 
-        if (outputs.leftLatitudinalMotorAppliedVoltage != 0 && outputs.leftLatitudinalMotorVelocityRPS < 0.1) { // TODO: Make constant thresholds
+        if (outputs.leftLatitudinalMotorAppliedVoltage != 0 && outputs.leftLatitudinalMotorVelocityRPS < TransitConstants.stalledRPSThreshold) {
             System.out.println("Left latitudinal motor stalled for " + transitStalledFrameCounter + " frames");
             transitStalledFrameCounter++;
-            if (transitStalledFrameCounter == 25) {
+            if (transitStalledFrameCounter == TransitConstants.stalledFramesToInvert) {
                 System.out.println("Stalled for 25 frames, inverting transit");
                 invertVoltages(); // Invert on the 25th frame only
-            } else if (transitStalledFrameCounter >= 50) {
+            } else if (transitStalledFrameCounter >= TransitConstants.stalledFramesToAbort) {
                 System.out.println("Stalled for >=50 frames, resetting counter and uninverting");
                 invertVoltages(); // Uninvert if we are still stalled
                 transitStalledFrameCounter = 0;
             }
         } else {
-            if (transitStalledFrameCounter > 25 && transitStalledFrameCounter < 50) {
+            if (transitStalledFrameCounter > TransitConstants.stalledFramesToInvert && transitStalledFrameCounter < TransitConstants.stalledFramesToAbort) {
                 System.out.println("Unstalled at frame " + transitStalledFrameCounter + ", uninverting");
                 invertVoltages(); // We must have inverted on a previous frame, uninvert
             }

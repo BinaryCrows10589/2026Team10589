@@ -5,6 +5,7 @@ import java.util.function.Supplier;
 
 import org.littletonrobotics.junction.Logger;
 
+import binarycrows.robot.Keybinds;
 import binarycrows.robot.MainStateManager;
 import binarycrows.robot.Robot;
 import binarycrows.robot.StateRequest;
@@ -73,41 +74,34 @@ public class ShootingSubStateManager extends SubStateManager<ShootingStateReques
 
     public boolean getIsCloseToTrench() {return closeToTrench;}
 
-
-    // TODO: Put reason on dashboard, maybe make Isaac's controller vibrate when we know a mechanism is screwed up (CAN stale, not moving, outside of mechanical range)
-    public boolean getCanShoot() { // TODO: LED Suggestion is to have color for: has balls, full; can't shoot shown by flashing; 
+    public boolean getCanShoot() {
         if ((!robotOnCorrectSide && !robotInDepotThird && !robotInHumanPlayerThird) || closeToTrench) {
-            CANdleSubStateManager.setLEDs(CANdleStateRequest.SHOOT_BAD_WRONG_SIDE_OF_FIELD);
             Logger.recordOutput("Shooting/CanShoot", "BAD POSITION: " + robotOnCorrectSide + " " + robotInDepotThird + " " + robotInHumanPlayerThird + " " + closeToTrench);
         } else if (!velocityInLargeBounds) {
             Logger.recordOutput("Shooting/CanShoot", "VERY BAD VELOCITY");
-            CANdleSubStateManager.setLEDs(CANdleStateRequest.SHOOT_BAD_VELOCITY_WAY_TOO_HIGH);
+
+            Keybinds.driverController.vibrate(1);
         } else if (!velocityInBounds) {
             Logger.recordOutput("Shooting/CanShoot", "BAD VELOCITY");
-            CANdleSubStateManager.setLEDs(CANdleStateRequest.SHOOT_BAD_VELOCITY_TOO_HIGH);
+            Keybinds.driverController.vibrate(.5);
         } else if (!accelerationInBounds) {
             Logger.recordOutput("Shooting/CanShoot", "BAD ACCELERATION");
-            CANdleSubStateManager.setLEDs(CANdleStateRequest.SHOOT_BAD_ACCELERATION_TOO_HIGH);
+            Keybinds.driverController.vibrate(.5);
         } else if (!jerkInBounds) {
             Logger.recordOutput("Shooting/CanShoot", "BAD JERK");
-            CANdleSubStateManager.setLEDs(CANdleStateRequest.SHOOT_BAD_JERK_TOO_HIGH);
+            Keybinds.driverController.vibrate(.5);
         } else if (!distanceInLargeBounds) {
             Logger.recordOutput("Shooting/CanShoot", "VERY BAD DISTANCE");
-            CANdleSubStateManager.setLEDs(CANdleStateRequest.SHOOT_BAD_DISTANCE_WAY_TOO_HIGH);
         } else if (!distanceInBounds) {
             Logger.recordOutput("Shooting/CanShoot", "BAD DISTANCE");
-            CANdleSubStateManager.setLEDs(CANdleStateRequest.SHOOT_BAD_DISTANCE_TOO_HIGH);
         } else if (Math.abs(turretDeltaSupplierRad.get()) > ShootingConstants.maxTurretDeltaRad) {
             Logger.recordOutput("Shooting/CanShoot", "BAD TURRET ANGLE");
-            CANdleSubStateManager.setLEDs(CANdleStateRequest.SHOOT_BAD_TURRET_DELTA_TOO_HIGH);
         } else if (Math.abs(hoodDeltaSupplierRad.get()) > ShootingConstants.maxHoodDeltaRad) {
             Logger.recordOutput("Shooting/CanShoot", "BAD HOOD ANGLE");
-            CANdleSubStateManager.setLEDs(CANdleStateRequest.SHOOT_BAD_HOOD_DELTA_TOO_HIGH);
         } else if (Math.abs(flywheelDeltaSupplierRPM.get()) > ShootingConstants.maxFlywheelDelta) {
             Logger.recordOutput("Shooting/CanShoot", "BAD FLYWHEEL DELTA");
-            CANdleSubStateManager.setLEDs(CANdleStateRequest.SHOOT_BAD_FLYWHEEL_DELTA_TOO_HIGH);
-        //} else if (!hubActiveWhenShotLands) {
-
+        } else if (!hubActiveWhenShotLands) {
+            Logger.recordOutput("Shooting/CanShoot", "HUB INACTIVE");
         } else {
             Logger.recordOutput("Shooting/CanShoot", "GOOD");
             CANdleSubStateManager.setLEDs(CANdleStateRequest.SHOOT_GOOD);
@@ -331,7 +325,7 @@ public class ShootingSubStateManager extends SubStateManager<ShootingStateReques
 
             // 4) Rotate into ROBOT frame (turret frame if turret is robot-relative)
             
-            double cosYaw = turretPose.getRotation().getCos(); //TO-DO: For some reason these were negative in Unity
+            double cosYaw = turretPose.getRotation().getCos();
             double sinYaw = turretPose.getRotation().getSin();
 
             Translation2d V_turret = new Translation2d(

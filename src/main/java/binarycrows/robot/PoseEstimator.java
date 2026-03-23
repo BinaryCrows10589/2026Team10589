@@ -268,9 +268,8 @@ public class PoseEstimator {
             if (Double.isNaN(swerveDrivePoseEstimator.getEstimatedPosition().getX())) {
                 swerveDrivePoseEstimator.resetPosition(DriveSubStateManager.getInstance().getGyroAngleRotation2d(),
                 DriveSubStateManager.getInstance().getModulePositions(), robotPose.toPose2d());
-            }
-                    // TODO: Add fudge factors here
-                    swerveDrivePoseEstimator.addVisionMeasurement(robotPose.toPose2d(), timestamp, PoseEstimatorConstants.questNavPoseEstimateTrust);
+            }                    
+                    swerveDrivePoseEstimator.addVisionMeasurement(robotPose.toPose2d().plus(PoseEstimatorConstants.questNavFudgeFactor), timestamp, PoseEstimatorConstants.questNavPoseEstimateTrust);
                 }
                 Logger.recordOutput("QuestNav/Updating", true);
             } catch (Exception e) {

@@ -5,7 +5,6 @@ import java.lang.reflect.Field;
 import org.littletonrobotics.junction.Logger;
 
 import binarycrows.robot.StateRequest;
-import binarycrows.robot.StateTable;
 import binarycrows.robot.SeasonCode.Constants.MetaConstants;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;

@@ -5,6 +5,7 @@ import org.littletonrobotics.junction.Logger;
 import binarycrows.robot.MainStateManager;
 import binarycrows.robot.StateRequest;
 import edu.wpi.first.wpilibj.GenericHID;
+import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 
 @SuppressWarnings("rawtypes")
 public class GenericGamepad {
@@ -86,6 +87,10 @@ public class GenericGamepad {
     }
     public int getPOV(int pov) {
         return this.gamepad.getPOV(pov);
+    }
+
+    public void vibrate(double amount) {
+        this.gamepad.setRumble(RumbleType.kBothRumble, amount);
     }
 
 }

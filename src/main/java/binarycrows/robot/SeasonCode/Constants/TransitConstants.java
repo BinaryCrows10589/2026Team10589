@@ -29,6 +29,14 @@ public final class TransitConstants {
     public static final double standardLatitudinalMotorVoltage = .6;
     public static final double standardInAndUpMotorVoltage = .8;
 
+    public static final double indexingLongitudinalVoltage = 0;
+    public static final double indexingLatitudinalVoltage = 2;
+    public static final double indexingInAndUpVoltage = 4;
+
+    public static final double stalledRPSThreshold = 0.1;
+    public static final int stalledFramesToInvert = 25;
+    public static final int stalledFramesToAbort = 50;
+
     public final class Sensors {
         public static final RangingMode binFullRangingMode = RangingMode.Short;
         public static final RangingMode outgoingFuelRangingMode = RangingMode.Short;
