@@ -13,12 +13,12 @@ public class ShootingConstants {
     public static final int numberOfAlgorithmIterations = 20;
     public static final double dragCoefficient = 0;
 
-    public static final double maxTurretDeltaRad = 10;
-    public static final double maxHoodDeltaRad = 10;
-    public static final double maxFlywheelDelta = 10;
+    public static final double maxTurretDeltaRad = Units.degreesToRadians(12);
+    public static final double maxHoodDeltaRad = Units.degreesToRadians(6);
+    public static final double maxFlywheelDelta = 250;
     public static final double maxVelocity = 4.4;
     public static final double maxAcceleration = 4.4;
-    public static final double maxJerk = 4.4;
+    public static final double maxJerk = 10;
     public static final double maxVelocityLarge = 4.4;
     public static final double maxTurretX = 4.6;
     public static final double maxDistanceFromGoal = 5;
@@ -38,10 +38,30 @@ public class ShootingConstants {
         //new double[] {2.613,   0.165,     55,      .99},
         //new double[] {3.669,   0.25,     55,      1.08},
         //new double[] {4.901,   0.38,     57,      1}
-        new double[] {1.561, .1, 48, .71},
+        
+        /*new double[] {1.561, .1, 48, .71},
         new double[] {2.452, .15, 48, 0.86},
         new double[] {3.469, .3, 48, 0.86},
-        new double[] {5.159, .4, 59, 1.04}
+        new double[] {5.159, .4, 59, 1.04}*/
+        
+        /*new double[] {1.15,  0,     52, .65},
+        new double[] {1.555, 0.05,  52, .86},
+        new double[] {2.057, 0.125, 52, .88},
+        new double[] {2.456, 0.175, 52, .91},
+        new double[] {2.916, 0.215, 52, 1.01},
+        new double[] {3.322, 0.24,  52, 1.06},
+        new double[] {3.855, .3,    55, 1.03},
+        new double[] {4.364, .35,   56, 1.03},
+        new double[] {4.844, 0.37,  60, 1.14}*/
+
+        new double[] {1.323, 0, 52.5, .83},
+        new double[] {2.176, .125, 50, .93},
+        new double[] {3.027, .19, 50, .94},
+        new double[] {3.572, .225, 52, .91},
+        new double[] {4.543, .325, 56.5, .93},
+        new double[] {5.487, .35, 60, 1},
+        new double[] {6.556, .375, 66, 1.11},
+
     }, 
     false);
 }

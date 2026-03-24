@@ -155,7 +155,7 @@ public class PoseEstimator {
     }
 
     public void resetRobotPose() {
-        Pose2d zeroPose = new Pose2d(0, 8.052, new Rotation2d());
+        Pose2d zeroPose = new Pose2d(0, 8.052, new Rotation2d()); //new Pose2d(ConversionUtils.inchesToMeters(158.85), ConversionUtils.inchesToMeters(182.11-(25+(9/16))), new Rotation2d());
         DriveSubStateManager.getInstance().resetGyro(new Rotation2d());
         swerveDrivePoseEstimator.resetPosition(DriveSubStateManager.getInstance().getGyroAngleRotation2d(),
             DriveSubStateManager.getInstance().getModulePositions(), zeroPose);
@@ -259,7 +259,7 @@ public class PoseEstimator {
                     double timestamp = questFrame.dataTimestamp();
 
                     // Transform by the mount pose to get your robot pose
-                    Pose3d robotPose = questPose.transformBy(PoseEstimatorConstants.robotToQuestOffset.inverse()).transformBy(PoseEstimatorConstants.questToWorldTransform);
+                    Pose3d robotPose = questPose.transformBy(PoseEstimatorConstants.robotToQuestOffset.inverse());
 
                     // Add the measurement to our estimator
                     Logger.recordOutput("QuestNav/RobotPose", robotPose);

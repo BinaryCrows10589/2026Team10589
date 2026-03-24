@@ -353,7 +353,7 @@ public class DriveSubStateManager extends SubStateManager<DriveStateRequest> {
                         if (CrowMotionConstants.currentTrajectory.isCompleted() && this.activeStateRequest.getStatus() != StateRequestStatus.FULFILLED) {
                             this.activeStateRequest.updateStatus(StateRequestStatus.FULFILLED);
                             Logger.recordOutput("DriveSubsystem/LastTrajectoryTimeSec", (System.currentTimeMillis() - trajectoryStartTime) / 1000.0);
-                            this.returnToDefaultState();
+                            //this.returnToDefaultState();
                         }
                         break;
                     case DRIVE_CROWMOTION_ARRAY:

@@ -73,8 +73,6 @@ public class PivotSubStateManager extends SubStateManager<PivotStateRequest>  {
 
         switch (this.activeStateRequest.getStateRequestType()) {
             case DOWN:
-            System.out.println(outputs.encoderRotation.minus(IntakeConstants.Pivot.intakeRollerActivateThreshold).getDegrees());
-            System.out.println(needsToStartRollers);
                 if (needsToStartRollers && outputs.encoderRotation.getRotations() > IntakeConstants.Pivot.intakeRollerActivateThreshold.getRotations()) {
                     needsToStartRollers = false;
                     System.out.println("START ROLLERS");

@@ -83,7 +83,12 @@ public class TurretSubStateManager extends SubStateManager<TurretStateRequest> {
                 turret.setTurretVoltage(TurretConstants.manualVoltage * (manualDirection));
                 break;
             case SHOOT_ON_THE_MOVE:
-                if (doAim.get()) turret.setTargetAngle(Rotation2d.fromRadians(shootingTurretAngleRad.get()), shooting.get() && !turret.getHasWrapped());
+                if (doAim.get()) {
+                    turret.setTargetAngle(Rotation2d.fromRadians(shootingTurretAngleRad.get()), shooting.get() && !turret.getHasWrapped());
+                }
+                Logger.recordOutput("Turret/doAim", doAim.get());
+                Logger.recordOutput("Turret/doShoot", shooting.get());
+                Logger.recordOutput("Turret/hasWrapped", turret.getHasWrapped());
                 Logger.recordOutput("Turret/ShootOnTheMoveTargetAngleRad", shootingTurretAngleRad.get());
                 break;
             case CONSTRUCT_VOLTAGE_TABLE:
@@ -107,6 +112,10 @@ public class TurretSubStateManager extends SubStateManager<TurretStateRequest> {
         }
          
 
+    }
+
+    public double getAngleRad() {
+        return outputs.encoderRotation.getRadians();
     }
 
     private static double[] convertLogArray(Object[] array) {

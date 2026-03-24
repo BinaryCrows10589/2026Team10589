@@ -34,9 +34,9 @@ public class ShootingSubStateManager extends SubStateManager<ShootingStateReques
     public double turretAngleRad;
     public double hoodAngleRad;
     public double flywheelVoltage;
-    public double flywheelRPM;
+    public double flywheelRPS;
 
-    private Supplier<Double> turretDeltaSupplierRad;
+    private Supplier<Double> turretAngleSupplierRad;
     private Supplier<Double> hoodDeltaSupplierRad;
     private Supplier<Double> flywheelDeltaSupplierRPM;
 
@@ -60,10 +60,10 @@ public class ShootingSubStateManager extends SubStateManager<ShootingStateReques
 
     @Override
     public void setupSuppliers() {
-        turretDeltaSupplierRad = TurretSubStateManager.getInstance()::getDeltaRad;
+        turretAngleSupplierRad = TurretSubStateManager.getInstance()::getAngleRad;
         hoodDeltaSupplierRad = HoodSubStateManager.getInstance()::getDeltaRad;
         flywheelRPMSupplier = FlywheelSubStateManager.getInstance()::getRPM;
-        flywheelDeltaSupplierRPM = () -> {return flywheelRPM - flywheelRPMSupplier.get();};
+        flywheelDeltaSupplierRPM = () -> {return flywheelRPS*60*FlywheelConstants.gearRatio - flywheelRPMSupplier.get();};
 
         linearVelocitySupplier = DriveSubStateManager.getInstance()::getLinearVelocitySOTM;
         robotPoseSupplier = DriveSubStateManager.getInstance()::getRobotPose;
@@ -77,9 +77,9 @@ public class ShootingSubStateManager extends SubStateManager<ShootingStateReques
     public boolean getCanShoot() {
         if ((!robotOnCorrectSide && !robotInDepotThird && !robotInHumanPlayerThird) || closeToTrench) {
             Logger.recordOutput("Shooting/CanShoot", "BAD POSITION: " + robotOnCorrectSide + " " + robotInDepotThird + " " + robotInHumanPlayerThird + " " + closeToTrench);
+            Keybinds.driverController.vibrate(0);
         } else if (!velocityInLargeBounds) {
             Logger.recordOutput("Shooting/CanShoot", "VERY BAD VELOCITY");
-
             Keybinds.driverController.vibrate(1);
         } else if (!velocityInBounds) {
             Logger.recordOutput("Shooting/CanShoot", "BAD VELOCITY");
@@ -89,22 +89,29 @@ public class ShootingSubStateManager extends SubStateManager<ShootingStateReques
             Keybinds.driverController.vibrate(.5);
         } else if (!jerkInBounds) {
             Logger.recordOutput("Shooting/CanShoot", "BAD JERK");
-            Keybinds.driverController.vibrate(.5);
+            Keybinds.driverController.vibrate(0);
         } else if (!distanceInLargeBounds) {
             Logger.recordOutput("Shooting/CanShoot", "VERY BAD DISTANCE");
+            Keybinds.driverController.vibrate(0);
         } else if (!distanceInBounds) {
             Logger.recordOutput("Shooting/CanShoot", "BAD DISTANCE");
-        } else if (Math.abs(turretDeltaSupplierRad.get()) > ShootingConstants.maxTurretDeltaRad) {
-            Logger.recordOutput("Shooting/CanShoot", "BAD TURRET ANGLE");
+            Keybinds.driverController.vibrate(0);
+        } else if (Math.abs(turretAngleSupplierRad.get() - turretAngleRad) > ShootingConstants.maxTurretDeltaRad) {
+            Logger.recordOutput("Shooting/CanShoot", "BAD TURRET ANGLE: " + (turretAngleSupplierRad.get() - turretAngleRad));
+            Keybinds.driverController.vibrate(0);
         } else if (Math.abs(hoodDeltaSupplierRad.get()) > ShootingConstants.maxHoodDeltaRad) {
-            Logger.recordOutput("Shooting/CanShoot", "BAD HOOD ANGLE");
+            Logger.recordOutput("Shooting/CanShoot", "BAD HOOD ANGLE: " + hoodDeltaSupplierRad.get());
+            Keybinds.driverController.vibrate(0);
         } else if (Math.abs(flywheelDeltaSupplierRPM.get()) > ShootingConstants.maxFlywheelDelta) {
-            Logger.recordOutput("Shooting/CanShoot", "BAD FLYWHEEL DELTA");
+            Logger.recordOutput("Shooting/CanShoot", "BAD FLYWHEEL DELTA: " + flywheelDeltaSupplierRPM.get());
+            Keybinds.driverController.vibrate(0);
         } else if (!hubActiveWhenShotLands) {
             Logger.recordOutput("Shooting/CanShoot", "HUB INACTIVE");
+            Keybinds.driverController.vibrate(0);
         } else {
             Logger.recordOutput("Shooting/CanShoot", "GOOD");
             CANdleSubStateManager.setLEDs(CANdleStateRequest.SHOOT_GOOD);
+            Keybinds.driverController.vibrate(0);
             return true;
         }
         return false;
@@ -117,8 +124,8 @@ public class ShootingSubStateManager extends SubStateManager<ShootingStateReques
         //if (testAngle != null) turretAngleRad = testAngle.getRadians();//shootingParameters[0];
         turretAngleRad = shootingParameters[0];
         hoodAngleRad = shootingParameters[1];
-        flywheelVoltage = FlywheelConstants.rpmToVoltage.get(shootingParameters[2]);
-        flywheelRPM = shootingParameters[2];
+        flywheelVoltage = FlywheelConstants.rpsToVoltage.get(shootingParameters[2]);
+        flywheelRPS = shootingParameters[2];
 
         switch (activeStateRequest.getStateRequestType()) {
             case SHOOT_PRELOADS:
@@ -157,7 +164,7 @@ public class ShootingSubStateManager extends SubStateManager<ShootingStateReques
     }
 
     public double getFlywheelVoltage() {
-        //return FlywheelConstants.rpmToVoltage.get((double) rpm.getValue());
+        //return FlywheelConstants.rpsToVoltage.get((double) rpm.getValue());
         return flywheelVoltage;
     }
 
@@ -174,7 +181,7 @@ public class ShootingSubStateManager extends SubStateManager<ShootingStateReques
     private Translation2d[] jerkFrames =  new Translation2d[framesOfVelocityMeasurement];
     private long[] timeFrames = new long[framesOfVelocityMeasurement];
 
-    private double lookaheadTimeSeconds = 0.2f;
+    private double lookaheadTimeSeconds = 0.15f;
     private double phaseTimeSeconds = 0.03f;
 
     private double nextShotTime = -1;

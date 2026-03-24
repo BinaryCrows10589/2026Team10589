@@ -35,8 +35,8 @@ public final class TurretConstants {
     public static final NeutralModeValue motorNeutralMode = NeutralModeValue.Coast;
 
     public static final TurretControlConstants normalTurretControlConstants = new TurretControlConstants(
-        MetaConstants.isReal ? 2 : 0.75, // Correction velocity (rad/sec)
-        MetaConstants.isReal ? Rotation2d.fromDegrees(20) : Rotation2d.fromDegrees(20), // Correction zone
+        MetaConstants.isReal ? 3.25 : 0.75, // Correction velocity (rad/sec)
+        MetaConstants.isReal ? Rotation2d.fromDegrees(10) : Rotation2d.fromDegrees(20), // Correction zone
 
         MetaConstants.isReal ? 0.4 : 0.025, // Deceleration buffer rad
 
