@@ -393,8 +393,15 @@ public class DriveSubStateManager extends SubStateManager<DriveStateRequest> {
         return new double[] {speeds.vxMetersPerSecond, speeds.vyMetersPerSecond, (speeds.omegaRadiansPerSecond * (180 / Math.PI))};
     }
     public Translation2d getLinearVelocitySOTM() {
+        Pose2d pose = poseEstimator.getRobotPose();
+        Rotation2d rotation = pose.getRotation();
+        double cos = rotation.getCos();
+        double sin = rotation.getSin();
         ChassisSpeeds speeds = SwerveDriveConstants.driveKinematics.toChassisSpeeds(swerveModuleStates);
-        return new Translation2d(speeds.vxMetersPerSecond, speeds.vyMetersPerSecond);
+        return new Translation2d(
+            cos * speeds.vxMetersPerSecond - sin * speeds.vyMetersPerSecond,
+            sin * speeds.vxMetersPerSecond + cos * speeds.vyMetersPerSecond
+        );
     }
 
     public void driveCM(double[] speeds) {

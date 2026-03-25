@@ -14,13 +14,13 @@ public class ShootingConstants {
     public static final double dragCoefficient = 0;
 
     public static final double maxTurretDeltaRad = Units.degreesToRadians(12);
-    public static final double maxHoodDeltaRad = Units.degreesToRadians(6);
-    public static final double maxFlywheelDelta = 250;
+    public static final double maxHoodDeltaRad = Units.degreesToRadians(8);
+    public static final double maxFlywheelDelta = 550;
     public static final double maxVelocity = 4.4;
     public static final double maxAcceleration = 4.4;
     public static final double maxJerk = 10;
     public static final double maxVelocityLarge = 4.4;
-    public static final double maxTurretX = 4.6;
+    public static final double maxTurretX = 5.631;
     public static final double maxDistanceFromGoal = 5;
     public static final double maxDistanceFromGoalLarge = 6;
 

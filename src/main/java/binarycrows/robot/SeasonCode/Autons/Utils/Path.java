@@ -5,7 +5,7 @@ import java.util.Objects;
 import binarycrows.robot.CrowMotion.UserSide.CMAutonPoint;
 import binarycrows.robot.CrowMotion.UserSide.CMRotation;
 
-public record Path(PathRotation[] pathRotations, CMAutonPoint... pathPoints) {
+public record Path(CMAutonPoint... pathPoints) {
 
     public record PathRotation(double angleDegrees, int rotationDirection, double percentOfPathToCompleteBy) {
         public CMRotation createCMRotation(double maxToleranceDegrees) {
@@ -16,8 +16,5 @@ public record Path(PathRotation[] pathRotations, CMAutonPoint... pathPoints) {
         }
     }
 
-    public CMRotation getFirstRotation(double maxToleranceDegrees) {
-        return pathRotations[0].createCMRotation(maxToleranceDegrees);
-    }
 
 }

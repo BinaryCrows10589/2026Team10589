@@ -132,6 +132,9 @@ public class ShootingSubStateManager extends SubStateManager<ShootingStateReques
                 if (!outgoingFuelSensorSupplier.get()) { // All preloads must have been shot
                     this.activeStateRequest.updateStatus(StateRequestStatus.FULFILLED);
                 }
+            case SHOOT:
+                this.activeStateRequest.updateStatus(StateRequestStatus.FULFILLED);
+                break;
             default: break;
         }
     }
@@ -147,7 +150,7 @@ public class ShootingSubStateManager extends SubStateManager<ShootingStateReques
 
     public boolean getShootingIntent() {
         ShootingStateRequest stateRequestType = activeStateRequest.getStateRequestType();
-        return stateRequestType == ShootingStateRequest.SHOOT || stateRequestType == ShootingStateRequest.FORCE_SHOOT;
+        return stateRequestType == ShootingStateRequest.SHOOT || stateRequestType == ShootingStateRequest.FORCE_SHOOT || (stateRequestType == ShootingStateRequest.SHOOT_PRELOADS && activeStateRequest.getStatus() != StateRequestStatus.FULFILLED);
     }
 
     public double getTurretAngleRad() {
@@ -181,7 +184,7 @@ public class ShootingSubStateManager extends SubStateManager<ShootingStateReques
     private Translation2d[] jerkFrames =  new Translation2d[framesOfVelocityMeasurement];
     private long[] timeFrames = new long[framesOfVelocityMeasurement];
 
-    private double lookaheadTimeSeconds = 0.15f;
+    private double lookaheadTimeSeconds = 0.3f;
     private double phaseTimeSeconds = 0.03f;
 
     private double nextShotTime = -1;
@@ -245,7 +248,7 @@ public class ShootingSubStateManager extends SubStateManager<ShootingStateReques
 
         velocityInBounds = velocityNorm < ShootingConstants.maxVelocity;
         accelerationInBounds = accelerationFrames[0].getNorm() < ShootingConstants.maxAcceleration;
-        jerkInBounds = jerkFrames[0].getNorm() < ShootingConstants.maxJerk;
+        jerkInBounds = true;//jerkFrames[0].getNorm() < ShootingConstants.maxJerk;
         velocityInLargeBounds = velocityNorm < ShootingConstants.maxVelocityLarge;
 
         Translation2d extraVelocity = Translation2d.kZero;
@@ -254,7 +257,7 @@ public class ShootingSubStateManager extends SubStateManager<ShootingStateReques
 
         double lookaheadTime = nextShotTime - currentTime;
 
-        extraVelocity = extraVelocity.plus(accelerationFrames[0].times(lookaheadTime)).plus(jerkFrames[0].times(0.5 * lookaheadTime * lookaheadTime));
+        extraVelocity = extraVelocity.plus(accelerationFrames[0].times(lookaheadTime));//.plus(jerkFrames[0].times(0.5 * lookaheadTime * lookaheadTime));
 
         if (!Double.isNaN(extraVelocity.getX()) && !Double.isNaN(extraVelocity.getY())) velocity = velocity.plus(extraVelocity);
         Logger.recordOutput("/Turret/Control/ExtraVelocity", extraVelocity);
@@ -357,5 +360,9 @@ public class ShootingSubStateManager extends SubStateManager<ShootingStateReques
 
     public static ShootingSubStateManager getInstance() {
         return (ShootingSubStateManager) MainStateManager.getInstance().resolveSubStateManager(ShootingStateRequest.class);
+    }
+
+    public String toString() {
+        return "Shooting SubStateManager";
     }
 }

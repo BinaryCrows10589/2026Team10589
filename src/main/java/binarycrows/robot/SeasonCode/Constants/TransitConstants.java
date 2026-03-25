@@ -25,9 +25,9 @@ public final class TransitConstants {
     public static final double standardLatitudinalMotorVoltagePercent = .7;
     public static final double standardInAndUpMotorVoltagePercent = .9;
 
-    public static final double standardLongitudinalMotorVoltage = .4;
-    public static final double standardLatitudinalMotorVoltage = .6;
-    public static final double standardInAndUpMotorVoltage = .8;
+    public static final double standardLongitudinalMotorVoltage = 3;
+    public static final double standardLatitudinalMotorVoltage = 5;
+    public static final double standardInAndUpMotorVoltage = 6;
 
     public static final double indexingLongitudinalVoltage = 0;
     public static final double indexingLatitudinalVoltage = 2;

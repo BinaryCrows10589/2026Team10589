@@ -265,6 +265,7 @@ public class Robot extends LoggedRobot {
   @Override
   public void teleopInit() {
     isDriverControlled = true;
+    DriveSubStateManager.getInstance().returnToDefaultState();
     //Climbing.climbRight(); // Sim testing
   }
 

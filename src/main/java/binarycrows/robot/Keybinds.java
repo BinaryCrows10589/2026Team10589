@@ -149,6 +149,14 @@ public class Keybinds {
         buttonBoard2.onPress(ButtonBoardButtons.BB2.intakeWheelToggle, 
         StateRequestUtils.createStateRequestRunnable(IntakeRollersStateRequest.INVERT));
 
+        buttonBoard2.onPress(ButtonBoardButtons.BB2.intakeWheelOverdrive, 
+        StateRequestUtils.createStateRequestRunnable(IntakeRollersStateRequest.OVERDRIVE),
+        StateRequestUtils.createStateRequestRunnable(IntakeRollersStateRequest.INTAKING));
+
+        buttonBoard2.onPress(ButtonBoardButtons.BB2.intakeWheelForceReverse, 
+        StateRequestUtils.createStateRequestRunnable(IntakeRollersStateRequest.REVERSE),
+        StateRequestUtils.createStateRequestRunnable(IntakeRollersStateRequest.INTAKING));
+
         // Transit
         buttonBoard2.onPress(ButtonBoardButtons.BB2.transitManualForward, 
         TransitSubStateManager.getInstance()::manualForward);

@@ -1,8 +1,11 @@
 package binarycrows.robot.SeasonCode.SubStateManagers.Intake.Rollers;
 
+import java.util.function.Supplier;
+
 import binarycrows.robot.StateRequest;
 import binarycrows.robot.SubStateManager;
 import binarycrows.robot.Enums.StateRequestPriority;
+import binarycrows.robot.Enums.StateRequestStatus;
 import binarycrows.robot.SeasonCode.Constants.IntakeConstants;
 import binarycrows.robot.SeasonCode.SubStateManagers.Intake.Rollers.IntakeRollersIO.IntakeRollersOutputs;
 import binarycrows.robot.SeasonCode.SubStateManagers.SwerveDrive.DriveSubStateManager;
@@ -14,11 +17,19 @@ public class IntakeRollersSubStateManager extends SubStateManager<IntakeRollersS
     private IntakeRollersIO intakeRollersIO;
     private IntakeRollersOutputs outputs;
 
+    private Supplier<ChassisSpeeds> chassisSpeeds;
+
     public IntakeRollersSubStateManager() {
         super(new StateRequest<IntakeRollersStateRequest>(IntakeRollersStateRequest.OFF, StateRequestPriority.NORMAL));
 
         outputs = new IntakeRollersOutputs();
         intakeRollersIO = new IntakeRollersTalonFXS(outputs);
+
+    }
+
+    @Override
+    public void setupSuppliers() {
+        chassisSpeeds = DriveSubStateManager.getInstance()::getChassisSpeeds;
 
     }
 
@@ -37,25 +48,36 @@ public class IntakeRollersSubStateManager extends SubStateManager<IntakeRollersS
         LoggingUtils.logObject("Intake/Rollers/Outputs", outputs);
         intakeRollersIO.update();
         switch (activeStateRequest.getStateRequestType()) {
+            case OVERDRIVE:
+                intakeRollersIO.setRotorVoltage(getDrivenIntakeVoltage() + IntakeConstants.Rollers.overdriveVoltage);
+                this.activeStateRequest.updateStatus(StateRequestStatus.FULFILLED);
+                break;
             case INTAKING:
-                ChassisSpeeds speeds = DriveSubStateManager.getInstance().getChassisSpeeds();
-                intakeRollersIO.setRotorVoltage(
-                    Math.min(
-                        Math.max(
-                            IntakeConstants.Rollers.intakingMotorVoltage 
-                                * Math.sqrt(speeds.vxMetersPerSecond * speeds.vxMetersPerSecond),
-                            IntakeConstants.Rollers.intakeWheelMinVoltage),
-                    IntakeConstants.Rollers.intakeWheelMaxVoltage));
+                intakeRollersIO.setRotorVoltage(getDrivenIntakeVoltage());
+                this.activeStateRequest.updateStatus(StateRequestStatus.FULFILLED);
                 break;
             case OFF:
                 intakeRollersIO.setRotorVoltage(0);
+                this.activeStateRequest.updateStatus(StateRequestStatus.FULFILLED);
                 break;
             case REVERSE:
                 intakeRollersIO.setRotorVoltage(-IntakeConstants.Rollers.intakingMotorVoltage);
+                this.activeStateRequest.updateStatus(StateRequestStatus.FULFILLED);
                 break;
             default:
                 break;
         }
+    }
+
+    private double getDrivenIntakeVoltage() {
+        ChassisSpeeds speeds = chassisSpeeds.get();
+
+        return Math.min(
+                        Math.max(
+                            IntakeConstants.Rollers.intakingMotorVoltage 
+                                * Math.sqrt(speeds.vxMetersPerSecond * speeds.vxMetersPerSecond),
+                            IntakeConstants.Rollers.intakeWheelMinVoltage),
+                    IntakeConstants.Rollers.intakeWheelMaxVoltage);
     }
 
     public String toString() {

@@ -46,7 +46,7 @@ public class SensorsPWF implements SensorsIO {
             outputs.binFullTripped = binFullTrippedThisFrame;
         }
 
-        boolean outgoingFuelTrippedThisFrame = outputs.outgoingFuelReading >= TransitConstants.Sensors.outgoingFuelTrippingDistance;
+        boolean outgoingFuelTrippedThisFrame = outputs.outgoingFuelReading <= TransitConstants.Sensors.outgoingFuelTrippingDistance;
 
         if (outputs.outgoingFuelTripped != outgoingFuelTrippedThisFrame) outgoingFuelNumFramesDifferent++;
         else outgoingFuelNumFramesDifferent = 0;

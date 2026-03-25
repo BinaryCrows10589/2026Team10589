@@ -4,5 +4,5 @@ public enum IntakeRollersStateRequest {
     INTAKING,
     OFF,
     REVERSE, 
-    INVERT
+    INVERT, OVERDRIVE
 }

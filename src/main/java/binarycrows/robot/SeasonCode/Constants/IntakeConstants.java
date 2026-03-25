@@ -20,6 +20,8 @@ public final class IntakeConstants {
 
         public static final double intakeWheelMinVoltage = 2.5;
         public static final double intakeWheelMaxVoltage = 6;
+
+        public static final double overdriveVoltage = 3.5;
     }
 
     public final class Pivot {
