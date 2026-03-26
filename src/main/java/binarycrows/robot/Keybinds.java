@@ -135,7 +135,7 @@ public class Keybinds {
         buttonBoard1.onPress(ButtonBoardButtons.BB1.intakeDown, 
         StateRequestUtils.createStateRequestRunnable(PivotStateRequest.DOWN));
         buttonBoard2.onPress(ButtonBoardButtons.BB2.intakeRaised, 
-        StateRequestUtils.createDualStateRequestRunnable(PivotStateRequest.RAISED, IntakeRollersStateRequest.INTAKING));
+        StateRequestUtils.createDualStateRequestRunnable(PivotStateRequest.RAISED, IntakeRollersStateRequest.OFF));
         buttonBoard2.onPress(ButtonBoardButtons.BB2.intakeUp, 
         StateRequestUtils.createDualStateRequestRunnable(PivotStateRequest.UP, IntakeRollersStateRequest.OFF));
 
@@ -159,9 +159,11 @@ public class Keybinds {
 
         // Transit
         buttonBoard2.onPress(ButtonBoardButtons.BB2.transitManualForward, 
-        TransitSubStateManager.getInstance()::manualForward);
+        TransitSubStateManager.getInstance()::manualForward,
+        TransitSubStateManager.getInstance()::manualOff);
         buttonBoard2.onPress(ButtonBoardButtons.BB2.transitManualReverse, 
-        TransitSubStateManager.getInstance()::manualReverse);
+        TransitSubStateManager.getInstance()::manualReverse,
+        TransitSubStateManager.getInstance()::manualOff);
 
         // Turret
         buttonBoard2.onPress(ButtonBoardButtons.BB2.turretManualLeft, 
@@ -224,9 +226,9 @@ public class Keybinds {
         buttonBoard1.onPress(ButtonBoardButtons.BB1.manualHoodSwitch,  
         StateRequestUtils.createStateRequestRunnable(HoodStateRequest.MANUAL_OVERRIDE),
         StateRequestUtils.createStateRequestRunnable(HoodStateRequest.SHOOT_ON_THE_MOVE));
-        buttonBoard1.onPress(ButtonBoardButtons.BB1.manualClimberSwitch, 
+        /*buttonBoard1.onPress(ButtonBoardButtons.BB1.manualClimberSwitch, 
         StateRequestUtils.createStateRequestRunnable(ClimberStateRequest.MANUAL_OVERRIDE),
-        StateRequestUtils.createStateRequestRunnable(ClimberStateRequest.RESTORE_CLOSEST));
+        StateRequestUtils.createStateRequestRunnable(ClimberStateRequest.RESTORE_CLOSEST));*/
     }
 
     public static double[] getTranslation() {

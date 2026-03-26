@@ -80,7 +80,7 @@ public class TurretSubStateManager extends SubStateManager<TurretStateRequest> {
 
         switch (activeStateRequest.getStateRequestType()) {
             case MANUAL_OVERRIDE:
-                turret.setTurretVoltage(TurretConstants.manualVoltage * (manualDirection));
+                turret.setTurretVoltage(TurretConstants.manualVoltage * -(manualDirection));
                 break;
             case SHOOT_ON_THE_MOVE:
                 if (doAim.get()) {

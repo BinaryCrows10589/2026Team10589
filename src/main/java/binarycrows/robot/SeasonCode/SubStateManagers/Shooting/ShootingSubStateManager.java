@@ -90,12 +90,12 @@ public class ShootingSubStateManager extends SubStateManager<ShootingStateReques
         } else if (!jerkInBounds) {
             Logger.recordOutput("Shooting/CanShoot", "BAD JERK");
             Keybinds.driverController.vibrate(0);
-        } else if (!distanceInLargeBounds) {
+        /* } else if (!distanceInLargeBounds) {
             Logger.recordOutput("Shooting/CanShoot", "VERY BAD DISTANCE");
             Keybinds.driverController.vibrate(0);
         } else if (!distanceInBounds) {
             Logger.recordOutput("Shooting/CanShoot", "BAD DISTANCE");
-            Keybinds.driverController.vibrate(0);
+            Keybinds.driverController.vibrate(0);*/
         } else if (Math.abs(turretAngleSupplierRad.get() - turretAngleRad) > ShootingConstants.maxTurretDeltaRad) {
             Logger.recordOutput("Shooting/CanShoot", "BAD TURRET ANGLE: " + (turretAngleSupplierRad.get() - turretAngleRad));
             Keybinds.driverController.vibrate(0);
@@ -133,6 +133,9 @@ public class ShootingSubStateManager extends SubStateManager<ShootingStateReques
                     this.activeStateRequest.updateStatus(StateRequestStatus.FULFILLED);
                 }
             case SHOOT:
+                this.activeStateRequest.updateStatus(StateRequestStatus.FULFILLED);
+                break;
+            case FORCE_SHOOT:
                 this.activeStateRequest.updateStatus(StateRequestStatus.FULFILLED);
                 break;
             default: break;

@@ -13,8 +13,12 @@ import org.littletonrobotics.junction.LoggedRobot;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 import org.littletonrobotics.junction.networktables.NT4Publisher;
+import org.littletonrobotics.junction.rlog.RLOGServer;
 import org.littletonrobotics.junction.wpilog.WPILOGReader;
 import org.littletonrobotics.junction.wpilog.WPILOGWriter;
+import org.littletonrobotics.junction.wpilog.WPILOGWriter.AdvantageScopeOpenBehavior;
+
+import com.ctre.phoenix6.SignalLogger;
 
 import binarycrows.robot.CrowMotion.UserSide.CMConfig;
 import binarycrows.robot.SeasonCode.Autons.DepotTrench_Wall_Shoot_L_Shoot_P_Shoot;
@@ -89,8 +93,9 @@ public class Robot extends LoggedRobot {
         // Set up data receivers & replay source
         if (RobotBase.isReal()) {
             // Running on a real robot, log to a USB stick ("/U/logs")
-            Logger.addDataReceiver(new WPILOGWriter());
+            Logger.addDataReceiver(new WPILOGWriter("/home/lvuser/log/"));
             Logger.addDataReceiver(new NT4Publisher());
+            SignalLogger.enableAutoLogging(false);
             new PowerDistribution(1, ModuleType.kRev); // Enables power distribution logging
         } else {
           if (RobotBase.isSimulation()) {

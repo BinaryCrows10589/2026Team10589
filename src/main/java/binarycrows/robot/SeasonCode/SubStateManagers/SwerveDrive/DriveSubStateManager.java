@@ -374,6 +374,7 @@ public class DriveSubStateManager extends SubStateManager<DriveStateRequest> {
                         break;
                     
                     default:
+                        this.drive(0, 0, 0, true);
                     break;
             }
         }

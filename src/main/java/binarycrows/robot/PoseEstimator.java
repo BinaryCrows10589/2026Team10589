@@ -24,6 +24,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Notifier;
 import gg.questnav.questnav.PoseFrame;
@@ -45,6 +46,11 @@ public class PoseEstimator {
 
     private boolean isADBConnected = false;
 
+    PoseFrame[] questFrames;
+    Pose3d robotPose;
+    double timestamp;
+    boolean isUpdating;
+
     // These are for Eli and David's gyro acceleration algorithm
     // It did not increase accuracy so it has been disabled
     /*
@@ -61,7 +67,7 @@ public class PoseEstimator {
             SwerveDriveConstants.driveKinematics,
             yawAngle,
             modulePositions, 
-            new Pose2d(0.0, 8.052, yawAngle),
+            new Pose2d(Units.inchesToMeters((33.5/2)), 8.052-Units.inchesToMeters(33.5/2), yawAngle),
             PoseEstimatorConstants.swerveDrivePoseEstimateTrust, PoseEstimatorConstants.visionPoseEstimateTrust);
         PoseEstimatorConstants.aprilTagLayout.setOrigin(PoseEstimatorConstants.originPosition);
         visionNotifier.startPeriodic(.1);
@@ -128,6 +134,8 @@ public class PoseEstimator {
             this.swerveDrivePoseEstimator.update(DriveSubStateManager.getInstance().gyroOutputs.yawAngle,
                 DriveSubStateManager.getInstance().getModulePositions());
 
+            logVisionMeasurements();
+
             // Accelerometer data algorithm (was less accurate than odometry and didn't help drift)
             /*if(this.lastChassisSpeeds != null && this.lastRobotPose != null && Math.sqrt(this.lastChassisSpeeds.vxMetersPerSecond * this.lastChassisSpeeds.vxMetersPerSecond + this.lastChassisSpeeds.vyMetersPerSecond * this.lastChassisSpeeds.vyMetersPerSecond) > .05) {
                 double xPose = (DriveSubStateManager.getInstance().gyroOutputs.xAccelerationMetersPerSecondPerSecond * dt + this.lastChassisSpeeds.vxMetersPerSecond) * dt + this.lastRobotPose.getX();
@@ -155,7 +163,7 @@ public class PoseEstimator {
     }
 
     public void resetRobotPose() {
-        Pose2d zeroPose = new Pose2d(0, 8.052, new Rotation2d()); //new Pose2d(ConversionUtils.inchesToMeters(158.85), ConversionUtils.inchesToMeters(182.11-(25+(9/16))), new Rotation2d());
+        Pose2d zeroPose = new Pose2d(Units.inchesToMeters((33.5/2)), 8.052-Units.inchesToMeters(33.5/2), new Rotation2d()); //new Pose2d(ConversionUtils.inchesToMeters(158.85), ConversionUtils.inchesToMeters(182.11-(25+(9/16))), new Rotation2d());
         DriveSubStateManager.getInstance().resetGyro(new Rotation2d());
         swerveDrivePoseEstimator.resetPosition(DriveSubStateManager.getInstance().getGyroAngleRotation2d(),
             DriveSubStateManager.getInstance().getModulePositions(), zeroPose);
@@ -178,6 +186,20 @@ public class PoseEstimator {
     private void configPhotonPoseEstimators() {
         this.photonPoseEstimators[0] = new PhotonPoseEstimator(PoseEstimatorConstants.aprilTagLayout, PoseStrategy.LOWEST_AMBIGUITY, PoseEstimatorConstants.frontRightCameraToCenter);
         this.photonPoseEstimators[1] = new PhotonPoseEstimator(PoseEstimatorConstants.aprilTagLayout, PoseStrategy.LOWEST_AMBIGUITY, PoseEstimatorConstants.frontLeftCameraToCenter);
+    }
+
+    private void logVisionMeasurements() {
+        if (questFrames != null) {
+            Logger.recordOutput("QuestNav/HasFrames", questFrames.length > 0);
+            Logger.recordOutput("QuestNav/Battery", questNav.getBatteryPercent().orElse(-1));
+            Logger.recordOutput("QuestNav/HasFrames", questFrames.length > 0);
+            Logger.recordOutput("QuestNav/LastUpdateTimestamp", timestamp);
+            Logger.recordOutput("QuestNav/Updating", isUpdating);
+        }
+        
+        Logger.recordOutput("QuestNav/RobotPose", robotPose);
+        
+
     }
 
 
@@ -238,32 +260,30 @@ public class PoseEstimator {
             }
             
         }
+
+        
+
         if(MetaConstants.updateQuestNav) {
-            Logger.recordOutput("Tuning/QuestToWorldTransform", PoseEstimatorConstants.questToWorldTransform);
             // Get the latest pose data frames from the Quest
             try {
-            PoseFrame[] questFrames = questNav.getAllUnreadPoseFrames();
-            Logger.recordOutput("QuestNav/HasFrames", questFrames.length > 0);
-            Logger.recordOutput("QuestNav/Battery", questNav.getBatteryPercent().orElse(-1));
+            questFrames = questNav.getAllUnreadPoseFrames();
+            
 
 
             // Loop over the pose data frames and send them to the pose estimator
             for (PoseFrame questFrame : questFrames) {
                 if (!questFrame.isTracking()) continue; // Skip frame if untracked
-                Logger.recordOutput("QuestNav/HasFrames", questFrames.length > 0);
 
                     Pose3d questPose = questFrame.questPose3d();
 
                     lastQuestNavPose = questPose;
 
-                    double timestamp = questFrame.dataTimestamp();
+                    timestamp = questFrame.dataTimestamp();
 
                     // Transform by the mount pose to get your robot pose
-                    Pose3d robotPose = questPose.transformBy(PoseEstimatorConstants.robotToQuestOffset.inverse());
+                    robotPose = questPose.transformBy(PoseEstimatorConstants.robotToQuestOffset.inverse());
 
-                    // Add the measurement to our estimator
-                    Logger.recordOutput("QuestNav/RobotPose", robotPose);
-                    Logger.recordOutput("QuestNav/LastUpdateTimestamp", timestamp);
+                    
                     
             if (Double.isNaN(swerveDrivePoseEstimator.getEstimatedPosition().getX())) {
                 swerveDrivePoseEstimator.resetPosition(DriveSubStateManager.getInstance().getGyroAngleRotation2d(),
@@ -271,13 +291,13 @@ public class PoseEstimator {
             }                    
                     swerveDrivePoseEstimator.addVisionMeasurement(robotPose.toPose2d().plus(PoseEstimatorConstants.questNavFudgeFactor), timestamp, PoseEstimatorConstants.questNavPoseEstimateTrust);
                 }
-                Logger.recordOutput("QuestNav/Updating", true);
+                isUpdating = true;
+                
             } catch (Exception e) {
                 System.err.println(e.getMessage());
             }
         } else {
-            Logger.recordOutput("QuestNav/HasFrames", false);
-            Logger.recordOutput("QuestNav/Updating", false);
+            isUpdating = false;
         }
         
     

@@ -11,6 +11,7 @@ public class Paths {
         Points.startPosition_HumanPlayerTrench_Wall,
         Points.InitialFuelQuadrant_OwnAllianceHumanPlayer,
         Points.CenterFuelQuadrant_OwnAllianceHumanPlayer);
+
     
     public static final Path HumanPlayerSide_L_Out_Trench =
         new Path(
@@ -67,24 +68,28 @@ public class Paths {
     public static final Path startPosition_DepotTrench_Wall_L_In =
         new Path(
         Points.startPosition_DepotTrench_Wall,
-        new CMAutonPoint(7.775+0.5, 7.554-0, 0, 0, 0, 0),
+        new CMAutonPoint(7.775+0.8, 7.554-0, 0, 0, 0, 0),
+        new CMAutonPoint(7.775+.8, 7.554-0.75, 0, 0, 0, 0),
         Points.CenterFuelQuadrant_OwnAllianceDepot);
     
     public static final Path startPosition_DepotTrench_Wall_L_Arch_Half_One =
         new Path(
         Points.CenterFuelQuadrant_OwnAllianceDepot,
-        new CMAutonPoint(7.690, 3.371-0.3),
-        new CMAutonPoint(5.714, 6.455-1));
-    
-    public static final Path startPosition_DepotTrench_Wall_L_Arch_Half_Two =
+        new CMAutonPoint(7.690-1.25, 3.371-0.3),
+        new CMAutonPoint(5.714, 6.455-0.5));
+
+    public static final Path startPosition_DepotTrench_Wall_L_Arch_Half_One_Second =
         new Path(
-        new CMAutonPoint(7.690, 3.371-1),
-        new CMAutonPoint(5.714, 6.455-.5));
+        Points.CenterFuelQuadrant_OwnAllianceDepot_Second,
+        new CMAutonPoint(7.817, 6.603, 0, 0, 0, 0),
+        new CMAutonPoint(5.714, 6.455-0.5));
+    
+  
 
     public static final Path startPosition_DepotTrench_Wall_L_Return =
         new Path(
-        new CMAutonPoint(5.714, 6.455-1), // TODO: Make constant
-        new CMAutonPoint(4.598, 5.639-.5),
+        new CMAutonPoint(5.714, 6.455-0.5), // TODO: Make constant
+        new CMAutonPoint(4.598, 5.639-0.5),
         new CMAutonPoint(2.738, 6.043));
 
     public static final Path startPosition_DepotTrench_Wall_L_In_Second_Crawl = new Path(
@@ -93,8 +98,10 @@ public class Paths {
     );
     public static final Path startPosition_DepotTrench_Wall_L_In_Second = new Path(
         new CMAutonPoint(2.738, 7.457+0.25),
-        new CMAutonPoint(3.780, 7.457+0.25),
-        new CMAutonPoint(5.825+0.3, 7.418)
+        Points.startPosition_DepotTrench_Wall_Second,
+        new CMAutonPoint(7.775+.8, 7.554-0, 0, 0, 0, 0),
+        new CMAutonPoint(7.817, 6.603, 0, 0, 0, 0),
+        Points.CenterFuelQuadrant_OwnAllianceDepot_Second
     );
     public static final Path startPosition_DepotTrench_Wall_L_Insertion = new Path(
         new CMAutonPoint(5.825, 7.418),

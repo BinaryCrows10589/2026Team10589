@@ -86,9 +86,13 @@ public class TransitSubStateManager  extends SubStateManager<TransitStateRequest
                 transitIO.setInAndUpVoltage(TransitConstants.standardInAndUpMotorVoltage * manualDirection);
                 break;
             case SHOOTER:
-                if (shooting.get()) {
+                if (manualDirection == -1) { // Use manual override for reverse to help unclog
+                    transitIO.setLatitudinalVoltage(TransitConstants.standardLatitudinalMotorVoltage * manualDirection);
+                    transitIO.setLongitudinalVoltage(TransitConstants.standardLongitudinalMotorVoltage * manualDirection);
+                    transitIO.setInAndUpVoltage(TransitConstants.standardInAndUpMotorVoltage * manualDirection);
+                } else if (shooting.get()) {
                     double flywheelVoltage = flywheelVoltageSupplier.get();
-                    transitIO.setLatitudinalVoltage(TransitConstants.standardLatitudinalMotorVoltagePercent * flywheelVoltage);
+                    transitIO.setLatitudinalVoltage(TransitConstants.standardLatitudinalMotorVoltagePercent * flywheelVoltage );
                     transitIO.setLongitudinalVoltage(TransitConstants.standardLongitudinalMotorVoltagePercent * flywheelVoltage);
                     transitIO.setInAndUpVoltage(TransitConstants.standardInAndUpMotorVoltagePercent * flywheelVoltage);
                 } else {

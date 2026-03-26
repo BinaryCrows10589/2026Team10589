@@ -1,20 +1,25 @@
 package binarycrows.robot.SeasonCode.Autons.Data;
 
 import binarycrows.robot.CrowMotion.UserSide.CMAutonPoint;
+import edu.wpi.first.math.util.Units;
 
 /** Format: [type_]fieldObject_sideOfFieldObject **/
 public class Points {
     public static final CMAutonPoint startPosition_HumanPlayerRamp_Trench = new CMAutonPoint(3.6, 2.05, 0, 0, 0, 0);
     public static final CMAutonPoint startPosition_HumanPlayerTrench_Wall = new CMAutonPoint(4.44, 0.496, 0, 0, 0, 0);
-    public static final CMAutonPoint InitialFuelQuadrant_OwnAllianceHumanPlayer = new CMAutonPoint(7.775, 0.496, 0, 0, 0, 0);
+    public static final CMAutonPoint InitialFuelQuadrant_OwnAllianceHumanPlayer = new CMAutonPoint(7.775-0.25, 0.496, 0, 0, 0, 0);
     public static final CMAutonPoint CenterFuelQuadrant_OwnAllianceHumanPlayer = new CMAutonPoint(7.775, 3.457, 0, 0, 0, 0);
     public static final CMAutonPoint ShootPosition_HumanPlayerTrench_Wall = new CMAutonPoint(3.145, 0.496, 0, 0, 0, 0);
     public static final CMAutonPoint MidFuelQuadrant_OwnAllianceHumanPlayer = new CMAutonPoint(7.775, 2.775, 0, 0, 0, 0);
     public static final CMAutonPoint ShootPosition_HumanPlayerRamp_Center = new CMAutonPoint(3.5, 2.5, 0, 0, 0, 0);
     public static final CMAutonPoint PEnd_OwnAllianceHumanPlayer = new CMAutonPoint(7.280, 2.175, 0, 0, 0, 0);
-    public static final CMAutonPoint startPosition_DepotTrench_Wall = new CMAutonPoint(4.44, 7.554, 0, 0, 0, 0);
+    public static final CMAutonPoint startPosition_DepotTrench_Wall = new CMAutonPoint(4.44, Units.inchesToMeters(317.69-4-(33.5)/2), 0, 0, 0, 0);
+    public static final CMAutonPoint startPosition_DepotTrench_Wall_Second = new CMAutonPoint(4.44, Units.inchesToMeters(317.69-20-(33.5)/2), 0, 0, 0, 0);
+
     public static final CMAutonPoint InitialFuelQuadrant_OwnAllianceDepot = new CMAutonPoint(7.775, 7.554, 0, 0, 0, 0);
-    public static final CMAutonPoint CenterFuelQuadrant_OwnAllianceDepot = new CMAutonPoint(7.775+.06, 4.580+1, 0, 0, 0, 0);
+    public static final CMAutonPoint CenterFuelQuadrant_OwnAllianceDepot = new CMAutonPoint(7.775+0, 4.580+1, 0, 0, 0, 0);
+        public static final CMAutonPoint CenterFuelQuadrant_OwnAllianceDepot_Second = new CMAutonPoint(7.775-0.1, 4.580, 0, 0, 0, 0);
+
     public static final CMAutonPoint ShootPosition_DepotTrench_Wall = new CMAutonPoint(3.145, 7.554, 0, 0, 0, 0);
     public static final CMAutonPoint MidFuelQuadrant_OwnAllianceDepot = new CMAutonPoint(7.775, 5.225, 0, 0, 0, 0);
     public static final CMAutonPoint ShootPosition_DepotRamp_Center = new CMAutonPoint(3.5, 5.5, 0, 0, 0, 0);

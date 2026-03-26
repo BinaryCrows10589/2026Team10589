@@ -15,7 +15,7 @@ public final class FlywheelConstants {
 
     public static final double motorShootingVoltage = 10;
 
-    public static final double reverseVoltage = 0.25;
+    public static final double reverseVoltage = -4;
 
     public static final double idleRecoveryVoltage = 0;
     public static final double idleMinVelocityRPS = 0;

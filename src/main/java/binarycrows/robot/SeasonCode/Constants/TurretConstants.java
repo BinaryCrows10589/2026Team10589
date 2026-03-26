@@ -75,7 +75,7 @@ public final class TurretConstants {
 
     public static final Rotation2d encoderHalfCircleDistance = Rotation2d.fromRotations(0.890869).minus(turretEncoderOffset);
 
-    public static final double manualVoltage = .25;
+    public static final double manualVoltage = .75;
 
     public static final double velocityToVoltage(double velocityRadPerSec) {
         return 0.483*velocityRadPerSec + 0.272;
