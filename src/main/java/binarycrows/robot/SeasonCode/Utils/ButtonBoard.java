@@ -15,9 +15,9 @@ public class ButtonBoard extends GenericGamepad {
             public static final int climberDown = 6;
             public static final int climberUp = 7;
             public static final int extra2 = 8;
-            public static final int climbLeft = 9;
+            public static final int targetPositionLeft = 9;
             public static final int hoodManualUp = 10;
-            public static final int climbRight = 11;
+            public static final int targetPositionRight = 11;
             public static final int intakeManualUp = 12;
             public static final int manualIntakeSwitch = 13;
             public static final int manualClimberSwitch = 14;
@@ -29,7 +29,7 @@ public class ButtonBoard extends GenericGamepad {
             public static final int hoodManualDown = 0;
             public static final int turretManualLeft = 1;
             public static final int hoodForceRetract = 2;
-            public static final int climbCenterRight = 3;
+            public static final int targetPositionBackward = 3;
             public static final int intakeWheelOverdrive = 4;
             public static final int intakeUp = 5;
             public static final int extra3 = 6;
@@ -41,7 +41,7 @@ public class ButtonBoard extends GenericGamepad {
             public static final int increaseShooterFeedForward = 12;
             public static final int decreaseShooterFeedForward = 13;
             public static final int transitManualForward = 14;
-            public static final int climbCenterLeft = 15;
+            public static final int targetPositionForward = 15;
             public static final int intakeWheelForceReverse = 16;
             public static final int extra4 = 17;
             public static final int intakeRaised = 18;

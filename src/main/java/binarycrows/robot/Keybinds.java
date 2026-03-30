@@ -1,7 +1,6 @@
 package binarycrows.robot;
 
 import binarycrows.robot.SeasonCode.Constants.ControlConstants;
-import binarycrows.robot.SeasonCode.SubStateManagers.Climber.ClimberStateRequest;
 import binarycrows.robot.SeasonCode.SubStateManagers.Flywheel.FlywheelStateRequest;
 import binarycrows.robot.SeasonCode.SubStateManagers.Flywheel.FlywheelSubStateManager;
 import binarycrows.robot.SeasonCode.SubStateManagers.Hood.HoodStateRequest;
@@ -10,6 +9,7 @@ import binarycrows.robot.SeasonCode.SubStateManagers.Intake.Pivot.PivotStateRequ
 import binarycrows.robot.SeasonCode.SubStateManagers.Intake.Pivot.PivotSubStateManager;
 import binarycrows.robot.SeasonCode.SubStateManagers.Intake.Rollers.IntakeRollersStateRequest;
 import binarycrows.robot.SeasonCode.SubStateManagers.Shooting.ShootingStateRequest;
+import binarycrows.robot.SeasonCode.SubStateManagers.Shooting.ShootingSubStateManager;
 import binarycrows.robot.SeasonCode.SubStateManagers.SwerveDrive.DriveStateRequest;
 import binarycrows.robot.SeasonCode.SubStateManagers.SwerveDrive.DriveSubStateManager;
 import binarycrows.robot.SeasonCode.SubStateManagers.Transit.TransitStateRequest;
@@ -197,6 +197,12 @@ public class Keybinds {
         buttonBoard1.onPress(ButtonBoardButtons.BB1.flywheelReverse, 
         StateRequestUtils.createStateRequestRunnable(FlywheelStateRequest.REVERSE), 
         StateRequestUtils.createStateRequestRunnable(FlywheelStateRequest.SHOOT_ON_THE_MOVE));
+
+        // Shooting Fudge Factors
+        buttonBoard1.onPress(ButtonBoardButtons.BB1.targetPositionLeft, ShootingSubStateManager.getInstance()::targetPositionShiftLeft);
+        buttonBoard1.onPress(ButtonBoardButtons.BB1.targetPositionRight, ShootingSubStateManager.getInstance()::targetPositionShiftRight);
+        buttonBoard1.onPress(ButtonBoardButtons.BB2.targetPositionForward, ShootingSubStateManager.getInstance()::targetPositionShiftForward);
+        buttonBoard1.onPress(ButtonBoardButtons.BB2.targetPositionBackward, ShootingSubStateManager.getInstance()::targetPositionShiftBackward);
         
         // Climber
         /* 

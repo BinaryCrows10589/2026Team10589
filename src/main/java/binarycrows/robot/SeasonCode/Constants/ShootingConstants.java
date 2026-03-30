@@ -64,4 +64,5 @@ public class ShootingConstants {
 
     }, 
     false);
+    public static final double positionFudgeFactorIncrement = Units.inchesToMeters(3.0);
 }

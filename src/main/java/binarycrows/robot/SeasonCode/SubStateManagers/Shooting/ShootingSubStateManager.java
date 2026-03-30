@@ -50,6 +50,8 @@ public class ShootingSubStateManager extends SubStateManager<ShootingStateReques
 
     private Supplier<Boolean> outgoingFuelSensorSupplier;
 
+    private Translation2d targetPositionFudgeFactor = Translation2d.kZero;
+
     public ShootingSubStateManager() {
         super(new StateRequest<>(ShootingStateRequest.STANDBY, StateRequestPriority.NORMAL));
         // Java is evil so the arrays need to be prepopulated
@@ -76,6 +78,19 @@ public class ShootingSubStateManager extends SubStateManager<ShootingStateReques
     }
 
     public boolean getIsCloseToTrench() {return closeToTrench;}
+
+    public void targetPositionShiftLeft() {
+        targetPositionFudgeFactor = targetPositionFudgeFactor.plus(new Translation2d(0, -ShootingConstants.positionFudgeFactorIncrement));
+    }
+    public void targetPositionShiftRight() {
+        targetPositionFudgeFactor = targetPositionFudgeFactor.plus(new Translation2d(0, ShootingConstants.positionFudgeFactorIncrement));
+    }
+    public void targetPositionShiftForward() {
+        targetPositionFudgeFactor = targetPositionFudgeFactor.plus(new Translation2d(ShootingConstants.positionFudgeFactorIncrement, 0));
+    }
+    public void targetPositionShiftBackward() {
+        targetPositionFudgeFactor = targetPositionFudgeFactor.plus(new Translation2d(-ShootingConstants.positionFudgeFactorIncrement, 0));
+    }
 
     public boolean getCanShoot() {
         if ((!robotOnCorrectSide && !robotInDepotThird && !robotInHumanPlayerThird) || closeToTrench) {
@@ -305,7 +320,7 @@ public class ShootingSubStateManager extends SubStateManager<ShootingStateReques
         Translation2d lookaheadDelta = velocity.times(nextShotTime-currentTime);
         turretPose = new Pose2d(turretPoseTranslation.plus(lookaheadDelta),turretPose.getRotation());
 
-        Translation2d targetPosition = robotOnCorrectSide ? this.targetPosition : 
+        Translation2d targetPosition = robotOnCorrectSide ? this.targetPosition.plus(targetPositionFudgeFactor) : 
         (robotInDepotThird ? this.depotBackPosition : this.humanPlayerBackPosition);
         Logger.recordOutput("Tuning/TargetPosition", targetPosition);
 
