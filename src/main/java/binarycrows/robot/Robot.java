@@ -203,7 +203,9 @@ public class Robot extends LoggedRobot {
   
       // Final updates
       updateAlliance();
-      DriveSubStateManager.getInstance().resetRobotPose();
+
+      // TODO: Likely useless & problematic
+      //DriveSubStateManager.getInstance().resetRobotPose();
   
       dashboardField = new Field2d();
       robotPoseSupplier = DriveSubStateManager.getInstance()::getRobotPose;
