@@ -21,6 +21,7 @@ import binarycrows.robot.SeasonCode.SubStateManagers.Hood.HoodSubStateManager;
 import binarycrows.robot.SeasonCode.SubStateManagers.SwerveDrive.DriveSubStateManager;
 import binarycrows.robot.SeasonCode.SubStateManagers.Transit.TransitSubStateManager;
 import binarycrows.robot.SeasonCode.SubStateManagers.Turret.TurretSubStateManager;
+import binarycrows.robot.Utils.LoggingUtils;
 import binarycrows.robot.Utils.Tuning.RuntimeTunableValue;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -81,18 +82,31 @@ public class ShootingSubStateManager extends SubStateManager<ShootingStateReques
 
     public void targetPositionShiftLeft() {
         targetPositionFudgeFactor = targetPositionFudgeFactor.plus(new Translation2d(0, -ShootingConstants.positionFudgeFactorIncrement));
+        LoggingUtils.logToAdvantageKit(targetPositionFudgeFactor, "FeedForward/targetPosFudge");
+        System.out.println("Target Pos Fudge Value: " + targetPositionFudgeFactor);
+
+
     }
     public void targetPositionShiftRight() {
         targetPositionFudgeFactor = targetPositionFudgeFactor.plus(new Translation2d(0, ShootingConstants.positionFudgeFactorIncrement));
+        LoggingUtils.logToAdvantageKit(targetPositionFudgeFactor, "FeedForward/targetPosFudge");
+        System.out.println("Target Pos Fudge Value: " + targetPositionFudgeFactor);
     }
     public void targetPositionShiftForward() {
         targetPositionFudgeFactor = targetPositionFudgeFactor.plus(new Translation2d(ShootingConstants.positionFudgeFactorIncrement, 0));
+        LoggingUtils.logToAdvantageKit(targetPositionFudgeFactor, "FeedForward/targetPosFudge");
+        System.out.println("Target Pos Fudge Value: " + targetPositionFudgeFactor);
     }
     public void targetPositionShiftBackward() {
         targetPositionFudgeFactor = targetPositionFudgeFactor.plus(new Translation2d(-ShootingConstants.positionFudgeFactorIncrement, 0));
+        LoggingUtils.logToAdvantageKit(targetPositionFudgeFactor, "FeedForward/targetPosFudge");
+        System.out.println("Target Pos Fudge Value: " + targetPositionFudgeFactor);
+
     }
     public void targetPositionReset() {
         targetPositionFudgeFactor = Translation2d.kZero;
+        LoggingUtils.logToAdvantageKit(targetPositionFudgeFactor, "FeedForward/targetPosFudge");
+        System.out.println("Target Pos Fudge Value: " + targetPositionFudgeFactor);
     }
 
     public boolean getCanShoot() {

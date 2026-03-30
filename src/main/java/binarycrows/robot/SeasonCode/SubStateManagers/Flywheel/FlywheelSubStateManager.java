@@ -148,13 +148,19 @@ public class FlywheelSubStateManager extends SubStateManager<FlywheelStateReques
 
     public void increaseShooterFF() {
         flywheelVoltageFF += FlywheelConstants.shooterFFIncrement;
+        LoggingUtils.logToAdvantageKit(flywheelVoltageFF, "FeedForward/flywheelVoltage");
+        System.out.println("Flywheel Feed Forward Value: " + flywheelVoltageFF);
     }
 
     public void decreaseShooterFF() {
         flywheelVoltageFF -= FlywheelConstants.shooterFFIncrement;
+        LoggingUtils.logToAdvantageKit(flywheelVoltageFF, "FeedForward/flywheelVoltage");
+        System.out.println("Flywheel Feed Forward Value: " + flywheelVoltageFF);
     }
 
     public void flywheelFeedForwardReset() {
         flywheelVoltageFF = FlywheelConstants.baseShooterFF;
+        LoggingUtils.logToAdvantageKit(flywheelVoltageFF, "FeedForward/flywheelVoltage");
+        System.out.println("Flywheel Feed Forward Value: " + flywheelVoltageFF);
     }
 }

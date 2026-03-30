@@ -9,6 +9,7 @@ import binarycrows.robot.SeasonCode.Constants.MetaConstants;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 
 public class LoggingUtils {
@@ -58,6 +59,7 @@ public class LoggingUtils {
         else if (fieldValue instanceof double[]           ) Logger.recordOutput(absolutePath, (double[]           ) fieldValue);
         else if (fieldValue instanceof String[]           ) Logger.recordOutput(absolutePath, (String[]           ) fieldValue);
         else if (fieldValue instanceof SwerveModuleState[]) Logger.recordOutput(absolutePath, (SwerveModuleState[]) fieldValue);
+        else if (fieldValue instanceof Translation2d)       Logger.recordOutput(absolutePath, (Translation2d      ) fieldValue);
         
         else if (fieldValue instanceof StateRequest       ) Logger.recordOutput(absolutePath, ((StateRequest       ) fieldValue).getAsLoggable());
         else {
