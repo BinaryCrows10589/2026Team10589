@@ -197,12 +197,15 @@ public class Keybinds {
         buttonBoard1.onPress(ButtonBoardButtons.BB1.flywheelReverse, 
         StateRequestUtils.createStateRequestRunnable(FlywheelStateRequest.REVERSE), 
         StateRequestUtils.createStateRequestRunnable(FlywheelStateRequest.SHOOT_ON_THE_MOVE));
+        buttonBoard1.onPress(ButtonBoardButtons.BB1.flywheelFFReset, FlywheelSubStateManager.getInstance()::flywheelFeedForwardReset);
+
 
         // Shooting Fudge Factors
         buttonBoard1.onPress(ButtonBoardButtons.BB1.targetPositionLeft, ShootingSubStateManager.getInstance()::targetPositionShiftLeft);
         buttonBoard1.onPress(ButtonBoardButtons.BB1.targetPositionRight, ShootingSubStateManager.getInstance()::targetPositionShiftRight);
         buttonBoard1.onPress(ButtonBoardButtons.BB2.targetPositionForward, ShootingSubStateManager.getInstance()::targetPositionShiftForward);
         buttonBoard1.onPress(ButtonBoardButtons.BB2.targetPositionBackward, ShootingSubStateManager.getInstance()::targetPositionShiftBackward);
+        buttonBoard1.onPress(ButtonBoardButtons.BB1.targetPosReset, ShootingSubStateManager.getInstance()::targetPositionReset);
         
         // Climber
         /* 

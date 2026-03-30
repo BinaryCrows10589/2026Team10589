@@ -10,8 +10,8 @@ public class ButtonBoard extends GenericGamepad {
             public static final int extra1 = 1;
             public static final int manualHoodSwitch = 2;
             public static final int intakeDown = 3;
-            public static final int manualClimberDown = 4;
-            public static final int manualClimberUp = 5;
+            public static final int targetPosReset = 4;
+            public static final int flywheelFFReset = 5;
             public static final int climberDown = 6;
             public static final int climberUp = 7;
             public static final int extra2 = 8;

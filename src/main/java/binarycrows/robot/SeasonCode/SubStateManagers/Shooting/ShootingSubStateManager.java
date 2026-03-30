@@ -91,6 +91,9 @@ public class ShootingSubStateManager extends SubStateManager<ShootingStateReques
     public void targetPositionShiftBackward() {
         targetPositionFudgeFactor = targetPositionFudgeFactor.plus(new Translation2d(-ShootingConstants.positionFudgeFactorIncrement, 0));
     }
+    public void targetPositionReset() {
+        targetPositionFudgeFactor = Translation2d.kZero;
+    }
 
     public boolean getCanShoot() {
         if ((!robotOnCorrectSide && !robotInDepotThird && !robotInHumanPlayerThird) || closeToTrench) {

@@ -153,4 +153,8 @@ public class FlywheelSubStateManager extends SubStateManager<FlywheelStateReques
     public void decreaseShooterFF() {
         flywheelVoltageFF -= FlywheelConstants.shooterFFIncrement;
     }
+
+    public void flywheelFeedForwardReset() {
+        flywheelVoltageFF = FlywheelConstants.baseShooterFF;
+    }
 }
