@@ -85,4 +85,6 @@ public final class SwerveDriveConstants {
 
     public static final double rotationSlowModeMultipler = .2;
 
+    public static final double supplyCurrentLimit = 50;
+
 }

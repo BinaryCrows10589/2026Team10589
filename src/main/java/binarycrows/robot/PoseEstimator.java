@@ -22,9 +22,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
-import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Notifier;
 import gg.questnav.questnav.PoseFrame;
@@ -67,7 +65,7 @@ public class PoseEstimator {
             SwerveDriveConstants.driveKinematics,
             yawAngle,
             modulePositions, 
-            new Pose2d(Units.inchesToMeters((33.5/2)), 8.052-Units.inchesToMeters(33.5/2), yawAngle),
+            new Pose2d(3.547, 4.016, yawAngle),
             PoseEstimatorConstants.swerveDrivePoseEstimateTrust, PoseEstimatorConstants.visionPoseEstimateTrust);
         PoseEstimatorConstants.aprilTagLayout.setOrigin(PoseEstimatorConstants.originPosition);
         visionNotifier.startPeriodic(.1);
@@ -99,7 +97,7 @@ public class PoseEstimator {
                 lastFrameNum = newFrameCount;
                 robotFramesSinceLastQuestFrame = 0;
             } else robotFramesSinceLastQuestFrame++;
-            //System.out.println(robotFramesSinceLastQuestFrame);
+            ////System.out.println(robotFramesSinceLastQuestFrame);
             PoseEstimator.isQuestNavActive = robotFramesSinceLastQuestFrame < 25;//questNav.isConnected();// && questNav.isTracking();
             PoseEstimator.isTrackingActive = questNav.isTracking();
 
@@ -113,11 +111,11 @@ public class PoseEstimator {
                     questNavRestartAttempts++;
 
                     if (QuestADBWrapper.updateIsConnected()) { // QuestNav is not active but Quest ADB is connected, so try to restart QuestNav.
-                        System.out.println("Connected, running restart...");
+                        //System.out.println("Connected, running restart...");
                         isADBConnected = true;
                         QuestADBWrapper.tryRestartQuestNav();
                     } /*else {
-                        System.out.println("Disconnected, trying to reconnect lazily...");
+                        //System.out.println("Disconnected, trying to reconnect lazily...");
                         isADBConnected = false; // QuestNav is not active and Quest ADB is not connected, try connecting anyway
                         QuestADBWrapper.lazyTryConnect();
                     }*/
@@ -163,7 +161,7 @@ public class PoseEstimator {
     }
 
     public void resetRobotPose() {
-        Pose2d zeroPose = new Pose2d(Units.inchesToMeters((33.5/2)), 8.052-Units.inchesToMeters(33.5/2), new Rotation2d()); //new Pose2d(ConversionUtils.inchesToMeters(158.85), ConversionUtils.inchesToMeters(182.11-(25+(9/16))), new Rotation2d());
+        Pose2d zeroPose = new Pose2d(3.547, 4.016, new Rotation2d()); //new Pose2d(ConversionUtils.inchesToMeters(158.85), ConversionUtils.inchesToMeters(182.11-(25+(9/16))), new Rotation2d());
         DriveSubStateManager.getInstance().resetGyro(new Rotation2d());
         swerveDrivePoseEstimator.resetPosition(DriveSubStateManager.getInstance().getGyroAngleRotation2d(),
             DriveSubStateManager.getInstance().getModulePositions(), zeroPose);
@@ -253,7 +251,7 @@ public class PoseEstimator {
                         Pose2d fudgedPosed = new Pose2d(estimatedPose2d.getX() + xFudge, estimatedPose2d.getY() + yFudge, Rotation2d.fromDegrees(estimatedPose2d.getRotation().getDegrees() + rotFudge));
                         if(!DriverStation.isEnabled() || ConversionUtils.getIsInTolerance(fudgedPosed, estimatedPose2d,
                             PoseEstimatorConstants.maxPoseDeltaFromCurrent)) {
-                            swerveDrivePoseEstimator.addVisionMeasurement(fudgedPosed, estimatedPose.timestampSeconds, PoseEstimatorConstants.visionPoseEstimateTrust);
+                            //swerveDrivePoseEstimator.addVisionMeasurement(fudgedPosed, estimatedPose.timestampSeconds, PoseEstimatorConstants.visionPoseEstimateTrust);
                         }
                     }
                 }

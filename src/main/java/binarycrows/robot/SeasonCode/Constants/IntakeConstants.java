@@ -22,6 +22,8 @@ public final class IntakeConstants {
         public static final double intakeWheelMaxVoltage = 6;
 
         public static final double overdriveVoltage = 3.5;
+
+        public static final double supplyCurrentLimit = 60;
     }
 
     public final class Pivot {
@@ -52,7 +54,7 @@ public final class IntakeConstants {
         public static final double manualVoltage = 1.5;
         public static final double manualVoltageFF = 1;
 
-        public static final double torqueCurrentLimit = 60;
+        public static final double torqueCurrentLimit = 20;
 
         
 }

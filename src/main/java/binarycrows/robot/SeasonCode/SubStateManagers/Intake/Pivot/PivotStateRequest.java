@@ -6,5 +6,5 @@ public enum PivotStateRequest {
     RAISED, 
 
     MANUAL_OVERRIDE, 
-    RESTORE_CLOSEST
+    RESTORE_CLOSEST, DOWN_DELAYED
 }

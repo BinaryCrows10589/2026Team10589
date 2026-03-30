@@ -20,6 +20,8 @@ public final class FlywheelConstants {
     public static final double idleRecoveryVoltage = 0;
     public static final double idleMinVelocityRPS = 0;
 
+    public static final double statorLimit = 60;
+
     public static final MotorAlignmentValue isSlaveReversed = MotorAlignmentValue.Opposed;
 
     public static final double gearRatio = 2;
@@ -36,4 +38,8 @@ public final class FlywheelConstants {
             0,0.4,0.6,0.8,1,1.2,1.4,1.6,1.8,2,2.2,2.4,2.6,2.8,3,3.2,3.4,3.6,3.8,4,4.2,4.4,4.6,4.8,5,5.2,5.4,5.6,5.8,6,6.2,6.4,6.6,6.8,7,7.2,7.4,7.6,7.8,8,8.2,8.4,8.6,8.8,9,9.2,9.4,9.6,9.8,10,10.2,10.4,10.6,10.8,10.999999999999993
         }, 
         false);
+
+    public static final double torqueCurrentLimit = 800;
+
+    public static final double supplyCurrentLimit = 40;
 }

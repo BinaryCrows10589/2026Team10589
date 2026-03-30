@@ -1,7 +1,6 @@
 package binarycrows.robot.SeasonCode.SubStateManagers.Transit;
 
 import com.ctre.phoenix6.configs.TalonFXSConfiguration;
-import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFXS;
 import com.ctre.phoenix6.signals.MotorArrangementValue;
@@ -42,6 +41,9 @@ public class TransitTalonFXS implements TransitIO {
         longitudinalMotorConfig.Voltage.PeakForwardVoltage = TransitConstants.maxLongitudinalMotorVoltage;
         longitudinalMotorConfig.Voltage.PeakReverseVoltage = -TransitConstants.maxLongitudinalMotorVoltage;
 
+        longitudinalMotorConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
+        longitudinalMotorConfig.CurrentLimits.SupplyCurrentLimit = TransitConstants.supplyCurrentLimit;
+
         this.longitudinalMotor.getConfigurator().apply(longitudinalMotorConfig);
 
         // Left Latitudinal Motor
@@ -60,17 +62,20 @@ public class TransitTalonFXS implements TransitIO {
         latitudinalMasterMotorConfig.Voltage.PeakForwardVoltage = TransitConstants.maxLatitudinalMotorVoltage;
         latitudinalMasterMotorConfig.Voltage.PeakReverseVoltage = -TransitConstants.maxLatitudinalMotorVoltage;
 
+        latitudinalMasterMotorConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
+        latitudinalMasterMotorConfig.CurrentLimits.SupplyCurrentLimit = TransitConstants.supplyCurrentLimit;
+
         this.leftLatitudinalMotor.getConfigurator().apply(latitudinalMasterMotorConfig);
         
         // Right Longitudinal Motor
-        rightLatitudinalMotor = new TalonFXS(CANIDs.RIO.rightLatitudinalMotor);
+        /*rightLatitudinalMotor = new TalonFXS(CANIDs.RIO.rightLatitudinalMotor);
 
         this.rightLatitudinalMotor.getVelocity().setUpdateFrequency(20);
         this.rightLatitudinalMotor.getAcceleration().setUpdateFrequency(20);
         this.rightLatitudinalMotor.getPosition().setUpdateFrequency(20);
         this.rightLatitudinalMotor.getTorqueCurrent().setUpdateFrequency(50);
 
-        this.rightLatitudinalMotor.getConfigurator().apply(latitudinalMasterMotorConfig);
+        this.rightLatitudinalMotor.getConfigurator().apply(latitudinalMasterMotorConfig);*/
 
         //rightLatitudinalMotor.setControl(new Follower(leftLatitudinalMotor.getDeviceID(), TransitConstants.isLatitudinalSlaveReversed));
 
@@ -89,6 +94,9 @@ public class TransitTalonFXS implements TransitIO {
         inAndUpMotorConfig.Voltage.PeakForwardVoltage = TransitConstants.maxInAndUpMotorVoltage;
         inAndUpMotorConfig.Voltage.PeakReverseVoltage = -TransitConstants.maxInAndUpMotorVoltage;
         inAndUpMotorConfig.Commutation.MotorArrangement = MotorArrangementValue.Minion_JST;
+
+        inAndUpMotorConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
+        inAndUpMotorConfig.CurrentLimits.SupplyCurrentLimit = TransitConstants.supplyCurrentLimit;
 
         this.inAndUpMotor.getConfigurator().apply(inAndUpMotorConfig);
     }
@@ -125,11 +133,11 @@ public class TransitTalonFXS implements TransitIO {
         outputs.leftLatitudinalMotorSupplyAmps = leftLatitudinalMotor.getSupplyCurrent().getValueAsDouble();
         outputs.leftLatitudinalMotorTorqueAmps = leftLatitudinalMotor.getTorqueCurrent().getValueAsDouble();
 
-        outputs.rightLatitudinalMotorRequestedVoltage = latitudinalMasterMotorVoltageRequest.Output;
+        /*outputs.rightLatitudinalMotorRequestedVoltage = latitudinalMasterMotorVoltageRequest.Output;
         outputs.rightLatitudinalMotorVelocityRPS = rightLatitudinalMotor.getVelocity().getValueAsDouble();
         outputs.rightLatitudinalMotorAppliedVoltage = rightLatitudinalMotor.getMotorVoltage().getValueAsDouble();
         outputs.rightLatitudinalMotorSupplyAmps = rightLatitudinalMotor.getSupplyCurrent().getValueAsDouble();
-        outputs.rightLatitudinalMotorTorqueAmps = rightLatitudinalMotor.getTorqueCurrent().getValueAsDouble();
+        outputs.rightLatitudinalMotorTorqueAmps = rightLatitudinalMotor.getTorqueCurrent().getValueAsDouble();*/
 
         outputs.inAndUpMotorRequestedVoltage = inAndUpMotorVoltageRequest.Output;
         outputs.inAndUpMotorVelocityRPS = inAndUpMotor.getVelocity().getValueAsDouble();
@@ -138,19 +146,19 @@ public class TransitTalonFXS implements TransitIO {
         outputs.inAndUpMotorTorqueAmps =  inAndUpMotor.getTorqueCurrent().getValueAsDouble();
 
         if (outputs.leftLatitudinalMotorAppliedVoltage != 0 && outputs.leftLatitudinalMotorVelocityRPS < TransitConstants.stalledRPSThreshold) {
-            System.out.println("Left latitudinal motor stalled for " + transitStalledFrameCounter + " frames");
+            //System.out.println("Left latitudinal motor stalled for " + transitStalledFrameCounter + " frames");
             transitStalledFrameCounter++;
             if (transitStalledFrameCounter == TransitConstants.stalledFramesToInvert) {
-                System.out.println("Stalled for 25 frames, inverting transit");
+                //System.out.println("Stalled for 25 frames, inverting transit");
                 invertVoltages(); // Invert on the 25th frame only
             } else if (transitStalledFrameCounter >= TransitConstants.stalledFramesToAbort) {
-                System.out.println("Stalled for >=50 frames, resetting counter and uninverting");
+                //System.out.println("Stalled for >=50 frames, resetting counter and uninverting");
                 invertVoltages(); // Uninvert if we are still stalled
                 transitStalledFrameCounter = 0;
             }
         } else {
             if (transitStalledFrameCounter > TransitConstants.stalledFramesToInvert && transitStalledFrameCounter < TransitConstants.stalledFramesToAbort) {
-                System.out.println("Unstalled at frame " + transitStalledFrameCounter + ", uninverting");
+                //System.out.println("Unstalled at frame " + transitStalledFrameCounter + ", uninverting");
                 invertVoltages(); // We must have inverted on a previous frame, uninvert
             }
             transitStalledFrameCounter = 0;

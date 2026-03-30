@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
+
 import binarycrows.robot.SeasonCode.Constants.MetaConstants;
 
 public class QuestADBWrapper {
@@ -19,9 +20,13 @@ public class QuestADBWrapper {
     public static Process currentADBCommand;
 
     public static final String adbExecPath = "~/adb";
-    public static final String questAddress = "10.105.89.200:5555";
+    public static String questAddress = "10.105.89.200:5555";
 
     public static boolean isConnected = false;
+
+    public static void setIPEnd(Integer ipEnd) {
+        questAddress = "10.105.89." + ipEnd.toString() + ":5555";
+    }
 
     public static <T> T[] add2BeginningOfArray(T[] elements, T element1, T element2, T element3)
     {
@@ -53,7 +58,7 @@ public class QuestADBWrapper {
         if (currentADBCommand == null) return;
         try {
             if (!currentADBCommand.waitFor(500, TimeUnit.MILLISECONDS)) {
-                System.out.println("Timed out");
+                //System.out.println("Timed out");
                 currentADBCommand.destroyForcibly();
             }
         } catch (InterruptedException e) {
@@ -78,7 +83,7 @@ public class QuestADBWrapper {
     public static boolean updateIsConnected() {
         if (isConnected) return true;
         QuestNavADBCommandResult result = sendQuestNavADBCommand("get-state");
-        //System.out.println(result.name());
+        ////System.out.println(result.name());
         if (result == QuestNavADBCommandResult.SUCCESS) {
             waitForCurrentADBCommand();
             String output = getCurrentADBCommandOutput();

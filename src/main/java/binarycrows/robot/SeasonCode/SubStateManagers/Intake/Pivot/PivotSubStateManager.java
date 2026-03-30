@@ -34,6 +34,10 @@ public class PivotSubStateManager extends SubStateManager<PivotStateRequest>  {
         pivotTargetPosition = new RuntimeTunableValue("Tuning/Pivot/TargetPosition", 2);
     }
 
+    // TODO: No.
+    long startTime;
+    final long timeTillStart = 500;
+
     @Override
     public void recieveStateRequest(StateRequest<PivotStateRequest> stateRequest) {
         if (stateRequest.getStateRequestType() == PivotStateRequest.RESTORE_CLOSEST) {
@@ -50,9 +54,12 @@ public class PivotSubStateManager extends SubStateManager<PivotStateRequest>  {
         if (stateRequest == this.activeStateRequest) {
             switch (this.activeStateRequest.getStateRequestType()) {
                 case DOWN:
-                    System.out.println("NEEDS TO START ROLLERS");
+                    //System.out.println("NEEDS TO START ROLLERS");
                     needsToStartRollers = true;
                     break;
+                case DOWN_DELAYED:
+                    needsToStartRollers = false;
+                    startTime = System.currentTimeMillis();
                 default:
                     needsToStartRollers = false;
                     break;
@@ -75,7 +82,7 @@ public class PivotSubStateManager extends SubStateManager<PivotStateRequest>  {
             case DOWN:
                 if (needsToStartRollers && outputs.encoderRotation.getRotations() > IntakeConstants.Pivot.intakeRollerActivateThreshold.getRotations()) {
                     needsToStartRollers = false;
-                    System.out.println("START ROLLERS");
+                    //System.out.println("START ROLLERS");
                     new StateRequest<>(IntakeRollersStateRequest.INTAKING, StateRequestPriority.NORMAL).dispatchSelf();;
                 }
                 delta = IntakeConstants.Pivot.pivotDownPosition.minus(outputs.encoderRotation).getDegrees();
@@ -107,6 +114,11 @@ public class PivotSubStateManager extends SubStateManager<PivotStateRequest>  {
                 else voltage = 0;
                 this.activeStateRequest.updateStatus(StateRequestStatus.FULFILLED);
                 break;
+            case DOWN_DELAYED:
+                if (startTime + timeTillStart <= System.currentTimeMillis()) (new StateRequest<>(PivotStateRequest.DOWN, StateRequestPriority.NORMAL)).dispatchSelf();
+                
+                this.activeStateRequest.updateStatus(StateRequestStatus.FULFILLED);
+
             case MANUAL_OVERRIDE:
                 voltage = manualDirection * IntakeConstants.Pivot.manualVoltage + outputs.encoderRotation.getCos() * IntakeConstants.Pivot.manualVoltageFF;
                 break;

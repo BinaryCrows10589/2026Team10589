@@ -35,6 +35,9 @@ public class IntakeRollersTalonFXS implements IntakeRollersIO {
         motorConfig.Voltage.PeakForwardVoltage = IntakeConstants.Rollers.maxMotorVoltage;
         motorConfig.Voltage.PeakReverseVoltage = -IntakeConstants.Rollers.maxMotorVoltage;
 
+        motorConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
+        motorConfig.CurrentLimits.SupplyCurrentLimit = IntakeConstants.Rollers.supplyCurrentLimit;
+
         this.motor.getConfigurator().apply(motorConfig);
     }
 

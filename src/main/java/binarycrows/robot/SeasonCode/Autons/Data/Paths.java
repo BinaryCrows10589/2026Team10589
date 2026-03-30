@@ -6,62 +6,50 @@ import binarycrows.robot.SeasonCode.Autons.Utils.Path;
 public class Paths {
     // Control points are determined in simulation
 
+    // INVERT
     public static final Path startPosition_HumanPlayerTrench_Wall_L_In =
         new Path(
         Points.startPosition_HumanPlayerTrench_Wall,
-        Points.InitialFuelQuadrant_OwnAllianceHumanPlayer,
+        new CMAutonPoint(7.775+0.8, 8.069- (7.554-0), 0, 0, 0, 0),
+        new CMAutonPoint(7.775+.8, 8.069- (7.554-0.75), 0, 0, 0, 0),
         Points.CenterFuelQuadrant_OwnAllianceHumanPlayer);
-
     
-    public static final Path HumanPlayerSide_L_Out_Trench =
+    public static final Path startPosition_HumanPlayerTrench_Wall_L_Arch_Half_One =
         new Path(
         Points.CenterFuelQuadrant_OwnAllianceHumanPlayer,
-        Points.InitialFuelQuadrant_OwnAllianceHumanPlayer,
-        Points.ShootPosition_HumanPlayerTrench_Wall);
-    
-    public static final Path HumanPlayerSide_L_Out_Ramp =
-        new Path(
-        Points.CenterFuelQuadrant_OwnAllianceHumanPlayer,
-        Points.MidFuelQuadrant_OwnAllianceHumanPlayer,
-        Points.ShootPosition_HumanPlayerRamp_Center);
-    
-    public static final Path startPosition_HumanPlayerTrench_Wall_P_In =
-        new Path(
-        Points.startPosition_HumanPlayerTrench_Wall,
-        Points.InitialFuelQuadrant_OwnAllianceHumanPlayer,
-        Points.HumanPlayer_P_In_ControlPoints[0],
-        Points.HumanPlayer_P_In_ControlPoints[1],
-        Points.HumanPlayer_P_In_ControlPoints[2],
-        Points.PEnd_OwnAllianceHumanPlayer);
-    
-    public static final Path HumanPlayerSide_P_Out_Trench =
-        new Path(
-        Points.PEnd_OwnAllianceHumanPlayer,
-        new CMAutonPoint(6, 0.5),
-        Points.ShootPosition_HumanPlayerTrench_Wall);
+        new CMAutonPoint(7.690-1.25, 8.069- (3.371-0.3)),
+        Points.crossOverPointHumanPlayer);
 
-    public static final Path HumanPlayerSide_P_Out_Ramp =
+    public static final Path startPosition_HumanPlayerTrench_Wall_L_Return =
         new Path(
-        Points.PEnd_OwnAllianceHumanPlayer,
-        new CMAutonPoint(6, 2.5),
-        Points.ShootPosition_HumanPlayerRamp_Center);
+        Points.crossOverPointHumanPlayer, // TODO: Make constant
+        new CMAutonPoint(4.598, 8.069- (5.639-0.5)),
 
-    public static final Path HumanPlayerSide_P_In_Ramp =
+        new CMAutonPoint(2.738, 8.069- 6.043));
+
+    public static final Path startPosition_HumanPlayerTrench_Wall_L_In_Second_Crawl = new Path(
+        new CMAutonPoint(2.738, 8.069- 6.043),
+        new CMAutonPoint(2.738, 8.069- (7.457+0.25))
+    );
+
+    public static final Path startPosition_HumanPlayerTrench_Wall_L_In_Second = new Path(
+        new CMAutonPoint(2.738, 8.069- (7.457+0.25)),
+        Points.startPosition_HumanPlayerTrench_Wall_Second,
+        new CMAutonPoint(7.775+.8, 8.069- (7.554-0), 0, 0, 0, 0),
+        new CMAutonPoint(7.817, 8.069- 6.603, 0, 0, 0, 0),
+        Points.CenterFuelQuadrant_OwnAllianceHumanPlayer_Second
+    );
+
+    public static final Path startPosition_HumanPlayerTrench_Wall_L_Arch_Half_One_Second =
         new Path(
-        Points.ShootPosition_HumanPlayerRamp_Center,
-        Points.ShootPosition_HumanPlayerRamp_Center_to_InitialFuelQuadrant_OwnAllianceHumanPlayer_ControlPoint,
-        Points.InitialFuelQuadrant_OwnAllianceHumanPlayer,
-        Points.HumanPlayer_P_In_ControlPoints[0],
-        Points.HumanPlayer_P_In_ControlPoints[1],
-        Points.HumanPlayer_P_In_ControlPoints[2],
-        Points.PEnd_OwnAllianceHumanPlayer);
-    
-    public static final Path HumanPlayerSide_L_In_Ramp =
-        new Path(
-        Points.ShootPosition_HumanPlayerRamp_Center,
-        Points.ShootPosition_HumanPlayerRamp_Center_to_InitialFuelQuadrant_OwnAllianceHumanPlayer_ControlPoint,
-        Points.InitialFuelQuadrant_OwnAllianceHumanPlayer,
-        Points.CenterFuelQuadrant_OwnAllianceHumanPlayer);
+        Points.CenterFuelQuadrant_OwnAllianceHumanPlayer_Second,
+        new CMAutonPoint(7.817, 8.069- 6.603, 0, 0, 0, 0),
+        Points.crossOverPointHumanPlayer);
+
+    public static final Path startPosition_HumanPlayerTrench_Wall_L_Second_Crawl = new Path(
+        new CMAutonPoint(2.719, 8.069- 5.698),
+        new CMAutonPoint(2.738, 8.069- (7.457+0.25))
+    );
     
     // Depot side
     
@@ -76,20 +64,21 @@ public class Paths {
         new Path(
         Points.CenterFuelQuadrant_OwnAllianceDepot,
         new CMAutonPoint(7.690-1.25, 3.371-0.3),
-        new CMAutonPoint(5.714, 6.455-0.5));
+        Points.crossOverPoint);
 
     public static final Path startPosition_DepotTrench_Wall_L_Arch_Half_One_Second =
         new Path(
         Points.CenterFuelQuadrant_OwnAllianceDepot_Second,
         new CMAutonPoint(7.817, 6.603, 0, 0, 0, 0),
-        new CMAutonPoint(5.714, 6.455-0.5));
+        Points.crossOverPoint);
     
   
 
     public static final Path startPosition_DepotTrench_Wall_L_Return =
         new Path(
-        new CMAutonPoint(5.714, 6.455-0.5), // TODO: Make constant
+        Points.crossOverPoint, // TODO: Make constant
         new CMAutonPoint(4.598, 5.639-0.5),
+
         new CMAutonPoint(2.738, 6.043));
 
     public static final Path startPosition_DepotTrench_Wall_L_In_Second_Crawl = new Path(

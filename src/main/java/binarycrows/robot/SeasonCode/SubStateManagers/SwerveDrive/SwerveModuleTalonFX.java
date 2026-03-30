@@ -124,7 +124,8 @@ public class SwerveModuleTalonFX implements SwerveModuleIO {
         driveMotorConfig.Voltage.PeakForwardVoltage = SwerveDriveConstants.maxDriveMotorVoltage;
         driveMotorConfig.Voltage.PeakReverseVoltage = -SwerveDriveConstants.maxDriveMotorVoltage;
 
-
+        driveMotorConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
+        driveMotorConfig.CurrentLimits.SupplyCurrentLimit = SwerveDriveConstants.supplyCurrentLimit;
         
         //this.driveMotor.optimizeBusUtilization();
         this.driveMotor.getConfigurator().apply(driveMotorConfig);
@@ -152,6 +153,8 @@ public class SwerveModuleTalonFX implements SwerveModuleIO {
         turnMotorConfig.Voltage.PeakForwardVoltage = SwerveDriveConstants.maxTurnMotorVoltage;
         turnMotorConfig.Voltage.PeakReverseVoltage = -SwerveDriveConstants.maxTurnMotorVoltage;
 
+        turnMotorConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
+        turnMotorConfig.CurrentLimits.SupplyCurrentLimit = SwerveDriveConstants.supplyCurrentLimit;
 
         //this.turnMotor.optimizeBusUtilization();
         this.turnMotor.getConfigurator().apply(turnMotorConfig);

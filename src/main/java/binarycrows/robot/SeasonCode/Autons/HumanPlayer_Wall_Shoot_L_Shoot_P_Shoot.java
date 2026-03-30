@@ -18,8 +18,8 @@ import binarycrows.robot.StateRequestGroup.SequentialGroup;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 
-public class DepotTrench_Wall_Shoot_L_Shoot_P_Shoot {
-    public static Pose2d startingPoint = new Pose2d(Points.startPosition_DepotTrench_Wall.getTranslation2d(), Rotation2d.fromDegrees(90));
+public class HumanPlayer_Wall_Shoot_L_Shoot_P_Shoot {
+    public static Pose2d startingPoint = new Pose2d(Points.startPosition_HumanPlayerTrench_Wall.getTranslation2d(), Rotation2d.fromDegrees(-90));
 
     private static double speedPercent = 0.434782;
 
@@ -34,9 +34,9 @@ public class DepotTrench_Wall_Shoot_L_Shoot_P_Shoot {
             new StateRequest<>(PivotStateRequest.DOWN_DELAYED, StateRequestPriority.NORMAL),
 
             new CMStateRequest(new CMTrajectory(
-                "startPosition_DepotTrench_Wall_L_In", 
-                Paths.startPosition_DepotTrench_Wall_L_In.pathPoints(), 
-                new CMRotation[] {new CMRotation(90, 0, 0.25, 5), new CMRotation(90, 0, 1, 5)},
+                "startPosition_HumanPlayerTrench_Wall_L_In", 
+                Paths.startPosition_HumanPlayerTrench_Wall_L_In.pathPoints(), 
+                new CMRotation[] {new CMRotation(-90, 0, 0.25, 5), new CMRotation(-90, 0, 1, 5)},
                 new CMEvent[] {}, 
                 4,
                 10,
@@ -53,9 +53,9 @@ public class DepotTrench_Wall_Shoot_L_Shoot_P_Shoot {
                 15*1000)),
             
             new CMStateRequest(new CMTrajectory(
-                "startPosition_DepotTrench_Wall_Arch_Half_One", 
-                Paths.startPosition_DepotTrench_Wall_L_Arch_Half_One.pathPoints(), 
-                new CMRotation[] {new CMRotation(-90, -1, .5, 20)},
+                "startPosition_HumanPlayerTrench_Wall_Arch_Half_One", 
+                Paths.startPosition_HumanPlayerTrench_Wall_L_Arch_Half_One.pathPoints(), 
+                new CMRotation[] {new CMRotation(90, -1, .5, 20)},
                 new CMEvent[] {}, 
                 4,
                 15,
@@ -75,8 +75,8 @@ public class DepotTrench_Wall_Shoot_L_Shoot_P_Shoot {
 
 
             /*new CMStateRequest(new CMTrajectory(
-                "startPosition_DepotTrench_Wall_Arch_Half_Two", 
-                Paths.startPosition_DepotTrench_Wall_L_Arch_Half_Two.pathPoints(), 
+                "startPosition_HumanPlayerTrench_Wall_Arch_Half_Two", 
+                Paths.startPosition_HumanPlayerTrench_Wall_L_Arch_Half_Two.pathPoints(), 
                 new CMRotation[] {new CMRotation(-90, -1, .5, 5)},
                 new CMEvent[] {}, 
                 4,
@@ -94,17 +94,17 @@ public class DepotTrench_Wall_Shoot_L_Shoot_P_Shoot {
                 15*1000)),*/
 
             new CMStateRequest(new CMTrajectory(
-                "startPosition_DepotTrench_Wall_Return", 
-                Paths.startPosition_DepotTrench_Wall_L_Return.pathPoints(), 
-                new CMRotation[] {new CMRotation(180, 0, .5, 5)},
+                "startPosition_HumanPlayerTrench_Wall_Return", 
+                Paths.startPosition_HumanPlayerTrench_Wall_L_Return.pathPoints(), 
+                new CMRotation[] {new CMRotation(-180, 0, .5, 5)},
                 new CMEvent[] {}, 
                 4,
                 15,
                 TrajectoryPriority.SPLIT_PROPORTIONALLY,
                 2.5,
-                2.5 ,
-                4.4 ,
-                1 ,
+                2.5,
+                4.4,
+                1,
                 true,
                 2,
                 0.1,
@@ -118,20 +118,20 @@ public class DepotTrench_Wall_Shoot_L_Shoot_P_Shoot {
             new StateRequest<>(ShootingStateRequest.FORCE_SHOOT, StateRequestPriority.NORMAL),
             
             new CMStateRequest(new CMTrajectory(
-                "startPosition_DepotTrench_Wall_In_Second_Crawl", 
-                Paths.startPosition_DepotTrench_Wall_L_In_Second_Crawl.pathPoints(), 
+                "startPosition_HumanPlayerTrench_Wall_In_Second_Crawl", 
+                Paths.startPosition_HumanPlayerTrench_Wall_L_In_Second_Crawl.pathPoints(), 
                 new CMRotation[] {
-                    new CMRotation(-200, 0, .05, 25, 25, 25,  0.01),
-                    new CMRotation(-160, 0, .15, 25, 25, 25,  0.01),
-                    new CMRotation(-200, 0, .25, 25, 25, 25,  0.01),
-                    new CMRotation(-160, 0, .35, 25, 25, 25,  0.01),
-                    new CMRotation(-200, 0, .45, 25, 25, 25,  0.01),
-                    new CMRotation(-160, 0, .55, 25, 25, 25,  0.01),
-                    new CMRotation(-200, 0, .65, 25, 25, 25,  0.01),
-                    new CMRotation(-160, 0, .75, 25, 25, 25,  0.01),
-                    new CMRotation(-200, 0, .85, 25, 25, 25,  0.01),
-                    new CMRotation(-160, 0, .95, 25, 25, 25,  0.01),
-                    new CMRotation(-200, 0, 1, 2)
+                    new CMRotation(200, 0, .05, 25, 25, 25,  0.01),
+                    new CMRotation(160, 0, .15, 25, 25, 25,  0.01),
+                    new CMRotation(200, 0, .25, 25, 25, 25,  0.01),
+                    new CMRotation(160, 0, .35, 25, 25, 25,  0.01),
+                    new CMRotation(200, 0, .45, 25, 25, 25,  0.01),
+                    new CMRotation(160, 0, .55, 25, 25, 25,  0.01),
+                    new CMRotation(200, 0, .65, 25, 25, 25,  0.01),
+                    new CMRotation(160, 0, .75, 25, 25, 25,  0.01),
+                    new CMRotation(200, 0, .85, 25, 25, 25,  0.01),
+                    new CMRotation(160, 0, .95, 25, 25, 25,  0.01),
+                    new CMRotation(200, 0, 1, 2)
                 },
                 new CMEvent[] {
                     new CMEvent("raiseIntake1", new StateRequest<>(PivotStateRequest.RAISED, StateRequestPriority.NORMAL)::dispatchSelf, 0.25),
@@ -160,11 +160,11 @@ public class DepotTrench_Wall_Shoot_L_Shoot_P_Shoot {
             new StateRequest<>(IntakeRollersStateRequest.INTAKING, StateRequestPriority.NORMAL),
 
             new CMStateRequest(new CMTrajectory(
-                "startPosition_DepotTrench_Wall_In_Second", 
-                Paths.startPosition_DepotTrench_Wall_L_In_Second.pathPoints(), 
+                "startPosition_HumanPlayerTrench_Wall_In_Second", 
+                Paths.startPosition_HumanPlayerTrench_Wall_L_In_Second.pathPoints(), 
                 new CMRotation[] {
-                    new CMRotation(-200, 0, .5, 10),
-                    new CMRotation(90, 0, .9, 10)},
+                    new CMRotation(200, 0, .5, 10),
+                    new CMRotation(-90, 0, .9, 10)},
                 new CMEvent[] {}, 
                 4,
                 10,
@@ -180,13 +180,13 @@ public class DepotTrench_Wall_Shoot_L_Shoot_P_Shoot {
                 0.04,
                 15*1000)),
 
-            new StateRequest<>(IntakeRollersStateRequest.OVERDRIVE, StateRequestPriority.NORMAL),
+            //new StateRequest<>(IntakeRollersStateRequest.OVERDRIVE, StateRequestPriority.NORMAL),
 
 
             new CMStateRequest(new CMTrajectory(
-                "startPosition_DepotTrench_Wall_Arch_Half_One_Second", 
-                Paths.startPosition_DepotTrench_Wall_L_Arch_Half_One_Second.pathPoints(), 
-                new CMRotation[] {new CMRotation(180, 0, .5, 20)},
+                "startPosition_HumanPlayerTrench_Wall_Arch_Half_One_Second", 
+                Paths.startPosition_HumanPlayerTrench_Wall_L_Arch_Half_One_Second.pathPoints(), 
+                new CMRotation[] {new CMRotation(-180, 0, .5, 20)},
                 new CMEvent[] {}, 
                 4,
                 15,
@@ -208,9 +208,9 @@ public class DepotTrench_Wall_Shoot_L_Shoot_P_Shoot {
 
 
             new CMStateRequest(new CMTrajectory(
-                "startPosition_DepotTrench_Wall_Return_Second", 
-                Paths.startPosition_DepotTrench_Wall_L_Return.pathPoints(), 
-                new CMRotation[] {new CMRotation(180, 0, .5, 8)},
+                "startPosition_HumanPlayerTrench_Wall_Return_Second", 
+                Paths.startPosition_HumanPlayerTrench_Wall_L_Return.pathPoints(), 
+                new CMRotation[] {new CMRotation(-180, 0, .5, 8)},
                 new CMEvent[] {}, 
                 4,
                 15,
@@ -230,8 +230,8 @@ public class DepotTrench_Wall_Shoot_L_Shoot_P_Shoot {
 
             
             new CMStateRequest(new CMTrajectory(
-                "startPosition_DepotTrench_Wall_L_Second_Crawl", 
-                Paths.startPosition_DepotTrench_Wall_L_Second_Crawl.pathPoints(), 
+                "startPosition_HumanPlayerTrench_Wall_L_Second_Crawl", 
+                Paths.startPosition_HumanPlayerTrench_Wall_L_Second_Crawl.pathPoints(), 
                 new CMRotation[] {},
                 new CMEvent[] {}, 
                 4,

@@ -33,6 +33,12 @@ public class FlywheelTalonFX implements FlywheelIO {
 
         masterMotorConfig.Voltage.PeakForwardVoltage = FlywheelConstants.maxMotorVoltage;
         masterMotorConfig.Voltage.PeakReverseVoltage = -FlywheelConstants.maxMotorVoltage;
+        
+        masterMotorConfig.TorqueCurrent.PeakForwardTorqueCurrent = FlywheelConstants.torqueCurrentLimit;
+        masterMotorConfig.TorqueCurrent.PeakReverseTorqueCurrent = -FlywheelConstants.torqueCurrentLimit;
+
+        masterMotorConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
+        masterMotorConfig.CurrentLimits.SupplyCurrentLimit = FlywheelConstants.supplyCurrentLimit;
 
         this.leftMotor.getConfigurator().apply(masterMotorConfig);
         

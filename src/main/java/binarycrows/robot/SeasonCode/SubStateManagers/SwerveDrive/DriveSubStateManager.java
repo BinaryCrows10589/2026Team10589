@@ -255,6 +255,9 @@ public class DriveSubStateManager extends SubStateManager<DriveStateRequest> {
 
                     this.activeStateRequest.updateStatus(StateRequestStatus.RUNNING);
                     break;
+                case DISABLE:
+                    this.activeStateRequest.updateStatus(StateRequestStatus.RUNNING);
+                    break;
                 default:
                     frontLeftSwerveModule.stopModuleDrive();
                     this.activeStateRequest.updateStatus(StateRequestStatus.FULFILLED);
@@ -282,7 +285,7 @@ public class DriveSubStateManager extends SubStateManager<DriveStateRequest> {
                         else {
                                 recordVoltageTableValue();
                                 currentVoltageTableTargetValue -= voltageTableStep;
-                                System.out.println("Dec voltage to " + currentVoltageTableTargetValue);
+                                //System.out.println("Dec voltage to " + currentVoltageTableTargetValue);
                                 frontLeftSwerveModule.setDesiredModuleDriveVoltage(currentVoltageTableTargetValue);
                                 frontRightSwerveModule.setDesiredModuleDriveVoltage(currentVoltageTableTargetValue);
                                 backLeftSwerveModule.setDesiredModuleDriveVoltage(currentVoltageTableTargetValue);
@@ -297,13 +300,13 @@ public class DriveSubStateManager extends SubStateManager<DriveStateRequest> {
                             backRightSwerveModule.getModuleState().speedMetersPerSecond != 0
                             ) {
                             consecutiveMovement++;
-                            System.out.println("Moving!");
+                            //System.out.println("Moving!");
                             
                         } else {
                             consecutiveMovement = 0;
                             recordVoltageTableValue();
                             currentVoltageTableTargetValue += voltageTableStep;
-                            System.out.println("Inc voltage to " + currentVoltageTableTargetValue);
+                            //System.out.println("Inc voltage to " + currentVoltageTableTargetValue);
                             frontLeftSwerveModule.setDesiredModuleDriveVoltage(currentVoltageTableTargetValue);
                             frontRightSwerveModule.setDesiredModuleDriveVoltage(currentVoltageTableTargetValue);
                             backLeftSwerveModule.setDesiredModuleDriveVoltage(currentVoltageTableTargetValue);
@@ -346,10 +349,10 @@ public class DriveSubStateManager extends SubStateManager<DriveStateRequest> {
                     case DRIVE_CROWMOTION:
                         CrowMotionConstants.currentTrajectory.runTrajectoryFrame();
                         drivePeriodic();
-                        System.out.println("-- CM --");
-                        System.out.println(CrowMotionConstants.currentTrajectory.isCompleted());
-                        System.out.println(CrowMotionConstants.currentTrajectory.toString());
-                        System.out.println(this.activeStateRequest.getStatus());
+                        //System.out.println("-- CM --");
+                        //System.out.println(CrowMotionConstants.currentTrajectory.isCompleted());
+                        //System.out.println(CrowMotionConstants.currentTrajectory.toString());
+                        //System.out.println(this.activeStateRequest.getStatus());
                         if (CrowMotionConstants.currentTrajectory.isCompleted() && this.activeStateRequest.getStatus() != StateRequestStatus.FULFILLED) {
                             this.activeStateRequest.updateStatus(StateRequestStatus.FULFILLED);
                             Logger.recordOutput("DriveSubsystem/LastTrajectoryTimeSec", (System.currentTimeMillis() - trajectoryStartTime) / 1000.0);
@@ -375,6 +378,7 @@ public class DriveSubStateManager extends SubStateManager<DriveStateRequest> {
                     
                     default:
                         this.drive(0, 0, 0, true);
+                        drivePeriodic();
                     break;
             }
         }
@@ -402,6 +406,18 @@ public class DriveSubStateManager extends SubStateManager<DriveStateRequest> {
         return new Translation2d(
             cos * speeds.vxMetersPerSecond - sin * speeds.vyMetersPerSecond,
             sin * speeds.vxMetersPerSecond + cos * speeds.vyMetersPerSecond
+        );
+    }
+
+    public Translation2d getDesiredLinearVelocitySOTM() {
+        if (this.desiredChassisSpeeds == null) return null;
+        Pose2d pose = poseEstimator.getRobotPose();
+        Rotation2d rotation = pose.getRotation();
+        double cos = rotation.getCos();
+        double sin = rotation.getSin();
+        return new Translation2d(
+            cos * desiredChassisSpeeds.vxMetersPerSecond - sin * desiredChassisSpeeds.vyMetersPerSecond,
+            sin * desiredChassisSpeeds.vxMetersPerSecond + cos * desiredChassisSpeeds.vyMetersPerSecond
         );
     }
 

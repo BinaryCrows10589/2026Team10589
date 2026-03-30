@@ -13,15 +13,16 @@ import org.littletonrobotics.junction.LoggedRobot;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 import org.littletonrobotics.junction.networktables.NT4Publisher;
-import org.littletonrobotics.junction.rlog.RLOGServer;
 import org.littletonrobotics.junction.wpilog.WPILOGReader;
 import org.littletonrobotics.junction.wpilog.WPILOGWriter;
-import org.littletonrobotics.junction.wpilog.WPILOGWriter.AdvantageScopeOpenBehavior;
 
 import com.ctre.phoenix6.SignalLogger;
 
 import binarycrows.robot.CrowMotion.UserSide.CMConfig;
+import binarycrows.robot.SeasonCode.Autons.BackUpAndShoot;
 import binarycrows.robot.SeasonCode.Autons.DepotTrench_Wall_Shoot_L_Shoot_P_Shoot;
+import binarycrows.robot.SeasonCode.Autons.HumanPlayer_Wall_Shoot_L_Shoot_P_Shoot;
+import binarycrows.robot.SeasonCode.Autons.NoAuton;
 import binarycrows.robot.SeasonCode.Constants.FieldConstants;
 import binarycrows.robot.SeasonCode.Constants.MetaConstants;
 import binarycrows.robot.SeasonCode.Constants.PoseEstimatorConstants;
@@ -35,7 +36,7 @@ import binarycrows.robot.SeasonCode.SubStateManagers.Shooting.ShootingSubStateMa
 import binarycrows.robot.SeasonCode.SubStateManagers.SwerveDrive.DriveSubStateManager;
 import binarycrows.robot.SeasonCode.SubStateManagers.Transit.TransitSubStateManager;
 import binarycrows.robot.SeasonCode.SubStateManagers.Turret.TurretSubStateManager;
-import binarycrows.robot.SeasonCode.Utils.Climbing;
+import binarycrows.robot.Utils.QuestADBWrapper;
 import binarycrows.robot.Utils.Auton.Auton;
 import edu.wpi.first.apriltag.AprilTagFieldLayout.OriginPosition;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -62,6 +63,8 @@ public class Robot extends LoggedRobot {
   public static double averageFrameTime = MetaConstants.loopPeriodSeconds;
 
   private final LoggedDashboardChooser<Auton> chooser = new LoggedDashboardChooser<>("AutonPath");
+
+  private final LoggedDashboardChooser<Integer> questIPChooser = new LoggedDashboardChooser<>("QuestIPChooser");
 
   public static double timeUntilHubIsActive = -1;
 
@@ -93,7 +96,7 @@ public class Robot extends LoggedRobot {
         // Set up data receivers & replay source
         if (RobotBase.isReal()) {
             // Running on a real robot, log to a USB stick ("/U/logs")
-            Logger.addDataReceiver(new WPILOGWriter("/home/lvuser/log/"));
+            //Logger.addDataReceiver(new WPILOGWriter("/home/lvuser/log/"));
             Logger.addDataReceiver(new NT4Publisher());
             SignalLogger.enableAutoLogging(false);
             new PowerDistribution(1, ModuleType.kRev); // Enables power distribution logging
@@ -176,10 +179,26 @@ public class Robot extends LoggedRobot {
       // Initialize autonomous chooser
       Auton defaultAuton = new Auton(DepotTrench_Wall_Shoot_L_Shoot_P_Shoot.startingPoint, DepotTrench_Wall_Shoot_L_Shoot_P_Shoot::getAutonomous);
       chooser.addDefaultOption("Depot Trench Wall: Shoot, L, Shoot, P, Shoot", defaultAuton);
+
+      chooser.addOption("Human Player Trench Wall: Shoot, L, Shoot, P, Shoot", new Auton(HumanPlayer_Wall_Shoot_L_Shoot_P_Shoot.startingPoint, HumanPlayer_Wall_Shoot_L_Shoot_P_Shoot::getAutonomous));
+
+      chooser.addOption("No Auton", new Auton(NoAuton.startingPoint, NoAuton::getAutonomous));
+
+      chooser.addOption("Back Up and Shoot", new Auton(BackUpAndShoot.startingPoint, BackUpAndShoot::getAutonomous));
+
       
       //onAutonSelect(defaultAuton); // Initialize first autonomous that is selected
   
       chooser.onChange(this::onAutonSelect);
+
+      questIPChooser.addDefaultOption("200", 200);
+      questIPChooser.addOption("201", 201);
+      questIPChooser.addOption("202", 202);
+      questIPChooser.addOption("203", 203);
+      questIPChooser.addOption("204", 204);
+      questIPChooser.addOption("205", 205);
+
+      questIPChooser.onChange(this::onQuestIPSelect);
   
   
       // Final updates
@@ -189,6 +208,10 @@ public class Robot extends LoggedRobot {
       dashboardField = new Field2d();
       robotPoseSupplier = DriveSubStateManager.getInstance()::getRobotPose;
   
+    }
+
+    public void onQuestIPSelect(Integer end) {
+      QuestADBWrapper.setIPEnd(end);
     }
   
     
@@ -233,7 +256,7 @@ public class Robot extends LoggedRobot {
     public void onAutonSelect(Auton auton) {
       if (auton != null) {
         auton.buildAuton();
-        System.out.println("Built auton.");
+        //System.out.println("Built auton.");
       }
     }
   
@@ -249,6 +272,8 @@ public class Robot extends LoggedRobot {
       
       }
       autonDirty = true;
+      HoodSubStateManager.getInstance().returnToDefaultState();
+
   }
 
   @Override
@@ -256,7 +281,7 @@ public class Robot extends LoggedRobot {
     if (!MetaConstants.startedAutonomous) {
       Auton auton = chooser.get();
       if (auton.builtAuton == null) {
-        System.out.println("NOT BUILT!");
+        //System.out.println("NOT BUILT!");
         auton.buildAuton(); // In case it wasn't built for some reason (should NEVER be necessary!)
       }
       DriveSubStateManager.getInstance().setRobotPose(auton.startingPoint);
@@ -270,6 +295,8 @@ public class Robot extends LoggedRobot {
   @Override
   public void teleopInit() {
     isDriverControlled = true;
+    ShootingSubStateManager.getInstance().returnToDefaultState();
+    FlywheelSubStateManager.getInstance().returnToDefaultState();
     DriveSubStateManager.getInstance().returnToDefaultState();
     //Climbing.climbRight(); // Sim testing
   }

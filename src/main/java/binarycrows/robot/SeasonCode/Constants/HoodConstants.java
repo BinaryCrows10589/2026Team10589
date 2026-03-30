@@ -41,7 +41,7 @@ public class HoodConstants {
     public static double maxAccelerationPerFrameRadPerSecPerSec = MetaConstants.isReal ? 0 : 40;
     public static double maxDecelerationPerFrameRadPerSecPerSec = MetaConstants.isReal ? 0 : 200; // Will need to be significantly higher than max
 
-    public static final double statorCurrentLimit = 120;
+    public static final double statorCurrentLimit = 60;
 
     public static final double profiledPIDMaxAcceleration = 1;
     public static final double profiledPIDMaxVelocity = 1;

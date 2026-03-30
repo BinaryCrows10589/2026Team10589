@@ -36,6 +36,7 @@ public final class TransitConstants {
     public static final double stalledRPSThreshold = 0.1;
     public static final int stalledFramesToInvert = 25;
     public static final int stalledFramesToAbort = 50;
+    public static final double supplyCurrentLimit = 70;
 
     public final class Sensors {
         public static final RangingMode binFullRangingMode = RangingMode.Short;

@@ -41,6 +41,8 @@ public class ShootingSubStateManager extends SubStateManager<ShootingStateReques
     private Supplier<Double> flywheelDeltaSupplierRPM;
 
     private Supplier<Translation2d> linearVelocitySupplier;
+    private Supplier<Translation2d> desiredLinearVelocitySupplier;
+
     private Supplier<Pose2d> robotPoseSupplier;
     private Supplier<Pose2d> turretPoseSupplier;
 
@@ -66,6 +68,7 @@ public class ShootingSubStateManager extends SubStateManager<ShootingStateReques
         flywheelDeltaSupplierRPM = () -> {return flywheelRPS*60*FlywheelConstants.gearRatio - flywheelRPMSupplier.get();};
 
         linearVelocitySupplier = DriveSubStateManager.getInstance()::getLinearVelocitySOTM;
+        desiredLinearVelocitySupplier = DriveSubStateManager.getInstance()::getDesiredLinearVelocitySOTM;
         robotPoseSupplier = DriveSubStateManager.getInstance()::getRobotPose;
         turretPoseSupplier = () -> {return robotPoseSupplier.get().transformBy(ShootingConstants.robotToTurret);};
 
@@ -260,13 +263,24 @@ public class ShootingSubStateManager extends SubStateManager<ShootingStateReques
 
         double lookaheadTime = nextShotTime - currentTime;
 
+        
         extraVelocity = extraVelocity.plus(accelerationFrames[0].times(lookaheadTime));//.plus(jerkFrames[0].times(0.5 * lookaheadTime * lookaheadTime));
 
-        if (!Double.isNaN(extraVelocity.getX()) && !Double.isNaN(extraVelocity.getY())) velocity = velocity.plus(extraVelocity);
+        Translation2d predictedVelocity = velocity;
+        if (!Double.isNaN(extraVelocity.getX()) && !Double.isNaN(extraVelocity.getY())) predictedVelocity = velocity.plus(extraVelocity);
         Logger.recordOutput("/Turret/Control/ExtraVelocity", extraVelocity);
         Logger.recordOutput("/Turret/Control/Velocity", velocityFrames[0]);
         Logger.recordOutput("/Turret/Control/Acceleration", accelerationFrames[0]);
         Logger.recordOutput("/Turret/Control/Jerk", jerkFrames[0]);
+
+        Translation2d desiredLinearVelocity = desiredLinearVelocitySupplier.get();
+        if (desiredLinearVelocity == null) desiredLinearVelocity = velocity;
+
+        velocity = (
+            velocity.times(1.0/3.0)
+            .plus(predictedVelocity.times(1.0/3.0))
+            .plus(desiredLinearVelocity.times(1.0/3.0))
+        );
 
         if (nextShotTime < currentTime)
         {
@@ -302,6 +316,14 @@ public class ShootingSubStateManager extends SubStateManager<ShootingStateReques
 
         distanceInBounds = (offsetDistance < ShootingConstants.maxDistanceFromGoal);
         distanceInLargeBounds = (offsetDistance < ShootingConstants.maxDistanceFromGoalLarge);
+
+        /*float turretVelocityX = velocity.x + angularVelocity
+            * (ShootingConstants.robotToTurret.y * Math.cos(robotRotation)
+                * ShootingConstants.robotToTurret.x * Math.sin(robotRotation));
+        
+        float turretVelocityY = velocity.y + angularVelocity
+            * (ShootingConstants.robotToTurret.x * Math.cos(robotRotation)
+                * ShootingConstants.robotToTurret.y * Math.sin(robotRotation));*/
 
         Translation2d distanceVector = new Translation2d();
         Rotation2d turretAngle = Rotation2d.kZero;
