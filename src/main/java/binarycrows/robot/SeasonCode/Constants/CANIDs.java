@@ -21,7 +21,6 @@ public final class CANIDs {
     }
 
     public final class RIO {
-        // PROBLEMATIC
         public static final int leftIntakeRoller = 0;
 
         public static final int rightIntakeRoller = 1;
@@ -29,28 +28,22 @@ public final class CANIDs {
         public static final int turretMotor = 2;
         public static final int turretEncoder = 3;
 
-        // PROBLEMATIC
         public static final int hoodMotor = 4;
 
         public static final int hoodEncoder = 5;
 
-        // PROBLEMATIC
         public static final int leftFlywheelMotor = 6;
 
         public static final int rightFlywheelMotor = 7;
-        // PROBLEMATIC
         public static final int leftPivotMotor = 8;
 
         public static final int rightPivotMotor = 9;
         public static final int pivotEncoder = 10;
 
-        // PROBLEMATIC
         public static final int longitudinalMotor = 12;       
-        // PROBLEMATIC
         public static final int leftLatitudinalMotor = 13;
         
         public static final int rightLatitudinalMotor = 14;
-        // PROBLEMATIC
         public static final int inAndUpMotor = 15;
 
         public static final int binFullTOFSensor = 16;
