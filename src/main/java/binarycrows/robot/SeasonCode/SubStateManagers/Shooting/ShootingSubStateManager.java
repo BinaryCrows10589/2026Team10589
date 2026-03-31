@@ -42,7 +42,6 @@ public class ShootingSubStateManager extends SubStateManager<ShootingStateReques
     private Supplier<Double> flywheelDeltaSupplierRPM;
 
     private Supplier<double[]> velocitySupplier;
-    private Supplier<Rotation2d> angularVelocitySupplier;
 
     private Supplier<double[]> desiredLinearVelocitySupplier;
 
@@ -58,9 +57,9 @@ public class ShootingSubStateManager extends SubStateManager<ShootingStateReques
     public ShootingSubStateManager() {
         super(new StateRequest<>(ShootingStateRequest.STANDBY, StateRequestPriority.NORMAL));
         // Java is evil so the arrays need to be prepopulated
-        Arrays.fill(velocityFrames, Translation2d.kZero);
-        Arrays.fill(accelerationFrames, Translation2d.kZero);
-        Arrays.fill(jerkFrames, Translation2d.kZero);
+        Arrays.fill(velocityFrames, new double[] {0,0,0});
+        Arrays.fill(accelerationFrames, new double[] {0,0,0});
+        Arrays.fill(jerkFrames, new double[] {0,0,0});
         Arrays.fill(timeFrames, System.currentTimeMillis());
     }
 
@@ -218,9 +217,9 @@ public class ShootingSubStateManager extends SubStateManager<ShootingStateReques
 
     private final int framesOfVelocityMeasurement = 6;
 
-    private double[][] velocityFrames =  new double[3][framesOfVelocityMeasurement];
-    private double[][] accelerationFrames =  new double[3][framesOfVelocityMeasurement];
-    private double[][] jerkFrames =  new double[3][framesOfVelocityMeasurement];
+    private double[][] velocityFrames =  new double[framesOfVelocityMeasurement][3];
+    private double[][] accelerationFrames =  new double[framesOfVelocityMeasurement][3];
+    private double[][] jerkFrames =  new double[framesOfVelocityMeasurement][3];
     private long[] timeFrames = new long[framesOfVelocityMeasurement];
 
     private double lookaheadTimeSeconds = 0.3f;
@@ -265,16 +264,15 @@ public class ShootingSubStateManager extends SubStateManager<ShootingStateReques
     public double[] calculate()
     {
         double[] velocity = velocitySupplier.get(); 
-        Rotation2d angularVelocity = angularVelocitySupplier.get();
 
         Pose2d turretPose = turretPoseSupplier.get();
 
 
-        double turretVelocityX = velocity[0] + angularVelocity.getRadians()
+        double turretVelocityX = velocity[0] + velocity[2]
             * (ShootingConstants.robotToTurret.getY() * turretPose.getRotation().getCos()
                 * ShootingConstants.robotToTurret.getX() * turretPose.getRotation().getSin());
         
-        double turretVelocityY = velocity[1] + angularVelocity.getRadians()
+        double turretVelocityY = velocity[1] + velocity[2]
             * (ShootingConstants.robotToTurret.getX() * turretPose.getRotation().getCos()
                 * ShootingConstants.robotToTurret.getY() * turretPose.getRotation().getSin());
 

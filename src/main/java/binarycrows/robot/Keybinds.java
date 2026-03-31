@@ -203,8 +203,8 @@ public class Keybinds {
         // Shooting Fudge Factors
         buttonBoard1.onPress(ButtonBoardButtons.BB1.targetPositionLeft, ShootingSubStateManager.getInstance()::targetPositionShiftLeft);
         buttonBoard1.onPress(ButtonBoardButtons.BB1.targetPositionRight, ShootingSubStateManager.getInstance()::targetPositionShiftRight);
-        buttonBoard1.onPress(ButtonBoardButtons.BB2.targetPositionForward, ShootingSubStateManager.getInstance()::targetPositionShiftForward);
-        buttonBoard1.onPress(ButtonBoardButtons.BB2.targetPositionBackward, ShootingSubStateManager.getInstance()::targetPositionShiftBackward);
+        buttonBoard2.onPress(ButtonBoardButtons.BB2.targetPositionForward, ShootingSubStateManager.getInstance()::targetPositionShiftForward);
+        buttonBoard2.onPress(ButtonBoardButtons.BB2.targetPositionBackward, ShootingSubStateManager.getInstance()::targetPositionShiftBackward);
         buttonBoard1.onPress(ButtonBoardButtons.BB1.targetPosReset, ShootingSubStateManager.getInstance()::targetPositionReset);
         
         // Climber

@@ -32,10 +32,10 @@ public final class TurretConstants {
     public static final Rotation2d turretEncoderOffset = Rotation2d.fromRotations(0.501709); // Encoder reading when turret is straight forward
 
     public static final InvertedValue motorInverted = InvertedValue.Clockwise_Positive;
-    public static final NeutralModeValue motorNeutralMode = NeutralModeValue.Coast;
+    public static final NeutralModeValue motorNeutralMode = NeutralModeValue.Brake;
 
     public static final TurretControlConstants normalTurretControlConstants = new TurretControlConstants(
-        MetaConstants.isReal ? 3.25 : 0.75, // Correction velocity (rad/sec)
+        MetaConstants.isReal ? 2.25 : 0.75, // Correction velocity (rad/sec)
         MetaConstants.isReal ? Rotation2d.fromDegrees(10) : Rotation2d.fromDegrees(20), // Correction zone
 
         MetaConstants.isReal ? 0.4 : 0.025, // Deceleration buffer rad
@@ -44,11 +44,11 @@ public final class TurretConstants {
 
         MetaConstants.isReal ? 0.05 : 0.05, // Correction factor tuning delta threshold rad
 
-        MetaConstants.isReal ? 8 : 12, // Max turret velocity rad per sec
-        MetaConstants.isReal ? 2 : 0.75, // Min turret velocity rad per sec
+        MetaConstants.isReal ? 40 : 12, // Max turret velocity rad per sec
+        MetaConstants.isReal ? 0 : 0.75, // Min turret velocity rad per sec
 
-        MetaConstants.isReal ? 10 : 40, // Max acceleration per frame (rad/s^2)
-        MetaConstants.isReal ? 20 : 200 // Max deceleration per frame (rad/s/s) (will need to be significantly higher than max)
+        MetaConstants.isReal ? 80 : 40, // Max acceleration per frame (rad/s^2)
+        MetaConstants.isReal ? 160 : 200 // Max deceleration per frame (rad/s/s) (will need to be significantly higher than max)
     );
     public static final TurretControlConstants overextensionTurretControlConstants = new TurretControlConstants(
         MetaConstants.isReal ? 1.25 : 0.75, // Correction velocity rad per sec
