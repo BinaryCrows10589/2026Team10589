@@ -27,6 +27,7 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.geometry.Twist2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
@@ -397,28 +398,30 @@ public class DriveSubStateManager extends SubStateManager<DriveStateRequest> {
         ChassisSpeeds speeds = SwerveDriveConstants.driveKinematics.toChassisSpeeds(swerveModuleStates);
         return new double[] {speeds.vxMetersPerSecond, speeds.vyMetersPerSecond, (speeds.omegaRadiansPerSecond * (180 / Math.PI))};
     }
-    public Translation2d getLinearVelocitySOTM() {
+    public double[] getRobotVelocitySOTM() {
         Pose2d pose = poseEstimator.getRobotPose();
         Rotation2d rotation = pose.getRotation();
         double cos = rotation.getCos();
         double sin = rotation.getSin();
         ChassisSpeeds speeds = SwerveDriveConstants.driveKinematics.toChassisSpeeds(swerveModuleStates);
-        return new Translation2d(
+        return new double[] {
             cos * speeds.vxMetersPerSecond - sin * speeds.vyMetersPerSecond,
-            sin * speeds.vxMetersPerSecond + cos * speeds.vyMetersPerSecond
-        );
+            sin * speeds.vxMetersPerSecond + cos * speeds.vyMetersPerSecond,
+            speeds.omegaRadiansPerSecond
+        };
     }
 
-    public Translation2d getDesiredLinearVelocitySOTM() {
+    public double[] getDesiredLinearVelocitySOTM() {
         if (this.desiredChassisSpeeds == null) return null;
         Pose2d pose = poseEstimator.getRobotPose();
         Rotation2d rotation = pose.getRotation();
         double cos = rotation.getCos();
         double sin = rotation.getSin();
-        return new Translation2d(
+        return new double[] {
             cos * desiredChassisSpeeds.vxMetersPerSecond - sin * desiredChassisSpeeds.vyMetersPerSecond,
-            sin * desiredChassisSpeeds.vxMetersPerSecond + cos * desiredChassisSpeeds.vyMetersPerSecond
-        );
+            sin * desiredChassisSpeeds.vxMetersPerSecond + cos * desiredChassisSpeeds.vyMetersPerSecond,
+            rotation.getRadians()
+        };
     }
 
     public void driveCM(double[] speeds) {

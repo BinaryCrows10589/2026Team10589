@@ -41,8 +41,10 @@ public class ShootingSubStateManager extends SubStateManager<ShootingStateReques
     private Supplier<Double> hoodDeltaSupplierRad;
     private Supplier<Double> flywheelDeltaSupplierRPM;
 
-    private Supplier<Translation2d> linearVelocitySupplier;
-    private Supplier<Translation2d> desiredLinearVelocitySupplier;
+    private Supplier<double[]> velocitySupplier;
+    private Supplier<Rotation2d> angularVelocitySupplier;
+
+    private Supplier<double[]> desiredLinearVelocitySupplier;
 
     private Supplier<Pose2d> robotPoseSupplier;
     private Supplier<Pose2d> turretPoseSupplier;
@@ -60,7 +62,6 @@ public class ShootingSubStateManager extends SubStateManager<ShootingStateReques
         Arrays.fill(accelerationFrames, Translation2d.kZero);
         Arrays.fill(jerkFrames, Translation2d.kZero);
         Arrays.fill(timeFrames, System.currentTimeMillis());
-        
     }
 
     @Override
@@ -70,7 +71,7 @@ public class ShootingSubStateManager extends SubStateManager<ShootingStateReques
         flywheelRPMSupplier = FlywheelSubStateManager.getInstance()::getRPM;
         flywheelDeltaSupplierRPM = () -> {return flywheelRPS*60*FlywheelConstants.gearRatio - flywheelRPMSupplier.get();};
 
-        linearVelocitySupplier = DriveSubStateManager.getInstance()::getLinearVelocitySOTM;
+        velocitySupplier = DriveSubStateManager.getInstance()::getRobotVelocitySOTM;
         desiredLinearVelocitySupplier = DriveSubStateManager.getInstance()::getDesiredLinearVelocitySOTM;
         robotPoseSupplier = DriveSubStateManager.getInstance()::getRobotPose;
         turretPoseSupplier = () -> {return robotPoseSupplier.get().transformBy(ShootingConstants.robotToTurret);};
@@ -217,9 +218,9 @@ public class ShootingSubStateManager extends SubStateManager<ShootingStateReques
 
     private final int framesOfVelocityMeasurement = 6;
 
-    private Translation2d[] velocityFrames =  new Translation2d[framesOfVelocityMeasurement];
-    private Translation2d[] accelerationFrames =  new Translation2d[framesOfVelocityMeasurement];
-    private Translation2d[] jerkFrames =  new Translation2d[framesOfVelocityMeasurement];
+    private double[][] velocityFrames =  new double[3][framesOfVelocityMeasurement];
+    private double[][] accelerationFrames =  new double[3][framesOfVelocityMeasurement];
+    private double[][] jerkFrames =  new double[3][framesOfVelocityMeasurement];
     private long[] timeFrames = new long[framesOfVelocityMeasurement];
 
     private double lookaheadTimeSeconds = 0.3f;
@@ -263,8 +264,24 @@ public class ShootingSubStateManager extends SubStateManager<ShootingStateReques
      */
     public double[] calculate()
     {
-        Translation2d velocity = linearVelocitySupplier.get(); 
-        double velocityNorm = velocity.getNorm();
+        double[] velocity = velocitySupplier.get(); 
+        Rotation2d angularVelocity = angularVelocitySupplier.get();
+
+        Pose2d turretPose = turretPoseSupplier.get();
+
+
+        double turretVelocityX = velocity[0] + angularVelocity.getRadians()
+            * (ShootingConstants.robotToTurret.getY() * turretPose.getRotation().getCos()
+                * ShootingConstants.robotToTurret.getX() * turretPose.getRotation().getSin());
+        
+        double turretVelocityY = velocity[1] + angularVelocity.getRadians()
+            * (ShootingConstants.robotToTurret.getX() * turretPose.getRotation().getCos()
+                * ShootingConstants.robotToTurret.getY() * turretPose.getRotation().getSin());
+
+        velocity = new double[] {turretVelocityX, turretVelocityY, velocity[2]};
+
+        double velocityNorm = Math.sqrt(velocity[0] * velocity[0] + velocity[1] * velocity[1]);
+
 
         
         for (int frame = framesOfVelocityMeasurement-2; frame >= 0; frame--)
@@ -276,43 +293,62 @@ public class ShootingSubStateManager extends SubStateManager<ShootingStateReques
         }
 
         timeFrames[0] = System.currentTimeMillis();
-        velocityFrames[0] = new Translation2d(velocity.getX(), velocity.getY());
+        velocityFrames[0] = new double[] {velocity[0], velocity[1], velocity[2]};
 
         double deltaTimeSec = (timeFrames[0] - timeFrames[framesOfVelocityMeasurement-1]) / 1000.0;
 
-        accelerationFrames[0] = velocityFrames[0].minus(velocityFrames[framesOfVelocityMeasurement-1]).div(deltaTimeSec);
+        accelerationFrames[0] = new double[] {
+            (velocityFrames[0][0]-velocityFrames[framesOfVelocityMeasurement-1][0])/deltaTimeSec,
+            (velocityFrames[0][1]-velocityFrames[framesOfVelocityMeasurement-1][1])/deltaTimeSec,
+            (velocityFrames[0][2]-velocityFrames[framesOfVelocityMeasurement-1][2])/deltaTimeSec,
+        };
 
-        jerkFrames[0] = accelerationFrames[0].minus(accelerationFrames[framesOfVelocityMeasurement-1]).div(deltaTimeSec);
-
+        jerkFrames[0] = new double[] {
+            (accelerationFrames[0][0]-accelerationFrames[framesOfVelocityMeasurement-1][0])/deltaTimeSec,
+            (accelerationFrames[0][1]-accelerationFrames[framesOfVelocityMeasurement-1][1])/deltaTimeSec,
+            (accelerationFrames[0][2]-accelerationFrames[framesOfVelocityMeasurement-1][2])/deltaTimeSec,
+        };
+        
         velocityInBounds = velocityNorm < ShootingConstants.maxVelocity;
-        accelerationInBounds = accelerationFrames[0].getNorm() < ShootingConstants.maxAcceleration;
+        accelerationInBounds = Math.sqrt(
+            accelerationFrames[0][0] * accelerationFrames[0][0] + accelerationFrames[0][1] * accelerationFrames[0][1]) 
+            < ShootingConstants.maxAcceleration;
         jerkInBounds = true;//jerkFrames[0].getNorm() < ShootingConstants.maxJerk;
         velocityInLargeBounds = velocityNorm < ShootingConstants.maxVelocityLarge;
 
-        Translation2d extraVelocity = Translation2d.kZero;
+        double[] extraVelocity = new double[] {0, 0, 0};
 
         double currentTime = System.currentTimeMillis() / 1000.0;
 
         double lookaheadTime = nextShotTime - currentTime;
 
         
-        extraVelocity = extraVelocity.plus(accelerationFrames[0].times(lookaheadTime));//.plus(jerkFrames[0].times(0.5 * lookaheadTime * lookaheadTime));
+        extraVelocity = new double[] {
+            extraVelocity[0] + accelerationFrames[0][0] * lookaheadTime, 
+            extraVelocity[1] + accelerationFrames[0][1] * lookaheadTime, 
+            extraVelocity[2] + accelerationFrames[0][2] * lookaheadTime};
+        //extraVelocity.plus(accelerationFrames[0].times(lookaheadTime));//.plus(jerkFrames[0].times(0.5 * lookaheadTime * lookaheadTime));
 
-        Translation2d predictedVelocity = velocity;
-        if (!Double.isNaN(extraVelocity.getX()) && !Double.isNaN(extraVelocity.getY())) predictedVelocity = velocity.plus(extraVelocity);
+        double[] predictedVelocity = velocity;
+        if (!Double.isNaN(extraVelocity[0]) && !Double.isNaN(extraVelocity[1])) predictedVelocity = new double[] {
+            velocity[0] + extraVelocity[0],
+            velocity[1] + extraVelocity[1],
+            velocity[2] + extraVelocity[2]
+        };
         Logger.recordOutput("/Turret/Control/ExtraVelocity", extraVelocity);
         Logger.recordOutput("/Turret/Control/Velocity", velocityFrames[0]);
         Logger.recordOutput("/Turret/Control/Acceleration", accelerationFrames[0]);
         Logger.recordOutput("/Turret/Control/Jerk", jerkFrames[0]);
 
-        Translation2d desiredLinearVelocity = desiredLinearVelocitySupplier.get();
+        double[] desiredLinearVelocity = desiredLinearVelocitySupplier.get();
         if (desiredLinearVelocity == null) desiredLinearVelocity = velocity;
 
-        velocity = (
-            velocity.times(1.0/3.0)
-            .plus(predictedVelocity.times(1.0/3.0))
-            .plus(desiredLinearVelocity.times(1.0/3.0))
-        );
+        velocity = new double[] {
+            velocity[0]/3 + predictedVelocity[0]/3 + desiredLinearVelocity[0]/3,
+            velocity[1]/3 + predictedVelocity[1]/3 + desiredLinearVelocity[1]/3,
+            velocity[2]/3 + predictedVelocity[2]/3 + desiredLinearVelocity[2]/3
+
+        };
 
         if (nextShotTime < currentTime)
         {
@@ -322,7 +358,6 @@ public class ShootingSubStateManager extends SubStateManager<ShootingStateReques
         {
             hasShotInCurrentPhase = true;
         }
-        Pose2d turretPose = turretPoseSupplier.get();
         turretPose = new Pose2d(turretPose.getX(), turretPose.getY(), turretPose.getRotation().times(-1));
         robotOnCorrectSide = turretPose.getX() < ShootingConstants.maxTurretX;
         robotInDepotThird = turretPose.getY() > 4.75;
@@ -334,7 +369,10 @@ public class ShootingSubStateManager extends SubStateManager<ShootingStateReques
             ShootingConstants.trenchBoundsHumanPlayerOppositeSide.contains(turretPoseTranslation) ||
             ShootingConstants.trenchBoundsDepotOppositeSide.contains(turretPoseTranslation);
 
-        Translation2d lookaheadDelta = velocity.times(nextShotTime-currentTime);
+        Translation2d lookaheadDelta = new Translation2d(
+            velocity[0] * (nextShotTime-currentTime),
+            velocity[1] * (nextShotTime-currentTime)
+        );
         turretPose = new Pose2d(turretPoseTranslation.plus(lookaheadDelta),turretPose.getRotation());
 
         Translation2d targetPosition = robotOnCorrectSide ? this.targetPosition.plus(targetPositionFudgeFactor) : 
@@ -349,13 +387,7 @@ public class ShootingSubStateManager extends SubStateManager<ShootingStateReques
         distanceInBounds = (offsetDistance < ShootingConstants.maxDistanceFromGoal);
         distanceInLargeBounds = (offsetDistance < ShootingConstants.maxDistanceFromGoalLarge);
 
-        /*float turretVelocityX = velocity.x + angularVelocity
-            * (ShootingConstants.robotToTurret.y * Math.cos(robotRotation)
-                * ShootingConstants.robotToTurret.x * Math.sin(robotRotation));
         
-        float turretVelocityY = velocity.y + angularVelocity
-            * (ShootingConstants.robotToTurret.x * Math.cos(robotRotation)
-                * ShootingConstants.robotToTurret.y * Math.sin(robotRotation));*/
 
         Translation2d distanceVector = new Translation2d();
         Rotation2d turretAngle = Rotation2d.kZero;
@@ -367,7 +399,7 @@ public class ShootingSubStateManager extends SubStateManager<ShootingStateReques
         for (int i = 0; i < ShootingConstants.numberOfAlgorithmIterations; i++)
         {
 
-            Translation2d requiredImpartedVelocity = requiredTotalVelocity.minus(velocity);
+            Translation2d requiredImpartedVelocity = requiredTotalVelocity.minus(new Translation2d(velocity[0], velocity[1]));
 
 
             distanceVector = requiredImpartedVelocity.times(timeOfFlight);
@@ -386,7 +418,7 @@ public class ShootingSubStateManager extends SubStateManager<ShootingStateReques
 
             // 3. Recalculate based on the new timeOfFlight from the LUT
             requiredTotalVelocity = targetDifference.div(timeOfFlight);
-            requiredImpartedVelocity = requiredTotalVelocity.minus(velocity);
+            requiredImpartedVelocity = requiredTotalVelocity.minus(new Translation2d(velocity[0], velocity[1]));
             
             // ... update turretAngle ...
 
