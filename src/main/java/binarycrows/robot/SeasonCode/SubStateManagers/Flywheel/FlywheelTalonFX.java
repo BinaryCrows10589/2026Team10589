@@ -1,11 +1,16 @@
 package binarycrows.robot.SeasonCode.SubStateManagers.Flywheel;
 
+import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import binarycrows.robot.SeasonCode.Constants.CANIDs;
 import binarycrows.robot.SeasonCode.Constants.FlywheelConstants;
+import binarycrows.robot.SeasonCode.Constants.MetaConstants;
+import binarycrows.robot.Utils.Tuning.RuntimeTunablePIDValues;
+import binarycrows.robot.Utils.Tuning.RuntimeTunableValue;
+import edu.wpi.first.math.controller.PIDController;
 
 public class FlywheelTalonFX implements FlywheelIO {
 
@@ -16,6 +21,7 @@ public class FlywheelTalonFX implements FlywheelIO {
 
     private VoltageOut masterMotorVoltageRequest = new VoltageOut(0);
 
+    
     public FlywheelTalonFX(FlywheelOutputs outputs) {
         this.outputs = outputs;
 
@@ -34,8 +40,7 @@ public class FlywheelTalonFX implements FlywheelIO {
         masterMotorConfig.Voltage.PeakForwardVoltage = FlywheelConstants.maxMotorVoltage;
         masterMotorConfig.Voltage.PeakReverseVoltage = -FlywheelConstants.maxMotorVoltage;
         
-        masterMotorConfig.TorqueCurrent.PeakForwardTorqueCurrent = FlywheelConstants.torqueCurrentLimit;
-        masterMotorConfig.TorqueCurrent.PeakReverseTorqueCurrent = -FlywheelConstants.torqueCurrentLimit;
+        
 
         masterMotorConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
         masterMotorConfig.CurrentLimits.SupplyCurrentLimit = FlywheelConstants.supplyCurrentLimit;
@@ -57,9 +62,11 @@ public class FlywheelTalonFX implements FlywheelIO {
 
     @Override
     public void setRotorVoltage(double rotorVoltage) {
+        
         masterMotorVoltageRequest = new VoltageOut(rotorVoltage);
         leftMotor.setControl(masterMotorVoltageRequest);
     }
+
 
     @Override
     public void update() {
@@ -72,6 +79,8 @@ public class FlywheelTalonFX implements FlywheelIO {
         outputs.rightMotorAppliedVoltage = rightMotor.getMotorVoltage().getValueAsDouble();
         outputs.rightMotorSupplyAmps = rightMotor.getSupplyCurrent().getValueAsDouble();
         outputs.rightMotorTorqueAmps = rightMotor.getTorqueCurrent().getValueAsDouble();
+
+        
 
     }
 }

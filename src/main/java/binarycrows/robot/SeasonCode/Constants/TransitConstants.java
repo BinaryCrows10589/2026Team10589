@@ -25,9 +25,9 @@ public final class TransitConstants {
     public static final double standardLatitudinalMotorVoltagePercent = .7;
     public static final double standardInAndUpMotorVoltagePercent = .9;
 
-    public static final double standardLongitudinalMotorVoltage = 3;
+    public static final double standardLongitudinalMotorVoltage = 4.5;
     public static final double standardLatitudinalMotorVoltage = 5;
-    public static final double standardInAndUpMotorVoltage = 6;
+    public static final double standardInAndUpMotorVoltage = 6.5;
 
     public static final double indexingLongitudinalVoltage = 0;
     public static final double indexingLatitudinalVoltage = 2;
@@ -36,6 +36,7 @@ public final class TransitConstants {
     public static final double stalledRPSThreshold = 0.1;
     public static final int stalledFramesToInvert = 25;
     public static final int stalledFramesToAbort = 50;
+
     public static final double supplyCurrentLimit = 70;
 
     public final class Sensors {

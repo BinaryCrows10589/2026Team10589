@@ -12,6 +12,7 @@ import binarycrows.robot.SeasonCode.SubStateManagers.Shooting.ShootingSubStateMa
 import binarycrows.robot.SeasonCode.SubStateManagers.Transit.SensorsIO.SensorsOutputs;
 import binarycrows.robot.SeasonCode.SubStateManagers.Transit.TransitIO.TransitOutputs;
 import binarycrows.robot.Utils.LoggingUtils;
+import binarycrows.robot.Utils.Tuning.RuntimeTunableValue;
 
 public class TransitSubStateManager  extends SubStateManager<TransitStateRequest> {
     
@@ -56,6 +57,11 @@ public class TransitSubStateManager  extends SubStateManager<TransitStateRequest
         return sensorOutputs.outgoingFuelTripped;
     }
 
+    public RuntimeTunableValue longitudinalPercent = new RuntimeTunableValue("TransitPercents/Longitudinal", 3.0);
+    public RuntimeTunableValue latitudinalPercent = new RuntimeTunableValue("TransitPercents/Latitudinal", 7.0);
+    public RuntimeTunableValue inAndUpPercent = new RuntimeTunableValue("TransitPercents/InAndUp", 9.0);
+
+
     @Override
     public void periodic() {
         LoggingUtils.logObject("Transit/Outputs", transitOutputs);
@@ -91,10 +97,9 @@ public class TransitSubStateManager  extends SubStateManager<TransitStateRequest
                     transitIO.setLongitudinalVoltage(TransitConstants.standardLongitudinalMotorVoltage * manualDirection);
                     transitIO.setInAndUpVoltage(TransitConstants.standardInAndUpMotorVoltage * manualDirection);
                 } else if (shooting.get()) {
-                    double flywheelVoltage = flywheelVoltageSupplier.get();
-                    transitIO.setLatitudinalVoltage(TransitConstants.standardLatitudinalMotorVoltagePercent * flywheelVoltage );
-                    transitIO.setLongitudinalVoltage(TransitConstants.standardLongitudinalMotorVoltagePercent * flywheelVoltage);
-                    transitIO.setInAndUpVoltage(TransitConstants.standardInAndUpMotorVoltagePercent * flywheelVoltage);
+                    transitIO.setLatitudinalVoltage(TransitConstants.standardLatitudinalMotorVoltage);
+                    transitIO.setLongitudinalVoltage(TransitConstants.standardLongitudinalMotorVoltage);
+                    transitIO.setInAndUpVoltage(TransitConstants.standardInAndUpMotorVoltage);
                 } else {
                     transitIO.setLatitudinalVoltage(0);
                     transitIO.setLongitudinalVoltage(0);

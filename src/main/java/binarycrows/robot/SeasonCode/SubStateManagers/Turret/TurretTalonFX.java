@@ -5,11 +5,9 @@ import com.ctre.phoenix6.configs.MagnetSensorConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.PositionDutyCycle;
-import com.ctre.phoenix6.controls.StaticBrake;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
-import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.signals.SensorDirectionValue;
 
 import binarycrows.robot.SeasonCode.Constants.CANIDs;
@@ -50,8 +48,8 @@ public class TurretTalonFX implements TurretIO {
 
         motorConfig.Voltage.PeakForwardVoltage = TurretConstants.maximumVoltage; 
         motorConfig.Voltage.PeakReverseVoltage = -TurretConstants.maximumVoltage;
-        motorConfig.TorqueCurrent.PeakForwardTorqueCurrent = TurretConstants.torqueCurrentLimit;
-        motorConfig.TorqueCurrent.PeakReverseTorqueCurrent = -TurretConstants.torqueCurrentLimit;
+        motorConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
+        motorConfig.CurrentLimits.SupplyCurrentLimit = TurretConstants.supplyCurrentLimit;
 
         motorConfig.SoftwareLimitSwitch.ForwardSoftLimitEnable = true;
         motorConfig.SoftwareLimitSwitch.ForwardSoftLimitThreshold = 

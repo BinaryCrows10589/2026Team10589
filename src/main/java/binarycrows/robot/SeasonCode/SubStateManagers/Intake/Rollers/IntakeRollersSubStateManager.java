@@ -10,6 +10,7 @@ import binarycrows.robot.SeasonCode.Constants.IntakeConstants;
 import binarycrows.robot.SeasonCode.SubStateManagers.Intake.Rollers.IntakeRollersIO.IntakeRollersOutputs;
 import binarycrows.robot.SeasonCode.SubStateManagers.SwerveDrive.DriveSubStateManager;
 import binarycrows.robot.Utils.LoggingUtils;
+import binarycrows.robot.Utils.Tuning.RuntimeTunableValue;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 
 public class IntakeRollersSubStateManager extends SubStateManager<IntakeRollersStateRequest> {
@@ -69,7 +70,11 @@ public class IntakeRollersSubStateManager extends SubStateManager<IntakeRollersS
         }
     }
 
+    public RuntimeTunableValue intakeVoltage = new RuntimeTunableValue("IntakeVoltage", 0.0);
+
     private double getDrivenIntakeVoltage() {
+        //return (double) intakeVoltage.getValue();
+         
         ChassisSpeeds speeds = chassisSpeeds.get();
 
         return Math.min(
@@ -78,6 +83,7 @@ public class IntakeRollersSubStateManager extends SubStateManager<IntakeRollersS
                                 * Math.sqrt(speeds.vxMetersPerSecond * speeds.vxMetersPerSecond),
                             IntakeConstants.Rollers.intakeWheelMinVoltage),
                     IntakeConstants.Rollers.intakeWheelMaxVoltage);
+                    
     }
 
     public String toString() {

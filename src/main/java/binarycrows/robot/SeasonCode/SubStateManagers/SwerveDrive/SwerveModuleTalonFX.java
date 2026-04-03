@@ -3,6 +3,7 @@ package binarycrows.robot.SeasonCode.SubStateManagers.SwerveDrive;
 import org.littletonrobotics.junction.Logger;
 
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
+import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.MagnetSensorConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
@@ -18,6 +19,7 @@ import binarycrows.robot.SeasonCode.Constants.CANIDs;
 import binarycrows.robot.SeasonCode.Constants.MetaConstants;
 import binarycrows.robot.SeasonCode.Constants.SwerveDriveConstants;
 import binarycrows.robot.Utils.Tuning.RuntimeTunablePIDValues;
+import binarycrows.robot.Utils.Tuning.RuntimeTunableValue;
 import edu.wpi.first.math.geometry.Rotation2d;
 
 public class SwerveModuleTalonFX implements SwerveModuleIO {
@@ -125,7 +127,7 @@ public class SwerveModuleTalonFX implements SwerveModuleIO {
         driveMotorConfig.Voltage.PeakReverseVoltage = -SwerveDriveConstants.maxDriveMotorVoltage;
 
         driveMotorConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
-        driveMotorConfig.CurrentLimits.SupplyCurrentLimit = SwerveDriveConstants.supplyCurrentLimit;
+        driveMotorConfig.CurrentLimits.SupplyCurrentLimit = SwerveDriveConstants.driveMotorSupplyCurrentLimit;
         
         //this.driveMotor.optimizeBusUtilization();
         this.driveMotor.getConfigurator().apply(driveMotorConfig);
@@ -154,13 +156,15 @@ public class SwerveModuleTalonFX implements SwerveModuleIO {
         turnMotorConfig.Voltage.PeakReverseVoltage = -SwerveDriveConstants.maxTurnMotorVoltage;
 
         turnMotorConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
-        turnMotorConfig.CurrentLimits.SupplyCurrentLimit = SwerveDriveConstants.supplyCurrentLimit;
+        turnMotorConfig.CurrentLimits.SupplyCurrentLimit = SwerveDriveConstants.turnMotorSupplyCurrentLimit;
 
         //this.turnMotor.optimizeBusUtilization();
         this.turnMotor.getConfigurator().apply(turnMotorConfig);
         this.driveMotor.setPosition(0);
 
     }
+
+
 
     // Drive motor getters
     public double getDriveMotorRPS() {

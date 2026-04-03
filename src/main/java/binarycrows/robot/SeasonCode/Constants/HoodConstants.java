@@ -9,8 +9,8 @@ import edu.wpi.first.math.geometry.Rotation2d;
 public class HoodConstants {
     public static final double motorToHoodGearRatio = 1;
 
-    public static final double hoodPIDValueP = 3.5;
-    public static final double hoodPIDValueI = 0.6;
+    public static final double hoodPIDValueP = 3.75;
+    public static final double hoodPIDValueI = 0;
     public static final double hoodPIDValueD = 0;
     public static final double hoodPIDValueFF = 0;
     public static final double hoodPIDValueG = 0.05;

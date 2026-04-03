@@ -29,9 +29,9 @@ public class FlywheelSubStateManager extends SubStateManager<FlywheelStateReques
 
     private ArrayList<Double> voltageToVelocityRotPerSecTable = new ArrayList<>();
     private ArrayList<Double> voltageToVelocityVoltageTable = new ArrayList<>();
-    private double voltageIncrement = 0.2;
-    private double endVoltage = 11;
-    private int framesPerIncrement = 30;
+    private double voltageIncrement = 0.1;
+    private double endVoltage = 12;
+    private int framesPerIncrement = 100;
     private int frameCounter = 0;
     private double voltageCounter = 0;
 

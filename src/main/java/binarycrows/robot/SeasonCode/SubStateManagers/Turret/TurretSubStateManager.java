@@ -75,7 +75,6 @@ public class TurretSubStateManager extends SubStateManager<TurretStateRequest> {
     public void periodic() {
         
         LoggingUtils.logObject("Turret/Outputs", outputs);
-        turret.update();
         if (targetPosition == null) targetPosition = outputs.encoderRotation;
 
         switch (activeStateRequest.getStateRequestType()) {
@@ -83,6 +82,8 @@ public class TurretSubStateManager extends SubStateManager<TurretStateRequest> {
                 turret.setTurretVoltage(TurretConstants.manualVoltage * -(manualDirection));
                 break;
             case SHOOT_ON_THE_MOVE:
+                turret.update();
+
                 if (doAim.get()) {
                     turret.setTargetAngle(Rotation2d.fromRadians(shootingTurretAngleRad.get()), shooting.get() && !turret.getHasWrapped());
                 }

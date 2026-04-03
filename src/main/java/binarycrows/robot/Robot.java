@@ -36,7 +36,6 @@ import binarycrows.robot.SeasonCode.SubStateManagers.Shooting.ShootingSubStateMa
 import binarycrows.robot.SeasonCode.SubStateManagers.SwerveDrive.DriveSubStateManager;
 import binarycrows.robot.SeasonCode.SubStateManagers.Transit.TransitSubStateManager;
 import binarycrows.robot.SeasonCode.SubStateManagers.Turret.TurretSubStateManager;
-import binarycrows.robot.Utils.QuestADBWrapper;
 import binarycrows.robot.Utils.Auton.Auton;
 import edu.wpi.first.apriltag.AprilTagFieldLayout.OriginPosition;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -198,7 +197,6 @@ public class Robot extends LoggedRobot {
       questIPChooser.addOption("204", 204);
       questIPChooser.addOption("205", 205);
 
-      questIPChooser.onChange(this::onQuestIPSelect);
   
   
       // Final updates
@@ -212,9 +210,6 @@ public class Robot extends LoggedRobot {
   
     }
 
-    public void onQuestIPSelect(Integer end) {
-      QuestADBWrapper.setIPEnd(end);
-    }
   
     
   

@@ -154,8 +154,8 @@ public class Keybinds {
         StateRequestUtils.createStateRequestRunnable(IntakeRollersStateRequest.INTAKING));
 
         buttonBoard2.onPress(ButtonBoardButtons.BB2.intakeWheelForceReverse, 
-        StateRequestUtils.createStateRequestRunnable(IntakeRollersStateRequest.REVERSE),
-        StateRequestUtils.createStateRequestRunnable(IntakeRollersStateRequest.INTAKING));
+        StateRequestUtils.createStateRequestRunnable(FlywheelStateRequest.OFF),
+        StateRequestUtils.createStateRequestRunnable(FlywheelStateRequest.CONSTRUCT_VOLTAGE_TABLE));
 
         // Transit
         buttonBoard2.onPress(ButtonBoardButtons.BB2.transitManualForward, 

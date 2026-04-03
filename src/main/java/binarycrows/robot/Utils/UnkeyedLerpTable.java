@@ -1,5 +1,7 @@
 package binarycrows.robot.Utils;
 
+import org.littletonrobotics.junction.Logger;
+
 public class UnkeyedLerpTable {
     private double[][] lerpTable;
     private boolean translateNegatives;
@@ -24,7 +26,15 @@ public class UnkeyedLerpTable {
     }
 
     private double findLerpValue(int lowerIndex, int higherIndex, double value, int targetIndice, int keyIndice) {
-        if (lowerIndex == higherIndex) return lerpTable[higherIndex][targetIndice];
+        Logger.recordOutput("Lerp/LowerIndex", lowerIndex);
+        Logger.recordOutput("Lerp/HigherIndex", higherIndex);
+        Logger.recordOutput("Lerp/Value", value);
+
+        if (lowerIndex == higherIndex) {
+            // Exact match on any row — just return directly, no lerp needed
+        
+            return lerpTable[lowerIndex][targetIndice];
+        }
         double x1 = lerpTable[lowerIndex][keyIndice];
         double y1 = lerpTable[lowerIndex][targetIndice];
         double x2 = lerpTable[higherIndex][keyIndice];

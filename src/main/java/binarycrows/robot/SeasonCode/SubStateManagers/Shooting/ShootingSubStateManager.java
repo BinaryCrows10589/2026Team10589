@@ -13,6 +13,7 @@ import binarycrows.robot.SubStateManager;
 import binarycrows.robot.Enums.StateRequestPriority;
 import binarycrows.robot.Enums.StateRequestStatus;
 import binarycrows.robot.SeasonCode.Constants.FlywheelConstants;
+import binarycrows.robot.SeasonCode.Constants.MetaConstants;
 import binarycrows.robot.SeasonCode.Constants.ShootingConstants;
 import binarycrows.robot.SeasonCode.SubStateManagers.CANdle.CANdleStateRequest;
 import binarycrows.robot.SeasonCode.SubStateManagers.CANdle.CANdleSubStateManager;
@@ -22,7 +23,9 @@ import binarycrows.robot.SeasonCode.SubStateManagers.SwerveDrive.DriveSubStateMa
 import binarycrows.robot.SeasonCode.SubStateManagers.Transit.TransitSubStateManager;
 import binarycrows.robot.SeasonCode.SubStateManagers.Turret.TurretSubStateManager;
 import binarycrows.robot.Utils.LoggingUtils;
+import binarycrows.robot.Utils.Tuning.RuntimeTunablePIDValues;
 import binarycrows.robot.Utils.Tuning.RuntimeTunableValue;
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -152,6 +155,10 @@ public class ShootingSubStateManager extends SubStateManager<ShootingStateReques
         return false;
     }
 
+    private PIDController flywheelFFController = new PIDController(0.00025, 0, 0);
+    private RuntimeTunablePIDValues pidValues = new RuntimeTunablePIDValues("Tuning/FlywheelFF/PID", 0.00025, 0, 0, 0);
+
+
     public void periodic() {
         canShoot = getCanShoot();
         double[] shootingParameters = calculate();
@@ -161,6 +168,17 @@ public class ShootingSubStateManager extends SubStateManager<ShootingStateReques
         hoodAngleRad = shootingParameters[1];
         flywheelVoltage = FlywheelConstants.rpsToVoltage.get(shootingParameters[2]);
         flywheelRPS = shootingParameters[2];
+
+        if (!MetaConstants.inProduction) {
+            double[] newPidValues = pidValues.getUpdatedPIDConstants();
+            flywheelFFController.setPID(newPidValues[0], newPidValues[1], newPidValues[2]);
+        }
+
+        flywheelVoltage += flywheelFFController.calculate(flywheelRPMSupplier.get(), flywheelRPS*60*FlywheelConstants.gearRatio);
+
+        Logger.recordOutput("Shooting/DesiredTurretAngleRad", turretAngleRad);
+        Logger.recordOutput("Shooting/DesiredHoodAngleRad", hoodAngleRad);
+        Logger.recordOutput("Shooting/DesiredFlywheelSpeedRPS", flywheelRPS);
 
         switch (activeStateRequest.getStateRequestType()) {
             case SHOOT_PRELOADS:
@@ -222,8 +240,7 @@ public class ShootingSubStateManager extends SubStateManager<ShootingStateReques
     private double[][] jerkFrames =  new double[framesOfVelocityMeasurement][3];
     private long[] timeFrames = new long[framesOfVelocityMeasurement];
 
-    private double lookaheadTimeSeconds = 0.3f;
-    private double phaseTimeSeconds = 0.03f;
+    private double lookaheadTimeSeconds = 0.005;
 
     private double nextShotTime = -1;
     private boolean hasShotInCurrentPhase;
@@ -256,6 +273,9 @@ public class ShootingSubStateManager extends SubStateManager<ShootingStateReques
     public boolean getDoAim() {
         return robotOnCorrectSide || ((robotInDepotThird || robotInHumanPlayerThird) && getShootingIntent());
     }
+
+    public RuntimeTunableValue dragCoeff = new RuntimeTunableValue("/SOTM/DragCoefficient", .1);
+    public RuntimeTunableValue lookaheadTimeSec = new RuntimeTunableValue("/SOTM/LookaheadTimeSec", .005);
 
     /**
      * Calculates optimal values for shooter control systems (shoot-on-the-move)
@@ -342,20 +362,14 @@ public class ShootingSubStateManager extends SubStateManager<ShootingStateReques
         if (desiredLinearVelocity == null) desiredLinearVelocity = velocity;
 
         velocity = new double[] {
-            velocity[0]/3 + predictedVelocity[0]/3 + desiredLinearVelocity[0]/3,
-            velocity[1]/3 + predictedVelocity[1]/3 + desiredLinearVelocity[1]/3,
-            velocity[2]/3 + predictedVelocity[2]/3 + desiredLinearVelocity[2]/3
+            velocity[0]/2 + /*predictedVelocity[0]/3 + */desiredLinearVelocity[0]/2,
+            velocity[1]/2 + /*predictedVelocity[1]/3 + */desiredLinearVelocity[1]/2,
+            velocity[2]/2 + /*predictedVelocity[2]/3 + */desiredLinearVelocity[2]/2
 
         };
 
-        if (nextShotTime < currentTime)
-        {
-            hasShotInCurrentPhase = false;
-            nextShotTime = currentTime + lookaheadTimeSeconds + phaseTimeSeconds;
-        } else if (nextShotTime < currentTime + phaseTimeSeconds && !hasShotInCurrentPhase)
-        {
-            hasShotInCurrentPhase = true;
-        }
+        nextShotTime = currentTime + (double)lookaheadTimeSec.getValue();//lookaheadTimeSeconds;
+
         turretPose = new Pose2d(turretPose.getX(), turretPose.getY(), turretPose.getRotation().times(-1));
         robotOnCorrectSide = turretPose.getX() < ShootingConstants.maxTurretX;
         robotInDepotThird = turretPose.getY() > 4.75;

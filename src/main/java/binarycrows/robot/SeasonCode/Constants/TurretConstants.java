@@ -118,7 +118,7 @@ public final class TurretConstants {
         12
     }, true);
 
-    public static final double torqueCurrentLimit = 100;
+    public static final double supplyCurrentLimit = 17;
 
     public static final Rotation2d encoderReadingAtMinRotation =  TurretConstants.turretEncoderOffset.minus(TurretConstants.encoderHalfCircleDistance);
 

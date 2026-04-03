@@ -16,7 +16,6 @@ import binarycrows.robot.SeasonCode.Constants.PoseEstimatorConstants;
 import binarycrows.robot.SeasonCode.Constants.SwerveDriveConstants;
 import binarycrows.robot.SeasonCode.SubStateManagers.SwerveDrive.DriveSubStateManager;
 import binarycrows.robot.Utils.ConversionUtils;
-import binarycrows.robot.Utils.QuestADBWrapper;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
@@ -105,29 +104,7 @@ public class PoseEstimator {
             Logger.recordOutput("QuestNavADB/QuestNavFramesSinceLastActive", robotFramesSinceLastQuestFrame);
             Logger.recordOutput("QuestNavADB/QuestNavRestartAttempts", questNavRestartAttempts);
 
-            if (!PoseEstimator.isQuestNavActive) {
-                MetaConstants.updateQuestNav = false;
-                if (questNavRestartAttempts < 25) {
-                    questNavRestartAttempts++;
-
-                    if (QuestADBWrapper.updateIsConnected()) { // QuestNav is not active but Quest ADB is connected, so try to restart QuestNav.
-                        //System.out.println("Connected, running restart...");
-                        isADBConnected = true;
-                        QuestADBWrapper.tryRestartQuestNav();
-                    } /*else {
-                        //System.out.println("Disconnected, trying to reconnect lazily...");
-                        isADBConnected = false; // QuestNav is not active and Quest ADB is not connected, try connecting anyway
-                        QuestADBWrapper.lazyTryConnect();
-                    }*/
-                }
-            } else {
-                MetaConstants.updateQuestNav = true;
-                questNavRestartAttempts = 0;
-                if (!isADBConnected) { // QuestNav is 
-                    if (QuestADBWrapper.updateIsConnected()) isADBConnected = true;
-                    else QuestADBWrapper.tryConnect();
-                }
-            }
+            
             
             this.swerveDrivePoseEstimator.update(DriveSubStateManager.getInstance().gyroOutputs.yawAngle,
                 DriveSubStateManager.getInstance().getModulePositions());

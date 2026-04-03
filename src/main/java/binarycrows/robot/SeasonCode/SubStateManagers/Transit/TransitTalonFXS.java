@@ -23,6 +23,8 @@ public class TransitTalonFXS implements TransitIO {
 
     private int transitStalledFrameCounter = 0;
 
+    private boolean doInvert = false;
+
     public TransitTalonFXS(TransitOutputs outputs) {
         this.outputs = outputs;
         // Left Longitudinal Motor
@@ -103,19 +105,19 @@ public class TransitTalonFXS implements TransitIO {
 
     @Override
     public void setLatitudinalVoltage(double rotorVoltage) {
-        latitudinalMasterMotorVoltageRequest = new VoltageOut(rotorVoltage);
+        latitudinalMasterMotorVoltageRequest = new VoltageOut(rotorVoltage * (doInvert ? -1 : 1));
         leftLatitudinalMotor.setControl(latitudinalMasterMotorVoltageRequest);
     }
 
     @Override
     public void setLongitudinalVoltage(double rotorVoltage) {
-        longitudinalMotorVoltageRequest = new VoltageOut(rotorVoltage);
+        longitudinalMotorVoltageRequest = new VoltageOut(rotorVoltage * (doInvert ? -1 : 1));
         longitudinalMotor.setControl(longitudinalMotorVoltageRequest);
     }
     
     @Override
     public void setInAndUpVoltage(double rotorVoltage) {
-        inAndUpMotorVoltageRequest = new VoltageOut(rotorVoltage);
+        inAndUpMotorVoltageRequest = new VoltageOut(rotorVoltage * (doInvert ? -1 : 1));
         inAndUpMotor.setControl(inAndUpMotorVoltageRequest);
     }
 
@@ -145,29 +147,26 @@ public class TransitTalonFXS implements TransitIO {
         outputs.inAndUpMotorSupplyAmps =  inAndUpMotor.getSupplyCurrent().getValueAsDouble();
         outputs.inAndUpMotorTorqueAmps =  inAndUpMotor.getTorqueCurrent().getValueAsDouble();
 
-        if (outputs.leftLatitudinalMotorAppliedVoltage != 0 && outputs.leftLatitudinalMotorVelocityRPS < TransitConstants.stalledRPSThreshold) {
-            //System.out.println("Left latitudinal motor stalled for " + transitStalledFrameCounter + " frames");
+        if ((outputs.leftLatitudinalMotorAppliedVoltage != 0 && outputs.leftLatitudinalMotorVelocityRPS < TransitConstants.stalledRPSThreshold) ||
+            (outputs.inAndUpMotorAppliedVoltage != 0 && outputs.inAndUpMotorVelocityRPS < TransitConstants.stalledRPSThreshold)) {
+            System.out.println("Transit stalled for " + transitStalledFrameCounter + " frames");
             transitStalledFrameCounter++;
             if (transitStalledFrameCounter == TransitConstants.stalledFramesToInvert) {
-                //System.out.println("Stalled for 25 frames, inverting transit");
-                invertVoltages(); // Invert on the 25th frame only
+                System.out.println("Stalled for 25 frames, inverting transit");
+                doInvert = true; // Invert on the 25th frame only
             } else if (transitStalledFrameCounter >= TransitConstants.stalledFramesToAbort) {
-                //System.out.println("Stalled for >=50 frames, resetting counter and uninverting");
-                invertVoltages(); // Uninvert if we are still stalled
+                System.out.println("Stalled for >=50 frames, resetting counter and uninverting");
+                doInvert = false; // Uninvert if we are still stalled
                 transitStalledFrameCounter = 0;
             }
         } else {
             if (transitStalledFrameCounter > TransitConstants.stalledFramesToInvert && transitStalledFrameCounter < TransitConstants.stalledFramesToAbort) {
-                //System.out.println("Unstalled at frame " + transitStalledFrameCounter + ", uninverting");
-                invertVoltages(); // We must have inverted on a previous frame, uninvert
+                System.out.println("Unstalled at frame " + transitStalledFrameCounter + ", uninverting");
+                doInvert = false; // We must have inverted on a previous frame, uninvert
             }
             transitStalledFrameCounter = 0;
         }
 
     }
 
-    private void invertVoltages() {
-        setInAndUpVoltage(-outputs.inAndUpMotorRequestedVoltage);
-        setLatitudinalVoltage(-outputs.leftLatitudinalMotorRequestedVoltage);
-    }
 }

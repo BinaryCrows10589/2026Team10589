@@ -60,8 +60,8 @@ public class SwerveModuleSim implements SwerveModuleIO {
         outputs.driveMotorTorqueAmps = outputs.driveMotorTorqueAmps; // Not a valid value from sim
 
         outputs.turnMotorRPS = this.turnMotor.getAngularVelocityRPM() / 60.0;
-        outputs.turnMotorAbsolutePositionRotations = this.turnMotor.getAngularPositionRotations();
-        outputs.turnMotorRelativePositionRotations = outputs.turnMotorAbsolutePositionRotations; // Same as absolute, since there's no offset
+        outputs.turnMotorAbsolutePositionRotations = this.desiredPositionRotations;//this.turnMotor.getAngularPositionRotations();
+        outputs.turnMotorRelativePositionRotations = this.desiredPositionRotations;//outputs.turnMotorAbsolutePositionRotations; // Same as absolute, since there's no offset
         outputs.turnMotorAppliedVolts = turnVolts;
         outputs.turnMotorSupplyAmps = this.turnMotor.getCurrentDrawAmps();
         outputs.turnMotorTorqueAmps = outputs.turnMotorTorqueAmps; // Not a valid value from sim

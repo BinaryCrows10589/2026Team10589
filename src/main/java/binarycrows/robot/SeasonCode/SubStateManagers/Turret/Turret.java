@@ -37,6 +37,7 @@ public class Turret {
 
     private boolean hasWrapped = false;
 
+
     
     public Turret(TurretIO turretIO) {
         this.turretIO = turretIO;
@@ -73,6 +74,7 @@ public class Turret {
         TurretConstants.maxDecelerationPerFrameRadPerSecPerSec = (double) maxDecelerationPerFrameTunerRadPerSecPerSec.getValue();
 
     }*/
+
 
     public void update() {
         //updateTunables();
@@ -178,8 +180,8 @@ public class Turret {
                         / (2 * controlConstants.maxDecelerationPerFrameRadPerSecPerSec()) + controlConstants.decelerationBufferRad();
             boolean forceDecelerate = Math.abs(delta) < distanceToStartDecelerating;
 
-            double targetVelocity = Math.signum(delta) * Math.abs(forceDecelerate ? minDesiredVelocity : maxDesiredVelocity);//delta / Robot.averageFrameTime;  
-
+            double targetVelocity = forceDecelerate ? minDesiredVelocity : maxDesiredVelocity;
+            
             Logger.recordOutput("Turret/Control/MaxDesiredVelocity", maxDesiredVelocity);
             Logger.recordOutput("Turret/Control/MinDesiredVelocity", minDesiredVelocity);
 
