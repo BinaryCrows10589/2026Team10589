@@ -146,8 +146,8 @@ public class Turret {
         TurretOutputs outputs = turretIO.getOutputs();
 
         TurretControlConstants controlConstants = 
-        outputs.motorRotation.getRadians() > Math.PI || outputs.motorRotation.getRadians() < -Math.PI ?
-        TurretConstants.overextensionTurretControlConstants : TurretConstants.normalTurretControlConstants;
+        /*outputs.motorRotation.getRadians() > Math.PI || outputs.motorRotation.getRadians() < -Math.PI ?
+        TurretConstants.overextensionTurretControlConstants : */TurretConstants.normalTurretControlConstants;
 
 
         double delta = targetTurretPosition.getRadians() - outputs.encoderRotation.getRadians();
@@ -181,7 +181,7 @@ public class Turret {
             boolean forceDecelerate = Math.abs(delta) < distanceToStartDecelerating;
 
             double targetVelocity = forceDecelerate ? minDesiredVelocity : maxDesiredVelocity;
-            
+
             Logger.recordOutput("Turret/Control/MaxDesiredVelocity", maxDesiredVelocity);
             Logger.recordOutput("Turret/Control/MinDesiredVelocity", minDesiredVelocity);
 

@@ -4,5 +4,5 @@ public enum ShootingStateRequest {
     SHOOT_PRELOADS,
     SHOOT,
     FORCE_SHOOT,
-    STANDBY
+    STANDBY, FORCE_SHOOT_REGARD_POSITION, FREEZE
 }

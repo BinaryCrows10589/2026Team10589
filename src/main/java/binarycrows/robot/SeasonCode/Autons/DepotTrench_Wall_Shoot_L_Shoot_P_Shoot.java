@@ -22,7 +22,6 @@ import edu.wpi.first.math.geometry.Rotation2d;
 public class DepotTrench_Wall_Shoot_L_Shoot_P_Shoot {
     public static Pose2d startingPoint = new Pose2d(Points.startPosition_DepotTrench_Wall.getTranslation2d(), Rotation2d.fromDegrees(90));
 
-    private static double speedPercent = 1;
 
     public static SequentialGroup getAutonomous() {
 
@@ -32,27 +31,29 @@ public class DepotTrench_Wall_Shoot_L_Shoot_P_Shoot {
             
             // First In
 
-            //new StateRequest<>(PivotStateRequest.DOWN_DELAYED, StateRequestPriority.NORMAL),
+            new StateRequest<>(ShootingStateRequest.FREEZE, StateRequestPriority.NORMAL),
+
+            new StateRequest<>(PivotStateRequest.DOWN_DELAYED, StateRequestPriority.NORMAL),
 
             new CMStateRequest(new CMTrajectory(
                 "startPosition_DepotTrench_Wall_L_In", 
                 Paths.startPosition_DepotTrench_Wall_L_In.pathPoints(), 
                 new CMRotation[] {new CMRotation(90, 0, 0.25, 5), new CMRotation(90, 0, 1, 5)},
                 new CMEvent[] {
-                    new CMEvent("deploy_intake", StateRequestUtils.createStateRequestRunnable(PivotStateRequest.DOWN), 0.2)
                 }, 
                 4,
                 10,
                 TrajectoryPriority.SPLIT_PROPORTIONALLY,
-                3.5,
-                3.5,
-                6,
-                2,
+                4.6,
+                4.6,
+                8,
+                3,
                 false,
                 2,
                 1,
-                new double[] {.5, .5},
+                new double[] {2, .75},
                 0.04,
+                
                 15*1000)),
             
             new CMStateRequest(new CMTrajectory(
@@ -75,23 +76,25 @@ public class DepotTrench_Wall_Shoot_L_Shoot_P_Shoot {
                 15*1000)),
 
             new StateRequest<>(IntakeRollersStateRequest.INTAKING, StateRequestPriority.NORMAL),
+            new StateRequest<>(ShootingStateRequest.FORCE_SHOOT_REGARD_POSITION, StateRequestPriority.NORMAL),
 
 
 
             new CMStateRequest(new CMTrajectory(
                 "startPosition_DepotTrench_Wall_Return", 
                 Paths.startPosition_DepotTrench_Wall_L_Return.pathPoints(), 
-                new CMRotation[] {new CMRotation(180, 0, .5, 5)},
-                new CMEvent[] {}, 
+                new CMRotation[] {new CMRotation(-90, 0, .5, 5)},
+                new CMEvent[] {
+                }, 
                 4,
                 15,
                 TrajectoryPriority.SPLIT_PROPORTIONALLY,
-                2.5,
-                2.5 ,
-                4.4 ,
-                1 ,
-                true,
                 2,
+                2 ,
+                4.4 ,
+                1.5,
+                true,
+                1,
                 0.1,
                 new double[] {0.2, 0.2},
                 0.04,
@@ -100,7 +103,6 @@ public class DepotTrench_Wall_Shoot_L_Shoot_P_Shoot {
             // Cycle 2
 
             new StateRequest<>(IntakeRollersStateRequest.OFF, StateRequestPriority.NORMAL),
-            new StateRequest<>(ShootingStateRequest.FORCE_SHOOT, StateRequestPriority.NORMAL),
             
             new CMStateRequest(new CMTrajectory(
                 "startPosition_DepotTrench_Wall_In_Second_Crawl", 
@@ -112,11 +114,11 @@ public class DepotTrench_Wall_Shoot_L_Shoot_P_Shoot {
                     new CMRotation(-160, 0, .35, 25, 25, 25,  0.01),
                     new CMRotation(-200, 0, .45, 25, 25, 25,  0.01),
                     new CMRotation(-160, 0, .55, 25, 25, 25,  0.01),
-                    new CMRotation(-200, 0, .65, 25, 25, 25,  0.01),
-                    new CMRotation(-160, 0, .75, 25, 25, 25,  0.01),
-                    new CMRotation(-200, 0, .85, 25, 25, 25,  0.01),
-                    new CMRotation(-160, 0, .95, 25, 25, 25,  0.01),
-                    new CMRotation(-200, 0, 1, 2)
+                    //new CMRotation(-200, 0, .65, 25, 25, 25,  0.01),
+                    //new CMRotation(-160, 0, .75, 25, 25, 25,  0.01),
+                    //new CMRotation(-200, 0, .85, 25, 25, 25,  0.01),
+                    //new CMRotation(-160, 0, .95, 25, 25, 25,  0.01),
+                    new CMRotation(-180, 0, 1, 2)
                 },
                 new CMEvent[] {
                     new CMEvent("raiseIntake1", new StateRequest<>(PivotStateRequest.RAISED, StateRequestPriority.NORMAL)::dispatchSelf, 0.25),
@@ -141,31 +143,34 @@ public class DepotTrench_Wall_Shoot_L_Shoot_P_Shoot {
                 15*1000)),
 
             new StateRequest<>(ShootingStateRequest.SHOOT_PRELOADS, StateRequestPriority.NORMAL, 8*1000, StateRequestGroupChildTimeoutBehavior.SKIP),
+
             
             new StateRequest<>(IntakeRollersStateRequest.INTAKING, StateRequestPriority.NORMAL),
+
+            new StateRequest<>(ShootingStateRequest.FREEZE, StateRequestPriority.NORMAL),
 
             new CMStateRequest(new CMTrajectory(
                 "startPosition_DepotTrench_Wall_In_Second", 
                 Paths.startPosition_DepotTrench_Wall_L_In_Second.pathPoints(), 
                 new CMRotation[] {
-                    new CMRotation(-200, 0, .5, 10),
+                    new CMRotation(-180, 0, .2, 10),
                     new CMRotation(90, 0, .9, 10)},
                 new CMEvent[] {}, 
                 4,
                 10,
                 TrajectoryPriority.SPLIT_PROPORTIONALLY,
-                3.75 * speedPercent,
-                3.75 * speedPercent,
-                4.4 * speedPercent,
-                2 * speedPercent,
-                false,
-            0.25 * speedPercent,
-                0,
+                3.5,
+                3.5,
+                6,
+                2,
+                true,
+                0.25,
+                0.25,
                 new double[] {0.5, 0.5},
                 0.04,
                 15*1000)),
 
-            new StateRequest<>(IntakeRollersStateRequest.OVERDRIVE, StateRequestPriority.NORMAL),
+            //new StateRequest<>(IntakeRollersStateRequest.OVERDRIVE, StateRequestPriority.NORMAL),
 
 
             new CMStateRequest(new CMTrajectory(
@@ -176,12 +181,12 @@ public class DepotTrench_Wall_Shoot_L_Shoot_P_Shoot {
                 4,
                 15,
                 TrajectoryPriority.SPLIT_PROPORTIONALLY,
-                4 * speedPercent,
-                4 * speedPercent,
-                4.4 * speedPercent,
-                1 * speedPercent,
+                3.5,
+                3.5,
+                6,
+                2,
                 false,
-                4 * speedPercent,
+                3.5,
                 0,
                 new double[] {0.9, 0.9},
                 0,
@@ -189,29 +194,33 @@ public class DepotTrench_Wall_Shoot_L_Shoot_P_Shoot {
 
             new StateRequest<>(IntakeRollersStateRequest.INTAKING, StateRequestPriority.NORMAL),
 
-
+            new StateRequest<>(ShootingStateRequest.STANDBY, StateRequestPriority.NORMAL),
 
 
             new CMStateRequest(new CMTrajectory(
                 "startPosition_DepotTrench_Wall_Return_Second", 
                 Paths.startPosition_DepotTrench_Wall_L_Return.pathPoints(), 
                 new CMRotation[] {new CMRotation(180, 0, .5, 8)},
-                new CMEvent[] {}, 
+                new CMEvent[] {
+
+                }, 
                 4,
                 15,
                 TrajectoryPriority.SPLIT_PROPORTIONALLY,
-                2.5,
-                2.5,
+                2,
+                2,
                 4.4,
-                2,
+                1.5,
                 true,
-                2,
+                1,
                 0.1,
                 new double[] {0.5, 0.5},
                 0.04,
                 15*1000)),
 
             new StateRequest<>(ShootingStateRequest.FORCE_SHOOT, StateRequestPriority.NORMAL),
+
+
 
             
             new CMStateRequest(new CMTrajectory(
@@ -222,12 +231,12 @@ public class DepotTrench_Wall_Shoot_L_Shoot_P_Shoot {
                 4,
                 10,
                 TrajectoryPriority.SPLIT_PROPORTIONALLY,
-                0.3 * speedPercent,
-                0.2 * speedPercent,
-                4.4 * speedPercent,
-                .5 * speedPercent,
+                0.3,
+                0.2,
+                4.4,
+                .5,
                 false,
-                .1 * speedPercent,
+                .1,
                 0,
                 new double[] {0.5, 0.5},
                 0.04,
@@ -238,7 +247,7 @@ public class DepotTrench_Wall_Shoot_L_Shoot_P_Shoot {
             // Shoot All
             new StateRequest<>(ShootingStateRequest.SHOOT_PRELOADS, StateRequestPriority.NORMAL, 8*1000, StateRequestGroupChildTimeoutBehavior.SKIP)
             
-
+            
         );
 
 

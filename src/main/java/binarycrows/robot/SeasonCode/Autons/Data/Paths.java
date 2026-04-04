@@ -68,8 +68,8 @@ public class Paths {
 
     public static final Path startPosition_DepotTrench_Wall_L_Arch_Half_One_Second =
         new Path(
-        Points.CenterFuelQuadrant_OwnAllianceDepot_Second,
-        new CMAutonPoint(7.817, 6.603, 0, 0, 0, 0),
+        new CMAutonPoint(6, 4),
+        new CMAutonPoint(6, 6.603, 0, 0, 0, 0),
         Points.crossOverPoint);
     
   
@@ -83,14 +83,14 @@ public class Paths {
 
     public static final Path startPosition_DepotTrench_Wall_L_In_Second_Crawl = new Path(
         new CMAutonPoint(2.738, 6.043),
-        new CMAutonPoint(2.738, 7.457+0.25)
+        new CMAutonPoint(2.738, 7.457+0.1) // Was 0.25
     );
     public static final Path startPosition_DepotTrench_Wall_L_In_Second = new Path(
-        new CMAutonPoint(2.738, 7.457+0.25),
+        new CMAutonPoint(2.738, 7.457+0.1),
         Points.startPosition_DepotTrench_Wall_Second,
-        new CMAutonPoint(7.775+.8, 7.554-0, 0, 0, 0, 0),
-        new CMAutonPoint(7.817, 6.603, 0, 0, 0, 0),
-        Points.CenterFuelQuadrant_OwnAllianceDepot_Second
+        new CMAutonPoint(6+1.25, 7.554+0.2, 0, 0, 0, 0),
+        new CMAutonPoint(6, 6.603, 0, 0, 0, 0),
+        new CMAutonPoint(6, 4)
     );
     public static final Path startPosition_DepotTrench_Wall_L_Insertion = new Path(
         new CMAutonPoint(5.825, 7.418),

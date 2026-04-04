@@ -82,9 +82,10 @@ public class TurretSubStateManager extends SubStateManager<TurretStateRequest> {
                 turret.setTurretVoltage(TurretConstants.manualVoltage * -(manualDirection));
                 break;
             case SHOOT_ON_THE_MOVE:
-                turret.update();
 
                 if (doAim.get()) {
+                    turret.update();
+
                     turret.setTargetAngle(Rotation2d.fromRadians(shootingTurretAngleRad.get()), shooting.get() && !turret.getHasWrapped());
                 }
                 Logger.recordOutput("Turret/doAim", doAim.get());

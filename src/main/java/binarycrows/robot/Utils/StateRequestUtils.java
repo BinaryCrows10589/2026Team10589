@@ -37,9 +37,10 @@ public class StateRequestUtils {
                 return false;
             case FULFILLED:
                 return false;
-            default:
-                throw new InvalidParameterException("No activity value found for given status."); 
+            case TIMED_OUT:
+                return false;
         }
+        return false;
     }
 
     public static Runnable createStateRequestRunnable(@SuppressWarnings("rawtypes") Enum type, int priority) {

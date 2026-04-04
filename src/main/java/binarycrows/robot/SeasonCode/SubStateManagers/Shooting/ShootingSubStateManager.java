@@ -191,6 +191,15 @@ public class ShootingSubStateManager extends SubStateManager<ShootingStateReques
             case FORCE_SHOOT:
                 this.activeStateRequest.updateStatus(StateRequestStatus.FULFILLED);
                 break;
+            case FORCE_SHOOT_REGARD_POSITION:
+                this.activeStateRequest.updateStatus(StateRequestStatus.FULFILLED);
+                break;
+            case STANDBY:
+                this.activeStateRequest.updateStatus(StateRequestStatus.FULFILLED);
+                break;
+            case FREEZE:
+                this.activeStateRequest.updateStatus(StateRequestStatus.FULFILLED);
+                break;
             default: break;
         }
     }
@@ -200,13 +209,14 @@ public class ShootingSubStateManager extends SubStateManager<ShootingStateReques
             case SHOOT: return canShoot;
             case SHOOT_PRELOADS: return this.activeStateRequest.getStatus() != StateRequestStatus.FULFILLED; // Only shoot if we haven't shot all preloads (we will verify if shot is possible in testing)
             case FORCE_SHOOT: return true;
+            case FORCE_SHOOT_REGARD_POSITION: return robotOnCorrectSideStrict;
             default: return false;
         }
     }
 
     public boolean getShootingIntent() {
         ShootingStateRequest stateRequestType = activeStateRequest.getStateRequestType();
-        return stateRequestType == ShootingStateRequest.SHOOT || stateRequestType == ShootingStateRequest.FORCE_SHOOT || (stateRequestType == ShootingStateRequest.SHOOT_PRELOADS && activeStateRequest.getStatus() != StateRequestStatus.FULFILLED);
+        return stateRequestType == ShootingStateRequest.SHOOT || stateRequestType == ShootingStateRequest.FORCE_SHOOT || stateRequestType == ShootingStateRequest.FORCE_SHOOT_REGARD_POSITION || (stateRequestType == ShootingStateRequest.SHOOT_PRELOADS && activeStateRequest.getStatus() != StateRequestStatus.FULFILLED);
     }
 
     public double getTurretAngleRad() {
@@ -250,6 +260,7 @@ public class ShootingSubStateManager extends SubStateManager<ShootingStateReques
     private boolean accelerationInBounds = true;
     private boolean jerkInBounds = true;
     private boolean robotOnCorrectSide = true;
+    private boolean robotOnCorrectSideStrict = true;
     private boolean robotInDepotThird = false;
     private boolean robotInHumanPlayerThird = false;
 
@@ -271,7 +282,7 @@ public class ShootingSubStateManager extends SubStateManager<ShootingStateReques
     }
 
     public boolean getDoAim() {
-        return robotOnCorrectSide || ((robotInDepotThird || robotInHumanPlayerThird) && getShootingIntent());
+        return (activeStateRequest.getStateRequestType() != ShootingStateRequest.FREEZE) && (robotOnCorrectSide || ((robotInDepotThird || robotInHumanPlayerThird) && getShootingIntent()));
     }
 
     public RuntimeTunableValue dragCoeff = new RuntimeTunableValue("/SOTM/DragCoefficient", .1);
@@ -372,6 +383,7 @@ public class ShootingSubStateManager extends SubStateManager<ShootingStateReques
 
         turretPose = new Pose2d(turretPose.getX(), turretPose.getY(), turretPose.getRotation().times(-1));
         robotOnCorrectSide = turretPose.getX() < ShootingConstants.maxTurretX;
+        robotOnCorrectSideStrict = turretPose.getX() < ShootingConstants.maxTurretXStrict;
         robotInDepotThird = turretPose.getY() > 4.75;
         robotInHumanPlayerThird = turretPose.getY() < 3.5;
         Translation2d turretPoseTranslation = turretPose.getTranslation();
@@ -387,7 +399,9 @@ public class ShootingSubStateManager extends SubStateManager<ShootingStateReques
         );
         turretPose = new Pose2d(turretPoseTranslation.plus(lookaheadDelta),turretPose.getRotation());
 
-        Translation2d targetPosition = robotOnCorrectSide ? this.targetPosition.plus(targetPositionFudgeFactor) : 
+        Translation2d targetPosition = 
+        (robotOnCorrectSide || this.activeStateRequest.getStateRequestType() == ShootingStateRequest.FORCE_SHOOT_REGARD_POSITION) 
+        ? this.targetPosition.plus(targetPositionFudgeFactor) : 
         (robotInDepotThird ? this.depotBackPosition : this.humanPlayerBackPosition);
         Logger.recordOutput("Tuning/TargetPosition", targetPosition);
 
