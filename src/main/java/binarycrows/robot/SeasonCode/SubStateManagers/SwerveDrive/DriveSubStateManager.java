@@ -56,6 +56,8 @@ public class DriveSubStateManager extends SubStateManager<DriveStateRequest> {
 
     private PoseEstimator poseEstimator;
 
+    private int poseResetCounter = 0;
+
     private double currentVoltageTableTargetValue = 0;
     private double voltageTableStep = 0.0002;
     private ArrayList<Double> voltage = new ArrayList<Double>();
@@ -116,10 +118,6 @@ public class DriveSubStateManager extends SubStateManager<DriveStateRequest> {
 
     public void setRobotPose(Pose2d newRobotPose) {
         this.poseEstimator.setRobotPose(newRobotPose);
-    }
-
-    public void setRobotStartingPose(Pose2d newRobotPose) {
-        setRobotPose(newRobotPose);
     }
 
     public void enableSlowMode() {
@@ -524,6 +522,8 @@ public class DriveSubStateManager extends SubStateManager<DriveStateRequest> {
     }
 
     public void resetRobotPose() {
+        poseResetCounter++;
+        Logger.recordOutput("Driver/ResetRobotPose", poseResetCounter);
         poseEstimator.resetRobotPose();
     }
 

@@ -44,7 +44,9 @@ public class TransitTalonFXS implements TransitIO {
         longitudinalMotorConfig.Voltage.PeakReverseVoltage = -TransitConstants.maxLongitudinalMotorVoltage;
 
         longitudinalMotorConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
-        longitudinalMotorConfig.CurrentLimits.SupplyCurrentLimit = TransitConstants.supplyCurrentLimit;
+        longitudinalMotorConfig.CurrentLimits.SupplyCurrentLimit = TransitConstants.upperSupplyCurrentLimit;
+        //longitudinalMotorConfig.CurrentLimits.SupplyCurrentLowerLimit = TransitConstants.lowerSupplyCurrentLimit;
+        //longitudinalMotorConfig.CurrentLimits.SupplyCurrentLowerTime = TransitConstants.supplyCurrentLimitTime;
 
         this.longitudinalMotor.getConfigurator().apply(longitudinalMotorConfig);
 
@@ -65,7 +67,9 @@ public class TransitTalonFXS implements TransitIO {
         latitudinalMasterMotorConfig.Voltage.PeakReverseVoltage = -TransitConstants.maxLatitudinalMotorVoltage;
 
         latitudinalMasterMotorConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
-        latitudinalMasterMotorConfig.CurrentLimits.SupplyCurrentLimit = TransitConstants.supplyCurrentLimit;
+        latitudinalMasterMotorConfig.CurrentLimits.SupplyCurrentLimit = TransitConstants.upperSupplyCurrentLimit;
+        //latitudinalMasterMotorConfig.CurrentLimits.SupplyCurrentLowerLimit = TransitConstants.lowerSupplyCurrentLimit;
+        //latitudinalMasterMotorConfig.CurrentLimits.SupplyCurrentLowerTime = TransitConstants.supplyCurrentLimitTime;
 
         this.leftLatitudinalMotor.getConfigurator().apply(latitudinalMasterMotorConfig);
         
@@ -98,7 +102,9 @@ public class TransitTalonFXS implements TransitIO {
         inAndUpMotorConfig.Commutation.MotorArrangement = MotorArrangementValue.Minion_JST;
 
         inAndUpMotorConfig.CurrentLimits.SupplyCurrentLimitEnable = true;
-        inAndUpMotorConfig.CurrentLimits.SupplyCurrentLimit = TransitConstants.supplyCurrentLimit;
+        inAndUpMotorConfig.CurrentLimits.SupplyCurrentLimit = TransitConstants.upperSupplyCurrentLimit;
+        //inAndUpMotorConfig.CurrentLimits.SupplyCurrentLowerLimit = TransitConstants.lowerSupplyCurrentLimit;
+        //inAndUpMotorConfig.CurrentLimits.SupplyCurrentLowerTime = TransitConstants.supplyCurrentLimitTime;
 
         this.inAndUpMotor.getConfigurator().apply(inAndUpMotorConfig);
     }

@@ -33,7 +33,7 @@ public class BackUpAndShoot {
                 "backUpAndShoot", 
                 new CMAutonPoint[] {
                     new CMAutonPoint(3.547, 4.016),
-                    new CMAutonPoint(3.547-2, 4.016),
+                    new CMAutonPoint(3.547-1.7, 4.016),
                 }, 
                 new CMRotation[] {new CMRotation(0, 0, 1, 5)},
                 new CMEvent[] {
@@ -48,9 +48,11 @@ public class BackUpAndShoot {
                 true,
                 .1,
                 .25,
-                new double[] {0.02, 0.02},
+                new double[] {0.5, 0.5},
                 0.04,
                 15*1000)),
+
+                new StateRequest(PivotStateRequest.DOWN, StateRequestPriority.NORMAL),
 
                 new StateRequest<>(ShootingStateRequest.FORCE_SHOOT, StateRequestPriority.NORMAL)
         );

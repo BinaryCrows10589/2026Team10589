@@ -95,7 +95,7 @@ public class Robot extends LoggedRobot {
         // Set up data receivers & replay source
         if (RobotBase.isReal()) {
             // Running on a real robot, log to a USB stick ("/U/logs")
-            //Logger.addDataReceiver(new WPILOGWriter("/home/lvuser/log/"));
+            Logger.addDataReceiver(new WPILOGWriter("/home/lvuser/log/"));
             Logger.addDataReceiver(new NT4Publisher());
             SignalLogger.enableAutoLogging(false);
             new PowerDistribution(1, ModuleType.kRev); // Enables power distribution logging

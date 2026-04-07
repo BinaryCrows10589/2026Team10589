@@ -23,6 +23,7 @@ public class PivotSubStateManager extends SubStateManager<PivotStateRequest>  {
     private int manualDirection = 0; // 1=up 0=none 2=down
 
     private boolean needsToStartRollers = false;
+    private boolean nextRollersOverdrive = false;
 
     public PivotSubStateManager() {
         super(new StateRequest<PivotStateRequest>(PivotStateRequest.UP, StateRequestPriority.NORMAL));
@@ -60,6 +61,10 @@ public class PivotSubStateManager extends SubStateManager<PivotStateRequest>  {
                 case DOWN_DELAYED:
                     needsToStartRollers = false;
                     startTime = System.currentTimeMillis();
+                case DOWN_DELAYED_OVERDRIVE:
+                    needsToStartRollers = false;
+                    nextRollersOverdrive = true;
+                    startTime = System.currentTimeMillis();
                 default:
                     needsToStartRollers = false;
                     break;
@@ -83,13 +88,19 @@ public class PivotSubStateManager extends SubStateManager<PivotStateRequest>  {
                 if (needsToStartRollers && outputs.encoderRotation.getRotations() > IntakeConstants.Pivot.intakeRollerActivateThreshold.getRotations()) {
                     needsToStartRollers = false;
                     //System.out.println("START ROLLERS");
-                    new StateRequest<>(IntakeRollersStateRequest.INTAKING, StateRequestPriority.NORMAL).dispatchSelf();;
+                    if (nextRollersOverdrive) {
+                        new StateRequest<>(IntakeRollersStateRequest.OVERDRIVE, StateRequestPriority.NORMAL).dispatchSelf();
+                        nextRollersOverdrive = false;
+                    } else {
+                        new StateRequest<>(IntakeRollersStateRequest.INTAKING, StateRequestPriority.NORMAL).dispatchSelf();
+                    }
                 }
                 delta = IntakeConstants.Pivot.pivotDownPosition.minus(outputs.encoderRotation).getDegrees();
                 if (delta > 80) voltage = 1.5;
-                else if (delta > 45) voltage = 0.75;
-                else if (delta > 20) voltage = 0.1;
-                else if (delta > 5) voltage = 0.05;
+                else if (delta > 45) voltage = 0.9;
+                else if (delta > 20) voltage = 0.75;
+                else if (delta > 5) voltage = 0.7;
+                else if (delta > 1) voltage = 0.1;
                 else voltage = 0;
                 this.activeStateRequest.updateStatus(StateRequestStatus.FULFILLED);
                 break;
@@ -115,6 +126,11 @@ public class PivotSubStateManager extends SubStateManager<PivotStateRequest>  {
                 this.activeStateRequest.updateStatus(StateRequestStatus.FULFILLED);
                 break;
             case DOWN_DELAYED:
+                if (startTime + timeTillStart <= System.currentTimeMillis()) (new StateRequest<>(PivotStateRequest.DOWN, StateRequestPriority.NORMAL)).dispatchSelf();
+                
+                this.activeStateRequest.updateStatus(StateRequestStatus.FULFILLED);
+            
+            case DOWN_DELAYED_OVERDRIVE:
                 if (startTime + timeTillStart <= System.currentTimeMillis()) (new StateRequest<>(PivotStateRequest.DOWN, StateRequestPriority.NORMAL)).dispatchSelf();
                 
                 this.activeStateRequest.updateStatus(StateRequestStatus.FULFILLED);

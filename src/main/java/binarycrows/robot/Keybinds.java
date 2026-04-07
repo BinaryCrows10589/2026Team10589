@@ -81,14 +81,14 @@ public class Keybinds {
          //0.5 / 0.9 = (0-1)
 
 
-        driverController.onPress(
+        /*driverController.onPress(
             XboxGamepad.XboxGamepadID.a, 
             StateRequestUtils.createStateRequestRunnable(DriveStateRequest.CONSTRUCT_VOLTAGE_TABLE)
         );
         driverController.onPress(
             XboxGamepad.XboxGamepadID.b, 
             StateRequestUtils.createStateRequestRunnable(DriveStateRequest.DISABLE)
-        );
+        );*/
         driverController.onPress(
             XboxGamepad.XboxGamepadID.x, 
             StateRequestUtils.createStateRequestRunnable(DriveStateRequest.TELEOP_DRIVE)

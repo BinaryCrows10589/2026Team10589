@@ -65,7 +65,7 @@ public class ShootingConstants {
         new double[] {6.556, .375, 66  +3.5, 1.11}, */
 
         // distance hood angle, flywheel, tof
-        new double[] {1.400, 0, 63.75, 1.2-.44},
+        /*new double[] {1.400, 0, 63.75, 1.2-.44},
         new double[] {1.916, 0, 65, 2.78-1.86},
         new double[] {2.314, .08, 65, 10.8-9.81},
         new double[] {2.851, .12, 65, 3.56-2.36},
@@ -83,7 +83,28 @@ public class ShootingConstants {
         new double[] {7.531, .45, 73, 6.5-5.05},
         new double[] {8.396, .45, 80, 2.93-1.53},
         new double[] {8.4, .45, 100, 3},
-        new double[] {11.012, .45, 100, 4}
+        new double[] {11.012, .45, 100, 4}*/
+
+        // distance, hood angle, flywheel rps, time of flight
+        new double[] {1.539, 0, 67, 1.2-0.43},
+        new double[] {1.856, 0, 67, 1-.12},
+        new double[] {2.216, 0.075, 67, 2.92-2.01},
+        new double[] {2.573, .125, 67, 1.86-.76},
+        new double[] {3.022, .175, 67, 2.46-1.28},
+        new double[] {3.333, .19, 67, 3.08-1.82},
+        new double[] {3.719, .205, 67, 15.35-14.01},
+        new double[] {3.930, .225, 67, 4.61-3.31},
+        new double[] {4.199, .235, 67, 4.61-3.25},
+        new double[] {4.362, .24, 67, 1.99-.62},
+        new double[] {4.606, .26, 67, 4.61-3.27},
+        new double[] {4.874, .27, 67, 6.33-4.94},
+        new double[] {5.083, .28, 67, 3.17-1.81},
+        new double[] {5.950, .33, 67, 13.19-11.78},
+        new double[] {6.239, .355, 67, 1.79-.65},
+        new double[] {6.609, .375, 70, 4.84-3.46},
+        new double[] {7.290, .39, 75, 2.79-1.34},
+        new double[] {7.3, .625, 90, 3},
+        new double[] {11.5, .625, 90, 3}
 
     }, 
     false);

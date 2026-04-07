@@ -15,7 +15,6 @@ import binarycrows.robot.SeasonCode.SubStateManagers.Intake.Rollers.IntakeRoller
 import binarycrows.robot.SeasonCode.SubStateManagers.Shooting.ShootingStateRequest;
 import binarycrows.robot.SeasonCode.SubStateManagers.SwerveDrive.DriveStateRequest;
 import binarycrows.robot.StateRequestGroup.SequentialGroup;
-import binarycrows.robot.Utils.StateRequestUtils;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 
@@ -31,10 +30,8 @@ public class DepotTrench_Wall_Shoot_L_Shoot_P_Shoot {
             
             // First In
 
-            new StateRequest<>(ShootingStateRequest.FREEZE, StateRequestPriority.NORMAL),
-
             new StateRequest<>(PivotStateRequest.DOWN_DELAYED, StateRequestPriority.NORMAL),
-
+            
             new CMStateRequest(new CMTrajectory(
                 "startPosition_DepotTrench_Wall_L_In", 
                 Paths.startPosition_DepotTrench_Wall_L_In.pathPoints(), 
@@ -55,6 +52,8 @@ public class DepotTrench_Wall_Shoot_L_Shoot_P_Shoot {
                 0.04,
                 
                 15*1000)),
+
+            new StateRequest<>(IntakeRollersStateRequest.OVERDRIVE, StateRequestPriority.NORMAL),
             
             new CMStateRequest(new CMTrajectory(
                 "startPosition_DepotTrench_Wall_Arch_Half_One", 
@@ -114,10 +113,6 @@ public class DepotTrench_Wall_Shoot_L_Shoot_P_Shoot {
                     new CMRotation(-160, 0, .35, 25, 25, 25,  0.01),
                     new CMRotation(-200, 0, .45, 25, 25, 25,  0.01),
                     new CMRotation(-160, 0, .55, 25, 25, 25,  0.01),
-                    //new CMRotation(-200, 0, .65, 25, 25, 25,  0.01),
-                    //new CMRotation(-160, 0, .75, 25, 25, 25,  0.01),
-                    //new CMRotation(-200, 0, .85, 25, 25, 25,  0.01),
-                    //new CMRotation(-160, 0, .95, 25, 25, 25,  0.01),
                     new CMRotation(-180, 0, 1, 2)
                 },
                 new CMEvent[] {
@@ -169,9 +164,6 @@ public class DepotTrench_Wall_Shoot_L_Shoot_P_Shoot {
                 new double[] {0.5, 0.5},
                 0.04,
                 15*1000)),
-
-            //new StateRequest<>(IntakeRollersStateRequest.OVERDRIVE, StateRequestPriority.NORMAL),
-
 
             new CMStateRequest(new CMTrajectory(
                 "startPosition_DepotTrench_Wall_Arch_Half_One_Second", 

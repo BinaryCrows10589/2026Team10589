@@ -25,7 +25,7 @@ public final class TransitConstants {
     public static final double standardLatitudinalMotorVoltagePercent = .7;
     public static final double standardInAndUpMotorVoltagePercent = .9;
 
-    public static final double standardLongitudinalMotorVoltage = 4.5;
+    public static final double standardLongitudinalMotorVoltage = 3.5;
     public static final double standardLatitudinalMotorVoltage = 5;
     public static final double standardInAndUpMotorVoltage = 6.5;
 
@@ -37,7 +37,9 @@ public final class TransitConstants {
     public static final int stalledFramesToInvert = 25;
     public static final int stalledFramesToAbort = 50;
 
-    public static final double supplyCurrentLimit = 70;
+    public static final double upperSupplyCurrentLimit = 70;
+    public static final double lowerSupplyCurrentLimit = 20;
+    public static final double supplyCurrentLimitTime = 1;
 
     public final class Sensors {
         public static final RangingMode binFullRangingMode = RangingMode.Short;

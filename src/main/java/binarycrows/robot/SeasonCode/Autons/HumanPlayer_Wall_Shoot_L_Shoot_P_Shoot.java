@@ -21,7 +21,6 @@ import edu.wpi.first.math.geometry.Rotation2d;
 public class HumanPlayer_Wall_Shoot_L_Shoot_P_Shoot {
     public static Pose2d startingPoint = new Pose2d(Points.startPosition_HumanPlayerTrench_Wall.getTranslation2d(), Rotation2d.fromDegrees(-90));
 
-    private static double speedPercent = 0.434782;
 
     public static SequentialGroup getAutonomous() {
 
@@ -42,15 +41,17 @@ public class HumanPlayer_Wall_Shoot_L_Shoot_P_Shoot {
                 10,
                 TrajectoryPriority.SPLIT_PROPORTIONALLY,
                 4.6,
-                10,
-                10,
                 4.6,
+                8,
+                3,
                 false,
-                4.6 * speedPercent,
                 2,
-                new double[] {0.5, 0.5},
+                1,
+                new double[] {2,.75},
                 0.04,
                 15*1000)),
+            
+            new StateRequest<>(IntakeRollersStateRequest.OVERDRIVE, StateRequestPriority.NORMAL),
             
             new CMStateRequest(new CMTrajectory(
                 "startPosition_HumanPlayerTrench_Wall_Arch_Half_One", 
@@ -60,53 +61,35 @@ public class HumanPlayer_Wall_Shoot_L_Shoot_P_Shoot {
                 4,
                 15,
                 TrajectoryPriority.SPLIT_PROPORTIONALLY,
-                4.6 * speedPercent,
-                4.6 * speedPercent,
-                4.4 * speedPercent,
-                1 * speedPercent,
+                3.5,
+                3.5,
+                6,
+                1,
                 false,
-                4.6 * speedPercent,
+                2,
                 0,
                 new double[] {0.9, 0.9},
                 0,
                 15*1000)),
 
             new StateRequest<>(IntakeRollersStateRequest.INTAKING, StateRequestPriority.NORMAL),
+            new StateRequest<>(ShootingStateRequest.FORCE_SHOOT_REGARD_POSITION, StateRequestPriority.NORMAL),
 
-
-            /*new CMStateRequest(new CMTrajectory(
-                "startPosition_HumanPlayerTrench_Wall_Arch_Half_Two", 
-                Paths.startPosition_HumanPlayerTrench_Wall_L_Arch_Half_Two.pathPoints(), 
-                new CMRotation[] {new CMRotation(-90, -1, .5, 5)},
-                new CMEvent[] {}, 
-                4,
-                15,
-                TrajectoryPriority.SPLIT_PROPORTIONALLY,
-                2.25,
-                2.25,
-                4.4,
-                2,
-                false,
-                1,
-                0,
-                new double[] {0.5, 0.5},
-                0.04,
-                15*1000)),*/
 
             new CMStateRequest(new CMTrajectory(
                 "startPosition_HumanPlayerTrench_Wall_Return", 
                 Paths.startPosition_HumanPlayerTrench_Wall_L_Return.pathPoints(), 
-                new CMRotation[] {new CMRotation(-180, 0, .5, 5)},
+                new CMRotation[] {new CMRotation(90, 0, .5, 5)},
                 new CMEvent[] {}, 
                 4,
                 15,
                 TrajectoryPriority.SPLIT_PROPORTIONALLY,
-                2.5,
-                2.5,
-                4.4,
-                1,
-                true,
                 2,
+                2,
+                4.4,
+                1.5,
+                true,
+                1,
                 0.1,
                 new double[] {0.2, 0.2},
                 0.04,
@@ -115,7 +98,6 @@ public class HumanPlayer_Wall_Shoot_L_Shoot_P_Shoot {
             // Cycle 2
 
             new StateRequest<>(IntakeRollersStateRequest.OFF, StateRequestPriority.NORMAL),
-            new StateRequest<>(ShootingStateRequest.FORCE_SHOOT, StateRequestPriority.NORMAL),
             
             new CMStateRequest(new CMTrajectory(
                 "startPosition_HumanPlayerTrench_Wall_In_Second_Crawl", 
@@ -127,11 +109,8 @@ public class HumanPlayer_Wall_Shoot_L_Shoot_P_Shoot {
                     new CMRotation(160, 0, .35, 25, 25, 25,  0.01),
                     new CMRotation(200, 0, .45, 25, 25, 25,  0.01),
                     new CMRotation(160, 0, .55, 25, 25, 25,  0.01),
-                    new CMRotation(200, 0, .65, 25, 25, 25,  0.01),
-                    new CMRotation(160, 0, .75, 25, 25, 25,  0.01),
-                    new CMRotation(200, 0, .85, 25, 25, 25,  0.01),
-                    new CMRotation(160, 0, .95, 25, 25, 25,  0.01),
-                    new CMRotation(200, 0, 1, 2)
+                    new CMRotation(180, 0, 1, 2),
+
                 },
                 new CMEvent[] {
                     new CMEvent("raiseIntake1", new StateRequest<>(PivotStateRequest.RAISED, StateRequestPriority.NORMAL)::dispatchSelf, 0.25),
@@ -159,29 +138,28 @@ public class HumanPlayer_Wall_Shoot_L_Shoot_P_Shoot {
             
             new StateRequest<>(IntakeRollersStateRequest.INTAKING, StateRequestPriority.NORMAL),
 
+            new StateRequest<>(ShootingStateRequest.FREEZE, StateRequestPriority.NORMAL),
+
             new CMStateRequest(new CMTrajectory(
                 "startPosition_HumanPlayerTrench_Wall_In_Second", 
                 Paths.startPosition_HumanPlayerTrench_Wall_L_In_Second.pathPoints(), 
                 new CMRotation[] {
-                    new CMRotation(200, 0, .5, 10),
+                    new CMRotation(180, 0, .2, 10),
                     new CMRotation(-90, 0, .9, 10)},
                 new CMEvent[] {}, 
                 4,
                 10,
                 TrajectoryPriority.SPLIT_PROPORTIONALLY,
-                3.75 * speedPercent,
-                3.75 * speedPercent,
-                4.4 * speedPercent,
-                2 * speedPercent,
+                3.5,
+                3.5,
+                6,
+                2,
                 false,
-            0.25 * speedPercent,
-                0,
+            0.25,
+                0.25,
                 new double[] {0.5, 0.5},
                 0.04,
                 15*1000)),
-
-            //new StateRequest<>(IntakeRollersStateRequest.OVERDRIVE, StateRequestPriority.NORMAL),
-
 
             new CMStateRequest(new CMTrajectory(
                 "startPosition_HumanPlayerTrench_Wall_Arch_Half_One_Second", 
@@ -191,12 +169,12 @@ public class HumanPlayer_Wall_Shoot_L_Shoot_P_Shoot {
                 4,
                 15,
                 TrajectoryPriority.SPLIT_PROPORTIONALLY,
-                4 * speedPercent,
-                4 * speedPercent,
-                4.4 * speedPercent,
-                1 * speedPercent,
+                3.5,
+                3.5,
+                6,
+                2,
                 false,
-                4 * speedPercent,
+                3.5,
                 0,
                 new double[] {0.9, 0.9},
                 0,
@@ -205,6 +183,7 @@ public class HumanPlayer_Wall_Shoot_L_Shoot_P_Shoot {
             new StateRequest<>(IntakeRollersStateRequest.INTAKING, StateRequestPriority.NORMAL),
 
 
+            new StateRequest<>(ShootingStateRequest.STANDBY, StateRequestPriority.NORMAL),
 
 
             new CMStateRequest(new CMTrajectory(
@@ -215,12 +194,12 @@ public class HumanPlayer_Wall_Shoot_L_Shoot_P_Shoot {
                 4,
                 15,
                 TrajectoryPriority.SPLIT_PROPORTIONALLY,
-                2.5,
-                2.5,
+                2,
+                2,
                 4.4,
-                2,
+                1.5,
                 true,
-                2,
+                1,
                 0.1,
                 new double[] {0.5, 0.5},
                 0.04,
@@ -237,12 +216,12 @@ public class HumanPlayer_Wall_Shoot_L_Shoot_P_Shoot {
                 4,
                 10,
                 TrajectoryPriority.SPLIT_PROPORTIONALLY,
-                0.3 * speedPercent,
-                0.2 * speedPercent,
-                4.4 * speedPercent,
-                .5 * speedPercent,
+                0.3,
+                0.2,
+                4.4,
+                .5,
                 false,
-                .1 * speedPercent,
+                .1,
                 0,
                 new double[] {0.5, 0.5},
                 0.04,

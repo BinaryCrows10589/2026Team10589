@@ -34,6 +34,8 @@ public class UnkeyedLerpTable {
             // Exact match on any row — just return directly, no lerp needed
         
             return lerpTable[lowerIndex][targetIndice];
+        } else if (higherIndex >= lerpTable.length || lowerIndex >= lerpTable.length) {
+            return lerpTable[lerpTable.length - 1][targetIndice];
         }
         double x1 = lerpTable[lowerIndex][keyIndice];
         double y1 = lerpTable[lowerIndex][targetIndice];
