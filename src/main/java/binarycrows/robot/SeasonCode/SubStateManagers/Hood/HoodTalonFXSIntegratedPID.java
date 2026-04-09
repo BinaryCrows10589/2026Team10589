@@ -109,9 +109,10 @@ public class HoodTalonFXSIntegratedPID implements HoodIO {
 
 
         if (MetaConstants.inProduction) return; // Don't run at competitions!
-        if(this.hoodPIDConstantTuner.hasAnyPIDValueChanged()) {
-            this.hoodMotor.getConfigurator().apply(hoodPIDConstantTuner.generatePIDFFConfigs());
-        }
+        /*System.out.println("Applying new hood PID values!");
+        System.out.println(
+            this.hoodMotor.getConfigurator().apply(hoodPIDConstantTuner.generatePIDFFGConfigs())
+            );*/
 
     }
 
@@ -128,7 +129,7 @@ public class HoodTalonFXSIntegratedPID implements HoodIO {
         this.hoodMotor.getConfigurator().apply(turretPIDConfig);
 
         hoodPIDConstantTuner = new RuntimeTunablePIDValues("Hood/PIDValues",
-        HoodConstants.hoodPIDValueP, HoodConstants.hoodPIDValueI, HoodConstants.hoodPIDValueD, HoodConstants.hoodPIDValueFF);
+        HoodConstants.hoodPIDValueP, HoodConstants.hoodPIDValueI, HoodConstants.hoodPIDValueD, HoodConstants.hoodPIDValueFF, HoodConstants.hoodPIDValueG);
 
     }
 

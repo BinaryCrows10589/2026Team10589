@@ -24,54 +24,69 @@ public class RuntimeTunablePIDValues {
     private RuntimeTunableValue changableJerkValue;
     
     private boolean isUsingAdvancedPID = false; // Whether the variables above will be used
-
-
-    /**
-     * WARNING!!! THIS WILL NOT WORK DURING MATCHES AT COMPETION.
-     * ALL PID VALUES TUNED HERE SHOULD BE ADDED TO THE RELEVENT CONSTANT FILE ONCE TUNING IS COMPLETE!!!
-     * WARNING!!! VALUES WILL NOT STAY BETWEEN DASHBOARD OR ROBOT REBOOTS/CODE REDEPLOYS.
-     * Please record the value somehow before proforming these actions to not loose progress
-     * @param networkTablesKey String: The start of the key under which the 
-     * values will be added to network tables. e.x Module/DrivePIDValues
-     *
-     * @param defaultPValue Double: The defualt P PID value
-     * @param defaultIValue Double: The defualt I PID value
-     * @param defaultDValue Double: The defualt D PID value
-     * @param defaultFFValue Double: The defualt FF PID value
-     */
-    public RuntimeTunablePIDValues(String baseNetworkTablesKey, double defaultPValue,
-        double defaultIValue, double defaultDValue, double defaultFFValue) {
-
-        this.changablePValue = new RuntimeTunableValue(baseNetworkTablesKey + "/PValue", (double)defaultPValue);
-        this.changableIValue = new RuntimeTunableValue(baseNetworkTablesKey + "/IValue", (double)defaultIValue);
-        this.changableDValue = new RuntimeTunableValue(baseNetworkTablesKey + "/DValue", (double)defaultDValue);
-        this.changableFFValue = new RuntimeTunableValue(baseNetworkTablesKey + "/FFValue", (double)defaultFFValue);
-    }
-
-    public RuntimeTunablePIDValues(String baseNetworkTablesKey,
-    double defaultPValue,
-    double defaultIValue,
-    double defaultDValue,
-    double defaultFFValue,
-    double defaultGValue,
-    double defaultSValue,
-    double defaultVValue,
-    double defaultAValue,
-    double defaultVelocityValue,
-    double defaultAccelerationValue,
-    double defaultJerkValue) {
-        this.changablePValue = new RuntimeTunableValue(baseNetworkTablesKey + "/PValue", (double)defaultPValue);
-        this.changableIValue = new RuntimeTunableValue(baseNetworkTablesKey + "/IValue", (double)defaultIValue);
-        this.changableDValue = new RuntimeTunableValue(baseNetworkTablesKey + "/DValue", (double)defaultDValue);
-        this.changableFFValue = new RuntimeTunableValue(baseNetworkTablesKey + "/FFValue", (double)defaultFFValue);
-        this.changableGValue = new RuntimeTunableValue(baseNetworkTablesKey + "/GValue", (double)defaultGValue);
-        this.changableSValue = new RuntimeTunableValue(baseNetworkTablesKey + "/SValue", (double)defaultSValue);
-        this.changableVValue = new RuntimeTunableValue(baseNetworkTablesKey + "/VValue", (double)defaultVValue);
-        this.changableAValue = new RuntimeTunableValue(baseNetworkTablesKey + "/AValue", (double)defaultAValue);
-        this.changableCruiseVelocityValue = new RuntimeTunableValue(baseNetworkTablesKey + "/CruseVelocityValue", (double) defaultVelocityValue);
-        this.changableAccelerationValue = new RuntimeTunableValue(baseNetworkTablesKey + "/AccelerationValue", (double)defaultAccelerationValue);
-        this.changableJerkValue = new RuntimeTunableValue(baseNetworkTablesKey + "/JerkValue", (double)defaultJerkValue);
-        isUsingAdvancedPID = true;
+        private boolean isUsingGravityPID = false;
+    
+    
+        /**
+         * WARNING!!! THIS WILL NOT WORK DURING MATCHES AT COMPETION.
+         * ALL PID VALUES TUNED HERE SHOULD BE ADDED TO THE RELEVENT CONSTANT FILE ONCE TUNING IS COMPLETE!!!
+         * WARNING!!! VALUES WILL NOT STAY BETWEEN DASHBOARD OR ROBOT REBOOTS/CODE REDEPLOYS.
+         * Please record the value somehow before proforming these actions to not loose progress
+         * @param networkTablesKey String: The start of the key under which the 
+         * values will be added to network tables. e.x Module/DrivePIDValues
+         *
+         * @param defaultPValue Double: The defualt P PID value
+         * @param defaultIValue Double: The defualt I PID value
+         * @param defaultDValue Double: The defualt D PID value
+         * @param defaultFFValue Double: The defualt FF PID value
+         */
+        public RuntimeTunablePIDValues(String baseNetworkTablesKey, double defaultPValue,
+            double defaultIValue, double defaultDValue, double defaultFFValue) {
+    
+            this.changablePValue = new RuntimeTunableValue(baseNetworkTablesKey + "/PValue", (double)defaultPValue);
+            this.changableIValue = new RuntimeTunableValue(baseNetworkTablesKey + "/IValue", (double)defaultIValue);
+            this.changableDValue = new RuntimeTunableValue(baseNetworkTablesKey + "/DValue", (double)defaultDValue);
+            this.changableFFValue = new RuntimeTunableValue(baseNetworkTablesKey + "/FFValue", (double)defaultFFValue);
+        }
+    
+        public RuntimeTunablePIDValues(String baseNetworkTablesKey,
+        double defaultPValue,
+        double defaultIValue,
+        double defaultDValue,
+        double defaultFFValue,
+        double defaultGValue,
+        double defaultSValue,
+        double defaultVValue,
+        double defaultAValue,
+        double defaultVelocityValue,
+        double defaultAccelerationValue,
+        double defaultJerkValue) {
+            this.changablePValue = new RuntimeTunableValue(baseNetworkTablesKey + "/PValue", (double)defaultPValue);
+            this.changableIValue = new RuntimeTunableValue(baseNetworkTablesKey + "/IValue", (double)defaultIValue);
+            this.changableDValue = new RuntimeTunableValue(baseNetworkTablesKey + "/DValue", (double)defaultDValue);
+            this.changableFFValue = new RuntimeTunableValue(baseNetworkTablesKey + "/FFValue", (double)defaultFFValue);
+            this.changableGValue = new RuntimeTunableValue(baseNetworkTablesKey + "/GValue", (double)defaultGValue);
+            this.changableSValue = new RuntimeTunableValue(baseNetworkTablesKey + "/SValue", (double)defaultSValue);
+            this.changableVValue = new RuntimeTunableValue(baseNetworkTablesKey + "/VValue", (double)defaultVValue);
+            this.changableAValue = new RuntimeTunableValue(baseNetworkTablesKey + "/AValue", (double)defaultAValue);
+            this.changableCruiseVelocityValue = new RuntimeTunableValue(baseNetworkTablesKey + "/CruseVelocityValue", (double) defaultVelocityValue);
+            this.changableAccelerationValue = new RuntimeTunableValue(baseNetworkTablesKey + "/AccelerationValue", (double)defaultAccelerationValue);
+            this.changableJerkValue = new RuntimeTunableValue(baseNetworkTablesKey + "/JerkValue", (double)defaultJerkValue);
+            isUsingAdvancedPID = true;
+        }
+    
+        public RuntimeTunablePIDValues(String baseNetworkTablesKey,
+        double defaultPValue,
+        double defaultIValue,
+        double defaultDValue,
+        double defaultFFValue,
+        double defaultGValue) {
+            this.changablePValue = new RuntimeTunableValue(baseNetworkTablesKey + "/PValue", (double)defaultPValue);
+            this.changableIValue = new RuntimeTunableValue(baseNetworkTablesKey + "/IValue", (double)defaultIValue);
+            this.changableDValue = new RuntimeTunableValue(baseNetworkTablesKey + "/DValue", (double)defaultDValue);
+            this.changableFFValue = new RuntimeTunableValue(baseNetworkTablesKey + "/FFValue", (double)defaultFFValue);
+            this.changableGValue = new RuntimeTunableValue(baseNetworkTablesKey + "/GValue", (double)defaultGValue);
+            isUsingGravityPID = true;
     }
 
     
@@ -100,7 +115,15 @@ public class RuntimeTunablePIDValues {
                 (double)this.changableJerkValue.getValue()
             };
 
-        } else {
+        } else if (isUsingGravityPID) {
+            arrayOfPIDValues = new double[] {
+                (double)this.changablePValue.getValue(),
+                (double)this.changableIValue.getValue(),
+                (double)this.changableDValue.getValue(),
+                (double)this.changableFFValue.getValue(),
+                (double)this.changableGValue.getValue(),
+            };
+        }else {
 
             arrayOfPIDValues = new double[] {
                 (double)this.changablePValue.getValue(),
@@ -120,6 +143,17 @@ public class RuntimeTunablePIDValues {
         newPIDConfigs.kI = currentPIDValues[1];
         newPIDConfigs.kD = currentPIDValues[2];
         newPIDConfigs.kS = currentPIDValues[3];
+        return newPIDConfigs;
+    }
+
+    public Slot0Configs generatePIDFFGConfigs() {
+        double[] currentPIDValues = this.getUpdatedPIDConstants();
+        Slot0Configs newPIDConfigs = new Slot0Configs();
+        newPIDConfigs.kP = currentPIDValues[0];
+        newPIDConfigs.kI = currentPIDValues[1];
+        newPIDConfigs.kD = currentPIDValues[2];
+        newPIDConfigs.kS = currentPIDValues[3];
+        newPIDConfigs.kG = currentPIDValues[4];
         return newPIDConfigs;
     }
 

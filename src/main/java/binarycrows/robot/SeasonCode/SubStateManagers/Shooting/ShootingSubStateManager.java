@@ -311,9 +311,10 @@ public class ShootingSubStateManager extends SubStateManager<ShootingStateReques
 
         double velocityNorm = Math.sqrt(velocity[0] * velocity[0] + velocity[1] * velocity[1]);
 
+        double currentTime = System.currentTimeMillis() / 1000.0;
 
         
-        for (int frame = framesOfVelocityMeasurement-2; frame >= 0; frame--)
+        /*for (int frame = framesOfVelocityMeasurement-2; frame >= 0; frame--)
         {
             velocityFrames[frame + 1] = velocityFrames[frame];
             accelerationFrames[frame + 1] = accelerationFrames[frame];
@@ -347,7 +348,6 @@ public class ShootingSubStateManager extends SubStateManager<ShootingStateReques
 
         double[] extraVelocity = new double[] {0, 0, 0};
 
-        double currentTime = System.currentTimeMillis() / 1000.0;
 
         double lookaheadTime = nextShotTime - currentTime;
 
@@ -367,7 +367,7 @@ public class ShootingSubStateManager extends SubStateManager<ShootingStateReques
         Logger.recordOutput("/Turret/Control/ExtraVelocity", extraVelocity);
         Logger.recordOutput("/Turret/Control/Velocity", velocityFrames[0]);
         Logger.recordOutput("/Turret/Control/Acceleration", accelerationFrames[0]);
-        Logger.recordOutput("/Turret/Control/Jerk", jerkFrames[0]);
+        Logger.recordOutput("/Turret/Control/Jerk", jerkFrames[0]);*/
 
         double[] desiredLinearVelocity = desiredLinearVelocitySupplier.get();
         if (desiredLinearVelocity == null) desiredLinearVelocity = velocity;

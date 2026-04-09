@@ -113,7 +113,7 @@ public class HoodSubStateManager extends SubStateManager<HoodStateRequest> {
     }
 
     public double getDeltaRad() {
-        return outputs.distanceFromSetpoint.getRadians();
+        return hoodAngleSupplier.get() - outputs.hoodRotation.getRadians();
     }
 
 
